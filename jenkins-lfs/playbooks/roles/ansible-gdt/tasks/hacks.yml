@@ -1,0 +1,23 @@
+- name: Copy udev_systemd-257.3.sh
+  ansible.builtin.copy:
+    src: udev_systemd-257.3.sh
+    dest: /mnt/lfs/sources/udev_systemd-257.3.sh
+    mode: '0755'
+
+- name: Copy shadow-4.17.3.sh
+  ansible.builtin.copy:
+    src: shadow-4.17.3.sh
+    dest: /mnt/lfs/sources/shadow-4.17.3.sh
+    mode: '0755'
+
+- name: Copy strip.sh
+  ansible.builtin.copy:
+    src: strip.sh
+    dest: /mnt/lfs/sources/strip.sh
+    mode: '0755'
+
+- name: Copy prepare_image.sh
+  ansible.builtin.copy:
+    src: prepare_image.sh
+    dest: /mnt/lfs/sources/prepare_image.sh
+    mode: '0755'
