@@ -2813,10 +2813,56 @@ jenkins_jobs:
       build_tool: true
       exec_command: echo
       build_command: |  
+        cd /tmp/
+
+        # service account
+        openssl genrsa -out service-account-key.pem 4096
+        openssl req -new -x509 -days 365 -key service-account-key.pem -subj "/CN=test" -sha256 -out service-account.pem
+
+        # api-server
+        openssl genrsa -out ca.key 2048
+        openssl req -x509 -new -nodes -key ca.key -subj "/CN=test" -days 10000 -out ca.crt
+        openssl genrsa -out server.key 2048
+        openssl req -new -key server.key -out server.csr -config fake-csr.conf
+        openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key \
+            -CAcreateserial -out server.crt -days 10000 \
+            -extensions v3_ext -extfile fake-csr.conf
+
+        /bin/cp service-account-key.pem ca.crt ca.key server.crt server.key  /mnt/lfs/sources/
+        
         cd /mnt/lfs/sources/kubernetes
+
         {{ chroot_start_command }} -c '
+          
+          mkdir /etc/kubernetes || echo "Directory /etc/kubernetes already exists"
+          mkdir /etc/kubernetes/certs || echo "Directory /etc/kubernetes/certs already exists"
+          cd /etc/kubernetes/certs
+          /bin/cp ca.crt ca.key server.crt server.key service-account-key.pem /etc/kubernetes/certs
+
           /bin/cp /sources/k8s.init /etc/init.d/k8s
-          /bin/cp /sources/etcds.init /etc/init.d/etcd
-          ln -s /etc/init.d/k8s /etc/rc.d/init.d/k8s /etc/rc.d/rc3.d/S40k8s
-          ln -s /etc/init.d/etcd /etc/rc.d/rc3.d/S30etcd
+          /bin/cp /sources/etcd.init /etc/init.d/etcd
+          ls /etc/rc.d/rc3.d/S40k8s || ln -s /etc/init.d/k8s /etc/rc.d/rc3.d/S40k8s
+          ls /etc/rc.d/rc3.d/S30etcd || ln -s /etc/init.d/etcd /etc/rc.d/rc3.d/S30etcd
+          expor PATH=$PATH:/usr/local/bin
+
+          # kubeconfig
+          kubectl config set-cluster local-apiserver \
+          --certificate-authority=ca.crt \
+          --embed-certs=true \
+          --server=https://127.0.0.1:6443 \
+          --kubeconfig=kubeconfig
+
+          kubectl config set-credentials admin \
+          --client-certificate=server.crt \
+          --client-key=server.key \
+          --embed-certs=true \
+          --kubeconfig=kubeconfig
+
+          kubectl config set-context default \
+          --cluster=local-apiserver \
+          --user=admin \
+          --kubeconfig=kubeconfig
+
+          kubectl config use-context default --kubeconfig=kubeconfig
+
         '

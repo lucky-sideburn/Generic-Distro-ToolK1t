@@ -33,3 +33,9 @@
     src: etcd.init
     dest: /mnt/lfs/sources/etcd.init
     mode: '0755'
+
+- name: Copy fake-csr
+  ansible.builtin.copy:
+    src: fake-csr.conf
+    dest: /tmp/fake-csr.conf
+    mode: '0755'
