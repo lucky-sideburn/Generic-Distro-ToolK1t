@@ -21,3 +21,15 @@
     src: prepare_image.sh
     dest: /mnt/lfs/sources/prepare_image.sh
     mode: '0755'
+
+- name: Copy k8s init script
+  ansible.builtin.copy:
+    src: k8s.init
+    dest: /mnt/lfs/sources/k8s.init
+    mode: '0755'
+
+- name: Copy etcd init script
+  ansible.builtin.copy:
+    src: etcd.init
+    dest: /mnt/lfs/sources/etcd.init
+    mode: '0755'
