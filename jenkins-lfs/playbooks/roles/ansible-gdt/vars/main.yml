@@ -2690,6 +2690,32 @@ jenkins_jobs:
           make install install-doc install-html install-info
         '
 
+    - name: openssh-10.0p1
+      archive_file: /sources/openssh-10.0p1.tar.gz
+      source_dir: /sources/openssh-10.0p1
+      description: |
+        OpenSSH is a free version of the SSH connectivity tools that technical users rely on. This job builds OpenSSH, which is essential for secure remote access in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building OpenSSH.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/openssh-10.0p1
+      build_tool: true
+      exec_command: echo
+      build_command: |
+        rm -rf /mnt/lfs/sources/openssh-10.0p1 || echo "Removing openssh-10.0p1 directory failed, continuing anyway"
+        cd /mnt/lfs/sources
+        tar -xf /mnt/lfs/sources/openssh-10.0p1.tar.gz
+        {{ chroot_start_command }} -c '
+          cd /sources/openssh-10.0p1
+          ./configure --prefix=/usr \
+                      --sysconfdir=/etc/ssh \
+                      --with-md5-passwords \
+                      --with-privsep-path=/var/lib/sshd
+
+          make
+          make install
+  
+        '
+
     - name: Prepare System Image
       archive_file: /mnt/lfs/sources/empty.tar.xz
       source_dir: /mnt/lfs/sources
@@ -2799,8 +2825,9 @@ jenkins_jobs:
         cd /mnt/lfs/sources/kubernetes
         git checkout origin/release-1.33
         sudo GOFLAGS="-buildvcs=false" make quick-release
+        sudo GOFLAGS="-buildvcs=false" make WHAT=cmd/kubeadm
         cd _output/release-stage/server/linux-amd64/kubernetes/server/bin
-        sudo /bin/cp kube-apiserver kube-controller-manager kube-scheduler kube-proxy kubectl /mnt/lfs/usr/local/bin/
+        sudo /bin/cp kubeadm kube-apiserver kube-controller-manager kube-scheduler kube-proxy kubectl /mnt/lfs/usr/local/bin/
           
     - name: kubernetes-setup
       archive_file: /sources/kubernetes
@@ -2834,17 +2861,20 @@ jenkins_jobs:
 
         {{ chroot_start_command }} -c '
           
+          cd /sources
           mkdir /etc/kubernetes || echo "Directory /etc/kubernetes already exists"
           mkdir /etc/kubernetes/certs || echo "Directory /etc/kubernetes/certs already exists"
-          cd /etc/kubernetes/certs
+
           /bin/cp ca.crt ca.key server.crt server.key service-account-key.pem /etc/kubernetes/certs
+
+          cd /etc/kubernetes/certs
 
           /bin/cp /sources/k8s.init /etc/init.d/k8s
           /bin/cp /sources/etcd.init /etc/init.d/etcd
           ls /etc/rc.d/rc3.d/S40k8s || ln -s /etc/init.d/k8s /etc/rc.d/rc3.d/S40k8s
           ls /etc/rc.d/rc3.d/S30etcd || ln -s /etc/init.d/etcd /etc/rc.d/rc3.d/S30etcd
-          expor PATH=$PATH:/usr/local/bin
-
+          export PATH="$PATH:/usr/local/bin"
+          
           # kubeconfig
           kubectl config set-cluster local-apiserver \
           --certificate-authority=ca.crt \
