@@ -187,7 +187,7 @@ menuentry "GNU/Linux, Linux 6.13.4-lfs-12.3" {
 
 EOF
 
-sudo cp /mnt/lfs/source/conf_tmp/profile /mnt/lfs-root/etc/profile
+sudo cp /mnt/lfs/sources/conf_tmp/profile /mnt/lfs-root/etc/profile
 sudo chmod 644 /mnt/lfs-root/etc/profile
 sudo cp /tmp/grub.cfg /mnt/lfs-boot/boot/grub/grub.cfg
 
