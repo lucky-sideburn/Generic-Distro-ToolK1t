@@ -1,4 +1,4 @@
-# GDT (Generic Distro Toolkit)
+# GDT (Generic Distro Toolkit) - Work in progress...
 
 ## Description
 The Generic Distro Toolkit (GDT) is part of the Garanti Del Talento initiative. It facilitates the creation of a custom GNU/Linux distribution based on Linux From Scratch (LFS) ([LFS website](https://www.linuxfromscratch.org/)) by using Ansible and Jenkins.
