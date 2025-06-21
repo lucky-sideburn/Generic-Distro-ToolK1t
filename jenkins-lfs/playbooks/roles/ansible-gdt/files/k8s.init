@@ -1,21 +1,24 @@
 #!/bin/bash
 
+
+exit 0
+
 # Initialize Kubernetes on Linux From Scratch
 
-# Set environment variables
-export PATH=$PATH:/usr/local/bin
-export KUBECONFIG=/etc/kubernetes/admin.conf
+# # Set environment variables
+# export PATH=$PATH:/usr/local/bin
+# export KUBECONFIG=/etc/kubernetes/admin.conf
 
-# Start kube-apiserver
-echo "Starting kube-apiserver..."
-kube-apiserver \
-  --etcd-servers http://localhost:2379 \
-  --service-account-key-file=/etc/kubernetes/certs/service-account-key.pem \
-  --service-account-signing-key-file=/etc/kubernetes/certs/service-account-key.pem \
-  --service-account-issuer=api \
-  --tls-cert-file=/etc/kubernetes/certs/server.crt \
-  --tls-private-key-file=/etc/kubernetes/certs/server.key \
-  --client-ca-file=/etc/kubernetes/certs/ca.crt &
+# # Start kube-apiserver
+# echo "Starting kube-apiserver..."
+# kube-apiserver \
+#   --etcd-servers http://localhost:2379 \
+#   --service-account-key-file=/etc/kubernetes/certs/service-account-key.pem \
+#   --service-account-signing-key-file=/etc/kubernetes/certs/service-account-key.pem \
+#   --service-account-issuer=api \
+#   --tls-cert-file=/etc/kubernetes/certs/server.crt \
+#   --tls-private-key-file=/etc/kubernetes/certs/server.key \
+#   --client-ca-file=/etc/kubernetes/certs/ca.crt &
 
 # # Start kube-controller-manager
 # echo "Starting kube-controller-manager..."

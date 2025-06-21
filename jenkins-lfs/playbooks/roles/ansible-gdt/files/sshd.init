@@ -1,0 +1,71 @@
+#!/bin/bash
+#
+# /etc/init.d/sshd
+#
+# Init script for OpenSSH server daemon
+#
+### BEGIN INIT INFO
+# Provides:          sshd
+# Required-Start:    $network $syslog
+# Required-Stop:     $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: OpenSSH server daemon
+# Description:       Starts and stops the OpenSSH server daemon
+### END INIT INFO
+
+DAEMON=/usr/sbin/sshd
+PIDFILE=/var/run/sshd.pid
+NAME=sshd
+DESC="OpenSSH server daemon"
+
+test -x $DAEMON || exit 0
+
+case "$1" in
+  start)
+    echo "Starting $DESC..."
+    if [ -f $PIDFILE ] && ps -p $(cat $PIDFILE) > /dev/null 2>&1; then
+      echo "$DESC is already running."
+    else
+      $DAEMON
+      if [ $? -eq 0 ]; then
+        echo "$DESC started successfully."
+      else
+        echo "Failed to start $DESC."
+      fi
+    fi
+    ;;
+  stop)
+    echo "Stopping $DESC..."
+    if [ -f $PIDFILE ] && ps -p $(cat $PIDFILE) > /dev/null 2>&1; then
+      kill $(cat $PIDFILE)
+      if [ $? -eq 0 ]; then
+        rm -f $PIDFILE
+        echo "$DESC stopped successfully."
+      else
+        echo "Failed to stop $DESC."
+      fi
+    else
+      echo "$DESC is not running."
+    fi
+    ;;
+  restart)
+    $0 stop
+    $0 start
+    ;;
+  status)
+    if [ -f $PIDFILE ] && ps -p $(cat $PIDFILE) > /dev/null 2>&1; then
+      echo "$DESC is running."
+      exit 0
+    else
+      echo "$DESC is not running."
+      exit 1
+    fi
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+    exit 1
+    ;;
+esac
+
+exit 0

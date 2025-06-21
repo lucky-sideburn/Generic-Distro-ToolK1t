@@ -1,3 +1,9 @@
+- name: Create tmp directory
+  ansible.builtin.file:
+    path: /mnt/lfs/sources/conf_tmp 
+    state: directory
+    mode: '0755'
+
 - name: Copy udev_systemd-257.3.sh
   ansible.builtin.copy:
     src: udev_systemd-257.3.sh
@@ -39,3 +45,27 @@
     src: fake-csr.conf
     dest: /tmp/fake-csr.conf
     mode: '0755'
+
+- name: Copy sshd init script
+  ansible.builtin.copy:
+    src: sshd.init
+    dest: /mnt/lfs/sources/sshd.init
+    mode: '0755'
+
+- name: Copy sshd_config
+  ansible.builtin.copy:
+    src: sshd_config
+    dest: /mnt/lfs/sources/conf_tmp/sshd_config
+    mode: '0644'
+
+- name: Copy profile
+  ansible.builtin.copy:
+    src: profile
+    dest: /mnt/lfs/sources/conf_tmp/profile
+    mode: '0644'
+
+- name: Copy kernel_config_x86_64
+  ansible.builtin.copy:
+    src: kernel_config_x86_64
+    dest: /mnt/lfs/sources/conf_tmp/kernel_config_x86_64
+    mode: '0644'

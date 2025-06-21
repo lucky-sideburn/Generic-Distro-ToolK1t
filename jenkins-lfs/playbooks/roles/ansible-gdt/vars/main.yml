@@ -2659,10 +2659,12 @@ jenkins_jobs:
         tar -xf /mnt/lfs/sources/linux-6.13.4.tar.xz
         {{ chroot_start_command }} -c '
         cd /sources/linux-6.13.4
-          make mrproper
-          make defconfig
+          # make mrproper
+          # make defconfig
+          # make modules_install
+          /bin/cp /sources/conf_tmp/kernel_config_x86_64 .config
+          make olddefconfig
           make -j$(nproc)
-          make modules_install
           cp -iv arch/x86/boot/bzImage /boot/vmlinuz-6.13.4-lfs-12.3
           cp -iv System.map /boot/System.map-6.13.4
           cp -iv .config /boot/config-6.13.4
@@ -2704,6 +2706,7 @@ jenkins_jobs:
         rm -rf /mnt/lfs/sources/openssh-10.0p1 || echo "Removing openssh-10.0p1 directory failed, continuing anyway"
         cd /mnt/lfs/sources
         tar -xf /mnt/lfs/sources/openssh-10.0p1.tar.gz
+
         {{ chroot_start_command }} -c '
           cd /sources/openssh-10.0p1
           ./configure --prefix=/usr \
@@ -2713,7 +2716,11 @@ jenkins_jobs:
 
           make
           make install
-  
+          /bin/cp /sources/conf_tmp/sshd_config /etc/ssh/sshd_config
+          groupadd -g 33 sshd || echo "Group sshd already exists, continuing anyway"
+          useradd -c "sshd Privsep" -d /var/lib/sshd -g sshd -s /bin/false -u 33 sshd || echo "User sshd already exists, continuing anyway"
+          /bin/cp /sources/sshd.init /etc/init.d/sshd
+          ls /etc/rc.d/rc3.d/S50sshd || ln -s /etc/init.d/k8s /etc/rc.d/rc3.d/S50sshd
         '
 
     - name: Prepare System Image
