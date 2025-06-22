@@ -4,6 +4,12 @@
     state: directory
     mode: '0755'
 
+- name: Create kernel_configs directory
+  ansible.builtin.file:
+    path: /mnt/lfs/sources/kernel_configs 
+    state: directory
+    mode: '0777'
+
 - name: Copy udev_systemd-257.3.sh
   ansible.builtin.copy:
     src: udev_systemd-257.3.sh
@@ -67,5 +73,17 @@
 - name: Copy kernel_config_x86_64
   ansible.builtin.copy:
     src: kernel_config_x86_64
-    dest: /mnt/lfs/sources/conf_tmp/kernel_config_x86_64
+    dest: /mnt/lfs/sources/kernel_configs/kernel_config_x86_64 
+    mode: '0644'
+
+- name: Copy sysctl.conf
+  ansible.builtin.copy:
+    src: sysctl.conf
+    dest: /mnt/lfs/sources/conf_tmp/sysctl.conf
+    mode: '0644'
+
+- name: Copy hosts file
+  ansible.builtin.copy:
+    src: hosts
+    dest: /mnt/lfs/sources/conf_tmp/hosts
     mode: '0644'

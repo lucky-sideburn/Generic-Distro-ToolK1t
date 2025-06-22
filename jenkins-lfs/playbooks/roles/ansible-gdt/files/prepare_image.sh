@@ -10,6 +10,14 @@ LIVE_VM_ISO_PATH="/var/lib/libvirt/images/alpine.iso"
 VIRSH_POOL="default"
 VIRSH_NETWORK="default"
 LOOP_DEVICE=$(losetup -l | grep "$IMAGE_PATH" | awk '{print $1}')
+CONF_TMP="/mnt/lfs/sources/conf_tmp"
+GDT_HOSTNAME="kgdt01"
+LFS_ROOT="/mnt/lfs-root"
+
+(mount | grep '/mnt/lfs/proc')    && sudo umount /mnt/lfs/proc
+(mount | grep '/mnt/lfs/sys')     && sudo umount /mnt/lfs/sys
+(mount | grep '/mnt/lfs/dev')     && sudo umount /mnt/lfs/dev
+(mount | grep '/mnt/lfs/dev/pts') && sudo umount /mnt/lfs/dev/pts
 
 echo "[INFO] Checking if VM_NAME or LIVE_VM_NAME exists..."
 if virsh list --all | grep -q "$VM_NAME"; then
@@ -69,12 +77,11 @@ sudo mkdir -p /mnt/lfs-boot /mnt/lfs-root
 sudo mount ${LOOP_DEVICE}p1 /mnt/lfs-boot
 sudo mount ${LOOP_DEVICE}p2 /mnt/lfs-root
 
-
-
 echo "[INFO] Copying content from /mnt/lfs/root to /mnt/lfs-root excluding boot..."
-sudo rsync -a --progress --stats --exclude='boot' --exclude='sources' /mnt/lfs/* /mnt/lfs-root/
+sudo rsync -a --stats --exclude='boot' --exclude='sources' /mnt/lfs/* /mnt/lfs-root/
 
-cat >  /tmp/inittab << "EOF"
+echo "[INFO] Creating inittab, clock, fstab, ifconfig.ens3, resolv.conf, and hostname files..."
+cat >  $CONF_TMP/inittab << "EOF"
 # Begin /etc/inittab
 
 id:3:initdefault:
@@ -104,7 +111,7 @@ s1:1:respawn:/sbin/sulogin
 # End /etc/inittab
 EOF
 
-cat > /tmp/ifconfig.ens3 << "EOF"
+cat > $CONF_TMP/ifconfig.ens3 << "EOF"
 ONBOOT=yes
 IFACE=ens3
 SERVICE=ipv4-static
@@ -114,7 +121,7 @@ PREFIX=24
 BROADCAST=192.168.122.255
 EOF
 
-cat > /etc/resolv.conf << "EOF"
+cat > $CONF_TMP/resolv.conf << "EOF"
 # Begin /etc/resolv.conf
 
 domain accolx.local
@@ -124,7 +131,7 @@ nameserver 8.8.4.4
 # End /etc/resolv.conf
 EOF
 
-cat > /tmp/clock << "EOF"
+cat > $CONF_TMP/clock << "EOF"
 # Begin /etc/sysconfig/clock
 
 UTC=1
@@ -136,7 +143,7 @@ CLOCKPARAMS=
 # End /etc/sysconfig/clock
 EOF
 
-cat > /tmp/fstab << "EOF"
+cat > $CONF_TMP/fstab << "EOF"
 # Begin /etc/fstab
 
 # file system  mount-point    type     options             dump  fsck
@@ -155,15 +162,19 @@ cgroup2        /sys/fs/cgroup cgroup2  nosuid,noexec,nodev 0     0
 # End /etc/fstab
 EOF
 
-echo "accolx" > /tmp/hostname
+echo $GDT_HOSTNAME > $CONF_TMP/hostname
 
-sudo cp /tmp/inittab /mnt/lfs-root/etc/inittab
-sudo cp /tmp/clock /mnt/lfs-root/etc/sysconfig/clock
-sudo cp /tmp/fstab /mnt/lfs-root/etc/fstab
-sudo cp /tmp/ifconfig.ens3 /mnt/lfs-root/etc/sysconfig/ifconfig.ens3
-sudo cp /tmp/hostname /mnt/lfs-root/etc/hostname
-sudo mkdir /mnt/lfs-root/boot
+echo "[INFO] Copying configuration files to $LFS_ROOT..."
+sudo cp $CONF_TMP/inittab           $LFS_ROOT/etc/inittab
+sudo cp $CONF_TMP/clock             $LFS_ROOT/etc/sysconfig/clock
+sudo cp $CONF_TMP/fstab             $LFS_ROOT/etc/fstab
+sudo cp $CONF_TMP/ifconfig.ens3     $LFS_ROOT/etc/sysconfig/ifconfig.ens3
+sudo cp $CONF_TMP/hostname          $LFS_ROOT/etc/hostname
+sudo cp $CONF_TMP/profile           $LFS_ROOT/etc/profile
+sudo cp $CONF_TMP/sysctl.conf       $LFS_ROOT/etc/sysctl.conf
+sudo cp $CONF_TMP/hosts             $LFS_ROOT/etc/hosts
 
+sudo mkdir $LFS_ROOT/boot
 echo "[INFO] Content copied successfully."
 
 echo "[INFO] Installing GRUB on /mnt/lfs-boot..."
@@ -174,7 +185,7 @@ echo "[INFO] Copying content from /mnt/lfs/boot to /mnt/lfs-boot..."
 sudo cp -a /mnt/lfs/boot/* /mnt/lfs-boot/
 echo "[INFO] Content copied successfully."
 
-sudo cat > /tmp/grub.cfg << "EOF"
+sudo cat > $CONF_TMP/grub.cfg << "EOF"
 # Begin /boot/grub/grub.cfg
 set default=0
 set timeout=5
@@ -182,14 +193,11 @@ set timeout=5
 menuentry "GNU/Linux, Linux 6.13.4-lfs-12.3" {
         set root=(hd0,msdos1)
         linux /vmlinuz-6.13.4-lfs-12.3 root=/dev/vda2 ro
-
 }
 
 EOF
 
-sudo cp /mnt/lfs/sources/conf_tmp/profile /mnt/lfs-root/etc/profile
-sudo chmod 644 /mnt/lfs-root/etc/profile
-sudo cp /tmp/grub.cfg /mnt/lfs-boot/boot/grub/grub.cfg
+sudo cp $CONF_TMP/grub.cfg /mnt/lfs-boot/boot/grub/grub.cfg
 
 sudo umount /mnt/lfs-boot
 sudo umount /mnt/lfs-root
@@ -236,14 +244,8 @@ sudo -i -u ubuntu virt-install \
   --graphics vnc,listen=0.0.0.0 \
   --import \
   --noautoconsole
+
 echo "[INFO] Virtual machine alpine-vm started successfully."
-
-
 echo "[INFO] Virtual machine $VM_NAME created successfully."
 
-# Uncomment the following lines if you want to generate a GRUB configuration file
-
-# echo "[INFO] Generating GRUB configuration file..."
-# sudo grub-mkconfig -o /mnt/lfs-boot/boot/grub/grub.cfg
-# echo "[INFO] GRUB configuration file generated successfully."
 

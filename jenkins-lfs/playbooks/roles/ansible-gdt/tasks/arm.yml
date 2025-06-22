@@ -1,5 +1,5 @@
-- name: "Include hacks.yml tasks"
-  include_tasks: hacks.yml
+- name: "Include conf.yml tasks"
+  include_tasks: conf.yml
 
 - name: "Create Jenkins Folder"
   ansible.builtin.uri:

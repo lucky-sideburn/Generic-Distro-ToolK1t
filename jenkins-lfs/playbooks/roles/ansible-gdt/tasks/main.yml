@@ -1,5 +1,5 @@
-- name: "Include hacks.yml tasks"
-  include_tasks: hacks.yml
+- name: "Include conf.yml tasks"
+  include_tasks: conf.yml
 
 - name: "Include arm.yml tasks"
   include_tasks: arm.yml
