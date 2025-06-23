@@ -4,7 +4,12 @@ sed -e 's/GROUP="render"/GROUP="video"/' \
     -e 's/GROUP="sgx", //'               \
     -i rules.d/50-udev-default.rules.in
 
+# TODO understand why this is needed.... this is a workaround for the
+#       udevadm command not being found in the build environment.
 sed -i "s/.*kmod\ load.*//g" rules.d/*
+# TODO understand why this is needed.... this is a workaround for the
+#       udevadm command not being found in the build environment.
+rm -f rules.d/90-image-dissect.rules
 
 sed -i '/systemd-sysctl/s/^/#/' rules.d/99-systemd.rules.in
 

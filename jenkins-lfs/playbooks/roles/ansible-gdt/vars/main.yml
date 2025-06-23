@@ -2433,7 +2433,7 @@ jenkins_jobs:
         (mount | grep '/mnt/lfs/dev/pts') || sudo mount -t devpts devpts /mnt/lfs/dev/pts
 
         cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/systemd-257.3 || echo "Removing systemd-257.3 directory failed, continuing anyway"
+        sudo rm -rf /mnt/lfs/sources/systemd-257.3 || echo "Removing systemd-257.3 directory failed, continuing anyway"
         tar -xvf /mnt/lfs/sources/systemd-257.3.tar.gz
         cp /mnt/lfs/sources/udev_systemd-257.3.sh /mnt/lfs/sources/systemd-257.3/udev_systemd-257.3.sh 
         {{ chroot_start_command }} -c '
