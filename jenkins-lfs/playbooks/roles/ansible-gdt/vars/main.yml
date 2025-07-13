@@ -63,6 +63,7 @@ jenkins_jobs:
     - basic_system_software
     - system_configuration
     - containers
+    - ansible
   arm_folders:
     - arm_cross_toolchain
     - arm_cross_compiling_temporary_tools
@@ -73,6 +74,34 @@ jenkins_jobs:
   setup:
     - Host System Requirements
     - Final Preparation
+
+  ansible:
+    - name: Configure Jenkins all jenkins_jobs
+      archive_file: /mnt/lfs/sources/empty.tar.xz
+      source_dir: /mnt/lfs/sources
+      description: |
+        This job configures Jenkins to use the jenkins_jobs tool for managing jobs. It sets up the necessary configuration files and ensures that Jenkins can manage jobs effectively.
+      category:
+        This job is part of the Ansible setup, specifically for configuring Jenkins to use jenkins_jobs.
+      jenkins_job_url: http://localhost:8080/job/ansible/job/Configure%20Jenkins%20jenkins_jobs/
+      build_command: echo
+      build_tool: false
+      exec_command: |
+        sudo -i -u ubuntu ansible-playbook -i /home/ubuntu/gdt/jenkins-lfs/inventories/host_prod.ini  /home/ubuntu/gdt/jenkins-lfs/playbooks/start.yml 
+  
+    - name: Configure Jenkins Basic System Software Jobs
+      archive_file: /mnt/lfs/sources/empty.tar.xz
+      source_dir: /mnt/lfs/sources
+      description: |
+        This job configures Jenkins to use the jenkins_jobs tool for managing jobs. It sets up the necessary configuration files and ensures that Jenkins can manage jobs effectively.
+      category:
+        This job is part of the Ansible setup, specifically for configuring Jenkins to use jenkins_jobs.
+      jenkins_job_url: http://localhost:8080/job/ansible/job/Configure%20Jenkins%20jenkins_jobs/
+      build_command: echo
+      build_tool: false
+      exec_command: |
+        sudo -i -u ubuntu ansible-playbook -i /home/ubuntu/gdt/jenkins-lfs/inventories/host_prod.ini  /home/ubuntu/gdt/jenkins-lfs/playbooks/start.yml --tags basic_system_software
+  
   cross_toolchain:
     - name: Binutils - Pass 1 (Cross Toolchain)
       archive_file: /mnt/lfs/sources/binutils-2.44.tar.xz
@@ -2611,6 +2640,57 @@ jenkins_jobs:
           ./strip.sh
         '
 
+    - name: gpgme-2.0.0 (Basic System Software)
+      archive_file: /sources/gpgme-2.0.0.tar.bz2
+      source_dir: /sources/gpgme-2.0.0
+      description: |
+        GPGME is a library that provides a high-level crypto API for GnuPG. This job builds GPGME, which is essential for cryptographic operations in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building GPGME.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/GPGME-2.0.0
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        rm -rf /mnt/lfs/sources/gpgme-2.0.0 || echo "Removing gpgme-2.0.0 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/gpgme-2.0.0.tar.bz2
+        {{ chroot_start_command }} -c '
+          cd /sources/gpgme-2.0.0
+          ls build || mkdir build
+          cd build 
+          ../configure --prefix=/usr --disable-static
+          make
+          make install  
+        '
+
+    - name: libassuan-3.0.2 (Basic System Software)
+      archive_file: /sources/libassuan-3.0.2.tar.bz2
+      source_dir: /sources/libassuan-3.0.2
+      description: |
+        Libassuan is a library that provides a simple IPC mechanism for communication between applications. This job builds Libassuan, which is essential for inter-process communication in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building Libassuan.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libassuan-3.0.2
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        tar -xf /mnt/lfs/sources/libassuan-3.0.2.tar.bz2
+        {{ chroot_start_command }} -c '
+          cd /sources/libassuan-3.0.2
+          ./configure --prefix=/usr
+          make
+          make -C doc html
+          makeinfo --html --no-split -o doc/assuan_nochunks.html doc/assuan.texi
+          makeinfo --plaintext -o doc/assuan.txt doc/assuan.texi
+          make -C doc pdf ps
+          make install
+          install -v -dm755 /usr/share/doc/libassuan-3.0.2/html
+          install -v -m644 doc/assuan.html/* /usr/share/doc/libassuan-3.0.2/html
+          install -v -m644 doc/assuan_nochunks.html /usr/share/doc/libassuan-3.0.2
+          install -v -m644 doc/assuan.{txt,texi} /usr/share/doc/libassuan-3.0.2
+        '
+
     - name: Cleaning Up (Basic System Software)
       archive_file: /sources/empty.tar.gz
       source_dir: /sources
@@ -2817,8 +2897,8 @@ jenkins_jobs:
         rm -rf /mnt/lfs/sources/cri-o-1.33.1 || echo "Removing cri-o-1.33.1 directory failed, continuing anyway"
         tar -xf /mnt/lfs/sources/cri-o-1.33.1.tar.xz
         cd /mnt/lfs/sources/cri-o-1.33.1
-        make
-        sudo make install
+        sudo make clean
+        sudo make install PREFIX=/mnt/lfs/usr/local
 
     - name: etcd-3.6.1
       archive_file: /sources/etcd
@@ -2855,7 +2935,7 @@ jenkins_jobs:
         sudo GOFLAGS="-buildvcs=false" make quick-release
         sudo GOFLAGS="-buildvcs=false" make WHAT=cmd/kubeadm
         cd _output/release-stage/server/linux-amd64/kubernetes/server/bin
-        sudo /bin/cp kubeadm kube-apiserver kube-controller-manager kube-scheduler kube-proxy kubectl /mnt/lfs/usr/local/bin/
+        sudo /bin/cp kubeadm kube-apiserver kube-controller-manager kube-scheduler kube-proxy kubectl kubelet /mnt/lfs/usr/local/bin/
           
     - name: kubernetes-setup
       archive_file: /sources/kubernetes

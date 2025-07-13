@@ -38,6 +38,8 @@
     timeout: 60
   loop: "{{ jenkins_jobs.folders }}"
   ignore_errors: yes
+  tags:
+    - folders
   
 # CROSS TOOLCHAIN
 - name: "Create Jenkins Jobs - Cross Toolchain Jobs"
@@ -85,6 +87,8 @@
     timeout: 60
   loop: "{{ jenkins_jobs.cross_toolchain }}"
   ignore_errors: yes
+  tags:
+    - cross_toolchain
 
 - name: "Create Jenkins Jobs - Cross Compiling Temporary Tools"
   ansible.builtin.uri:
@@ -131,6 +135,8 @@
     timeout: 60
   loop: "{{ jenkins_jobs.cross_compiling_temporary_tools }}"
   ignore_errors: yes
+  tags:
+    - cross_compiling_temporary_tools
 
 - name: "Create Jenkins Jobs - Chroot And Building Additional Temporary Tools"
   ansible.builtin.uri:
@@ -175,6 +181,8 @@
     timeout: 60
   loop: "{{ jenkins_jobs.chroot_and_building_additional_temporary_tools }}"
   ignore_errors: yes
+  tags:
+    - chroot_and_building_additional_temporary_tools
 
 - name: "Create Jenkins Jobs - Basic System Software"
   ansible.builtin.uri:
@@ -219,6 +227,8 @@
     timeout: 60
   loop: "{{ jenkins_jobs.basic_system_software }}"
   ignore_errors: yes
+  tags:
+    - basic_system_software
 
 - name: "Create Jenkins Jobs - Basic System Configuration"
   ansible.builtin.uri:
@@ -263,6 +273,8 @@
     timeout: 60
   loop: "{{ jenkins_jobs.system_configuration }}"
   ignore_errors: yes
+  tags:
+    - system_configuration
 
 - name: "Create Jenkins Jobs - Containers"
   ansible.builtin.uri:
@@ -307,3 +319,5 @@
     timeout: 60
   loop: "{{ jenkins_jobs.containers }}"
   ignore_errors: yes
+  tags:
+    - containers
