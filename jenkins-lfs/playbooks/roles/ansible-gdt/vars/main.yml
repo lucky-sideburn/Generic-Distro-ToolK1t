@@ -2640,6 +2640,103 @@ jenkins_jobs:
           ./strip.sh
         '
 
+    - name: libgcrypt-1.11.1 (Basic System Software)
+      archive_file: /sources/libgcrypt-1.11.1.tar.bz2
+      source_dir: /sources/libgcrypt-1.11.1
+      description: |
+        Libgcrypt is a general-purpose cryptographic library based on the code from GnuPG. This job builds Libgcrypt, which is essential for cryptographic operations in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building Libgcrypt.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libgcrypt-1.11.1
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        rm -rf /mnt/lfs/sources/libgcrypt-1.11.1 || echo "Removing libgcrypt-1.11.1 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/libgcrypt-1.11.1.tar.bz2
+        {{ chroot_start_command }} -c '
+          cd /sources/libgcrypt-1.11.1
+          ./configure --prefix=/usr
+          make
+          make -C doc html                                    
+          makeinfo --html --no-split -o doc/gcrypt_nochunks.html doc/gcrypt.texi
+          makeinfo --plaintext       -o doc/gcrypt.txt           doc/gcrypt.texi
+          make install
+          install -v -dm755   /usr/share/doc/libgcrypt-1.11.1
+          install -v -m644    README doc/{README.apichanges,fips*,libgcrypt*} \
+                              /usr/share/doc/libgcrypt-1.11.1
+
+          install -v -dm755   /usr/share/doc/libgcrypt-1.11.1/html
+          install -v -m644 doc/gcrypt.html/* \
+                              /usr/share/doc/libgcrypt-1.11.1/html
+          install -v -m644 doc/gcrypt_nochunks.html \
+                              /usr/share/doc/libgcrypt-1.11.1
+          install -v -m644 doc/gcrypt.{txt,texi} \
+                              /usr/share/doc/libgcrypt-1.11.1
+        '
+
+    - name: libksba-1.6.7 (Basic System Software)
+      archive_file: /sources/libksba-1.6.7.tar.bz2
+      source_dir: /sources/libksba-1.6.7
+      description: |
+        Libksba is a library that provides access to the X.509 certificate and CRL formats. This job builds Libksba, which is essential for handling certificates in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building Libksba.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libksba-1.6.7
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        rm -rf /mnt/lfs/sources/libksba-1.6.7 || echo "Removing libksba-1.6.7 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/libksba-1.6.7.tar.bz2
+        {{ chroot_start_command }} -c '
+          cd /sources/libksba-1.6.7
+          ./configure --prefix=/usr
+          make
+          make install
+        '
+
+    - name: npth-1.8 (Basic System Software)
+      archive_file: /sources/npth-1.8.tar.bz2
+      source_dir: /sources/npth-1.8
+      description: |
+        Npth is a library that provides a portable, non-blocking thread API for GnuPG. This job builds Npth, which is essential for threading support in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building Npth.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Npth-1.8
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        rm -rf /mnt/lfs/sources/npth-1.8 || echo "Removing npth-1.8 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/npth-1.8.tar.bz2
+        {{ chroot_start_command }} -c '
+          cd /sources/npth-1.8
+          ./configure --prefix=/usr
+          make
+          make install
+        ' 
+    - name: libgpg-error-1.55 (Basic System Software)
+      archive_file: /sources/libgpg-error-1.55.tar.bz2
+      source_dir: /sources/libgpg-error-1.55
+      description: |
+        Libgpg-error is a library that defines common error values for all GnuPG components. This job builds Libgpg-error, which is essential for error handling in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building Libgpg-error.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libgpg-error-1.55
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        rm -rf /mnt/lfs/sources/libgpg-error-1.55 || echo "Removing libgpg-error-1.55 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/libgpg-error-1.55.tar.bz2
+        {{ chroot_start_command }} -c '
+          cd /sources/libgpg-error-1.55
+          ./configure --prefix=/usr
+          make
+          make install
+          install -v -m644 -D README /usr/share/doc/libgpg-error-1.55/README
+        '
     - name: gpgme-2.0.0 (Basic System Software)
       archive_file: /sources/gpgme-2.0.0.tar.bz2
       source_dir: /sources/gpgme-2.0.0
@@ -2689,6 +2786,47 @@ jenkins_jobs:
           install -v -m644 doc/assuan.html/* /usr/share/doc/libassuan-3.0.2/html
           install -v -m644 doc/assuan_nochunks.html /usr/share/doc/libassuan-3.0.2
           install -v -m644 doc/assuan.{txt,texi} /usr/share/doc/libassuan-3.0.2
+        '
+    - name: gnupg-2.4.8 (Basic System Software)
+      archive_file: /sources/gnupg-2.4.8.tar.bz2
+      source_dir: /sources/gnupg-2.4.8
+      description: |
+        GnuPG is a complete and free implementation of the OpenPGP standard, which allows for secure communication and data storage. This job builds GnuPG, which is essential for cryptographic operations in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building GnuPG.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/GnuPG-2.4.8
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        rm -rf /mnt/lfs/sources/gnupg-2.4.8 || echo "Removing gnupg-2.4.8 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/gnupg-2.4.8.tar.bz2
+        {{ chroot_start_command }} -c '
+          cd /sources/gnupg-2.4.8
+          mkdir build
+          cd    build
+
+          ../configure --prefix=/usr        \
+                      --localstatedir=/var \
+                      --sysconfdir=/etc    \
+                      --docdir=/usr/share/doc/gnupg-2.4.8
+          make
+
+          makeinfo --html --no-split -I doc -o doc/gnupg_nochunks.html ../doc/gnupg.texi
+          makeinfo --plaintext       -I doc -o doc/gnupg.txt           ../doc/gnupg.texi
+          make -C doc html
+          make -C doc pdf
+          make install
+
+          install -v -m755 -d /usr/share/doc/gnupg-2.4.8/html
+          install -v -m644    doc/gnupg_nochunks.html \
+                              /usr/share/doc/gnupg-2.4.8/html/gnupg.html
+          install -v -m644    ../doc/*.texi doc/gnupg.txt \
+                              /usr/share/doc/gnupg-2.4.8
+          install -v -m644    doc/gnupg.html/* \
+                              /usr/share/doc/gnupg-2.4.8/html
+          install -v -m644 doc/gnupg.pdf \
+                          /usr/share/doc/gnupg-2.4.8
         '
 
     - name: Cleaning Up (Basic System Software)
