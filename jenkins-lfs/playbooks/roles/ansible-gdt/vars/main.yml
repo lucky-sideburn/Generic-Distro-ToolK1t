@@ -2846,6 +2846,32 @@ jenkins_jobs:
           find /usr/lib /usr/libexec -name \*.la -delete
           find /usr -depth -name $(uname -m)-lfs-linux-gnu\* | xargs rm -rf
         '
+    - name: go1.22.9 (Basic System Software)
+      archive_file: /sources/empty.tar.gz
+      source_dir: /sources/empty.tar.gz
+      description: |
+        Go is an open-source programming language that makes it easy to build simple, reliable, and efficient software. This job installs Go, which is essential for building Go applications in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for installing Go.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Go-1.22.9
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        ls /usr/bin/go || sudo apt-get reinstall golang
+
+        ls goroot &> /dev/null || git clone https://go.googlesource.com/go goroot
+        cd goroot
+        git checkout origin/release-branch.go1.22
+        export GOROOT=/mnt/lfs/sources/goroot
+
+        cd ./src
+        bash all.bash
+        cd ..
+
+        /bin/cp ./bin/go /mnt/lfs/usr/bin/
+        '
+  
   system_configuration:
     - name: LFS-Bootscripts-20240825 (Basic System Software)
       archive_file: /sources/lfs-bootscripts-20240825.tar.xz

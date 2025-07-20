@@ -11,7 +11,7 @@ VIRSH_POOL="default"
 VIRSH_NETWORK="default"
 LOOP_DEVICE=$(losetup -l | grep "$IMAGE_PATH" | awk '{print $1}')
 CONF_TMP="/mnt/lfs/sources/conf_tmp"
-GDT_HOSTNAME="kgdt01"
+GDT_HOSTNAME="0xHrtz"
 LFS_ROOT="/mnt/lfs-root"
 
 (mount | grep '/mnt/lfs/proc')    && sudo umount /mnt/lfs/proc
