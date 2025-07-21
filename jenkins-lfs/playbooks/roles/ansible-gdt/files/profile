@@ -1,1 +1,2 @@
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+export GOROOT=/usr/local/go

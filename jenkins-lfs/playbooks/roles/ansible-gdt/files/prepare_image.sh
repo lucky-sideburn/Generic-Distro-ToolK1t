@@ -220,6 +220,9 @@ echo "[INFO] Preparing LFS image completed successfully."
 echo "[INFO] Info of image file:"
 sudo ls -lh $IMAGE_PATH
 
+echo "[INFO] Copying CA certificates to LFS image completed successfully."
+sudo cp /etc/ssl/certs/ca-certificates.crt /mnt/lfs/etc/ssl/certs/
+
 echo "[INFO] Creating a virtual machine to import LFS image..."
 sudo -i -u ubuntu virt-install \
   --name $VM_NAME \

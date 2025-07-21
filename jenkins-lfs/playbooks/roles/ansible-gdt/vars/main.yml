@@ -890,7 +890,6 @@ jenkins_jobs:
           cp services protocols /etc
         '
 
-
     - name: Glibc-2.41 (Basic System Software)
       archive_file: /sources/glibc-2.41.tar.xz
       source_dir: /sources/glibc-2.41
@@ -996,7 +995,48 @@ jenkins_jobs:
           echo \"/usr/local/lib\" >> /etc/ld.so.conf
           echo \"/opt/lib\" >> /etc/ld.so.conf
           "
+    - name: glib-2.84.3 (Basic System Software)
+      archive_file: /sources/glib-2.84.3.tar.xz
+      source_dir: /sources/glib-2.84.3
+      exec_command: echo
+      description: |
+        Glib is a low-level core library that forms the basis for libraries such as GTK+ and GStreamer. This job builds Glib, which is essential for many applications in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building Glib.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Glib-2.84.3
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        curl -O https://www.linuxfromscratch.org/patches/blfs/svn/glib-skip_warnings-1.patch
+        rm -rf /mnt/lfs/sources/glib-2.84.3 || echo "Removing glib-2.84.3 directory failed, continuing anyway"
+        tar -xf ./glib-2.84.3.tar.xz
+        cd glib-2.84.3
+        patch -Np1 -i ../glib-skip_warnings-1.patch
 
+        {{ chroot_start_command }} -c '
+          cd /sources/glib-2.84.3
+          mkdir build
+          cd    build
+
+          meson setup ..                  \
+                --prefix=/usr             \
+                --buildtype=release       \
+                -D introspection=disabled \
+                -D glib_debug=disabled    \
+                -D man-pages=enabled      \
+                -D sysprof=disabled
+          ninja
+          ninja install
+          tar xf ../../gobject-introspection-1.84.0.tar.xz
+
+          meson setup gobject-introspection-1.84.0 gi-build \
+                      --prefix=/usr --buildtype=release
+          ninja -C gi-build
+          ninja -C gi-build install
+          meson configure -D introspection=enabled
+          ninja
+          ninja install
+        '
     - name: Zlib-1.3.1 (Basic System Software)
       archive_file: /sources/zlib-1.3.1.tar.xz
       source_dir: /sources/zlib-1.3.1
@@ -2728,7 +2768,7 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/libgpg-error-1.55 || echo "Removing libgpg-error-1.55 directory failed, continuing anyway"
+        sudo rm -rf /mnt/lfs/sources/libgpg-error-1.55 || echo "Removing libgpg-error-1.55 directory failed, continuing anyway"
         tar -xf /mnt/lfs/sources/libgpg-error-1.55.tar.bz2
         {{ chroot_start_command }} -c '
           cd /sources/libgpg-error-1.55
@@ -2846,7 +2886,7 @@ jenkins_jobs:
           find /usr/lib /usr/libexec -name \*.la -delete
           find /usr -depth -name $(uname -m)-lfs-linux-gnu\* | xargs rm -rf
         '
-    - name: go1.22.9 (Basic System Software)
+    - name: go1.24 (Basic System Software)
       archive_file: /sources/empty.tar.gz
       source_dir: /sources/empty.tar.gz
       description: |
@@ -2858,18 +2898,44 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         cd /mnt/lfs/sources
+
+        ls /mnt/lfs/usr/local/go || sudo mkdir -p /mnt/lfs/usr/local/go
+        ls /mnt/lfs/usr/local/go/bin || sudo mkdir /mnt/lfs/usr/local/go/bin
+
         ls /usr/bin/go || sudo apt-get reinstall golang
 
         ls goroot &> /dev/null || git clone https://go.googlesource.com/go goroot
         cd goroot
-        git checkout origin/release-branch.go1.22
+        git checkout origin/release-branch.go1.24
         export GOROOT=/mnt/lfs/sources/goroot
 
         cd ./src
         bash all.bash
         cd ..
-
-        /bin/cp ./bin/go /mnt/lfs/usr/bin/
+        ls /mnt/lfs/usr/local || mkdir /mnt/lfs/usr/local
+        sudo /bin/cp ./bin/go /mnt/lfs/usr/local/go/bin/ 
+        {{ chroot_start_command }} -c '
+          ln -s /usr/local/go/bin/go /usr/local/bin/go 
+        '
+    - name: conmon-v2.1.13 (Basic System Software)
+      archive_file: /sources/conmon-v2.1.13.tar.gz
+      source_dir: /sources/conmon-v2.1.13
+      description: |
+        Conmon is a lightweight container monitor that is used to manage the lifecycle of containers. This job builds Conmon, which is essential for container management in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building Conmon.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Conmon-v2.1.13
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        rm -rf /mnt/lfs/sources/conmon-v2.1.13 || echo "Removing conmon-v2.1.13 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/conmon-v2.1.13.tar.xz
+        {{ chroot_start_command }} -c '
+          cd /sources/conmon
+          make
+          make install
+          make crio
         '
   
   system_configuration:
@@ -2885,6 +2951,7 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         cd /mnt/lfs/sources
+        ls /mnt/lfs/usr/local/go || sudo mkdir -p /mnt/lfs/usr/local/go
         rm -rf /mnt/sources/lfs-bootscripts-20240825 || echo "Removing lfs-bootscripts-20240825 directory failed, continuing anyway"  
         tar -xf /mnt/lfs/sources/lfs-bootscripts-20240825.tar.xz
         {{ chroot_start_command }} -c '
@@ -2987,6 +3054,65 @@ jenkins_jobs:
           /bin/cp /sources/sshd.init /etc/init.d/sshd
           ls /etc/rc.d/rc3.d/S50sshd || ln -s /etc/init.d/k8s /etc/rc.d/rc3.d/S50sshd
         '
+    - name: p11-kit-0.25.5
+      archive_file: /sources/p11-kit-0.25.5.tar.xz
+      source_dir: /sources/p11-kit-0.25.5
+      description: |
+        P11-kit is a library that provides a way to access PKCS#11 modules and manage certificates. This job builds P11-kit, which is essential for certificate management in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building P11-kit.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/p11-kit-0.25.5
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        rm -rf /mnt/lfs/sources/p11-kit-0.25.5 || echo "Removing p11-kit-0.25.5 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/p11-kit-0.25.5.tar.xz
+        {{ chroot_start_command }} -c '
+          cd /sources/p11-kit-0.25.5
+          sed "20,$ d" -i trust/trust-extract-compat
+          echo "# Copy existing anchor modifications to /etc/ssl/local" >> trust/trust-extract-compat
+          echo "/usr/libexec/make-ca/copy-trust-modifications" >> trust/trust-extract-compat
+          echo "" >> trust/trust-extract-compat
+          echo "# Update trust stores" >> trust/trust-extract-compat
+          echo "/usr/sbin/make-ca -r" >> trust/trust-extract-compat
+
+          mkdir p11-build
+          cd    p11-build 
+
+          meson setup ..            \
+                --prefix=/usr       \
+                --buildtype=release \
+                -D trust_paths=/etc/pki/anchors
+          ninja
+
+          ninja install
+          ln -sfv /usr/libexec/p11-kit/trust-extract-compat \
+                  /usr/bin/update-ca-certificates
+
+        ln -sfv ./pkcs11/p11-kit-trust.so /usr/lib/libnssckbi.so
+
+        '
+    - name: make-ca-1.16.1 (Certificate Authorities)
+      archive_file: /sources/make-ca-1.16.1.tar.gz
+      source_dir: /sources/make-ca-1.16.1
+      description: |
+        This job installs the CA certificates, which are essential for establishing secure connections in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for installing CA certificates.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/make-ca-1.16.1
+      build_command: echo
+      build_tool: false
+      exec_command: |
+        cd /mnt/lfs/sources
+        rm -rf /mnt/lfs/sources/make-ca-1.16.1 || echo "Removing make-ca-1.16.1 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/make-ca-1.16.1.tar.gz
+        {{ chroot_start_command }} -c '
+          cd /sources/make-ca-1.16.1
+          make install
+          install -vdm755 /etc/ssl/local
+          /usr/sbin/make-ca -g
+        '
 
     - name: Prepare System Image
       archive_file: /mnt/lfs/sources/empty.tar.xz
@@ -3060,9 +3186,17 @@ jenkins_jobs:
         cd /mnt/lfs/sources
         rm -rf /mnt/lfs/sources/cri-o-1.33.1 || echo "Removing cri-o-1.33.1 directory failed, continuing anyway"
         tar -xf /mnt/lfs/sources/cri-o-1.33.1.tar.xz
-        cd /mnt/lfs/sources/cri-o-1.33.1
-        sudo make clean
-        sudo make install PREFIX=/mnt/lfs/usr/local
+        {{ chroot_start_command }} -c '
+          export GOROOT="/sources/goroot"
+          export PATH="$PATH:/usr/local/go/bin"
+          cd /sources/cri-o-1.33.1
+          make clean
+          make
+          echo "find bin..."
+          find ./ -type d -name "bin"
+          find ./bin
+          make install PREFIX=/usr/local
+        '
 
     - name: etcd-3.6.1
       archive_file: /sources/etcd
