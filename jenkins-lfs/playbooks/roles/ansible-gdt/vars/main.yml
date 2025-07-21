@@ -2938,6 +2938,95 @@ jenkins_jobs:
           make crio
         '
   
+    - name: libpsl-0.21.5 (Basic System Software)
+      archive_file: /sources/libpsl-0.21.5.tar.gz
+      source_dir: /sources/libpsl-0.21.5
+      description: |
+        Libpsl is a library that provides support for the Public Suffix List, which is used to determine the effective top-level domain (eTLD) of a domain name. This job builds Libpsl, which is essential for domain name handling in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building Libpsl.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libpsl-0.21.5
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        rm -rf /mnt/lfs/sources/libpsl-0.21.5 || echo "Removing libpsl-0.21.5 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/libpsl-0.21.5.tar.gz
+        {{ chroot_start_command }} -c '
+          cd /sources/libpsl-0.21.5
+          mkdir build
+          cd    build
+          meson setup --prefix=/usr --buildtype=release
+          ninja
+          ninja install
+        '
+
+    - name: libidn2-2.3.8 (Basic System Software)
+      archive_file: /sources/libidn2-2.3.8.tar.gz
+      source_dir: /sources/libidn2-2.3.8
+      description: |
+        Libidn2 is a library that provides support for Internationalized Domain Names (IDN) and is used to handle domain names in various languages. This job builds Libidn2, which is essential for domain name handling in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building Libidn2.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libidn2-2.3.8
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        rm -rf /mnt/lfs/sources/libidn2-2.3.8 || echo "Removing libidn2-2.3.8 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/libidn2-2.3.8.tar.gz
+        {{ chroot_start_command }} -c '
+          cd /sources/libidn2-2.3.8
+          ./configure --prefix=/usr --disable-static
+          make
+          make install
+        '
+
+    - name: libunistring-1.3 (Basic System Software)
+      archive_file: /sources/libunistring-1.3.tar.xz
+      source_dir: /sources/libunistring-1.3.tar.xz
+      description: |
+        Libunistring is a library that provides functions for manipulating Unicode strings and is used in various applications for handling text in different languages. This job builds Libunistring, which is essential for text handling in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building Libunistring.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libunistring-1.30
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        rm -rf /mnt/lfs/sources/libunistring-1.30 || echo "Removing libunistring-1.30 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/libunistring-1.3.tar.xz
+        {{ chroot_start_command }} -c '
+          cd /sources/libunistring-1.30
+          ./configure --prefix=/usr --disable-static
+          make
+          make install
+        '
+
+    - name: curl-8.15.0 (Basic System Software)
+      archive_file: /sources/curl-8.15.0.tar.xz
+      source_dir: /sources/curl-8.15.0
+      description: |
+        Curl is a command-line tool for transferring data with URLs. It supports various protocols and is widely used for downloading files and interacting with web services. This job builds Curl, which is essential for network operations in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building Curl.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Curl-8.15.0
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        rm -rf /mnt/lfs/sources/curl-8.15.0 || echo "Removing curl-8.15.0 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/curl-8.15.0.tar.xz
+        {{ chroot_start_command }} -c '
+          cd /sources/curl-8.15.0
+          ./configure --prefix=/usr    \
+            --disable-static \
+            --with-openssl   \
+            --with-ca-path=/etc/ssl/certs
+          make
+          make install
+        '
+
   system_configuration:
     - name: LFS-Bootscripts-20240825 (Basic System Software)
       archive_file: /sources/lfs-bootscripts-20240825.tar.xz
@@ -3054,6 +3143,27 @@ jenkins_jobs:
           /bin/cp /sources/sshd.init /etc/init.d/sshd
           ls /etc/rc.d/rc3.d/S50sshd || ln -s /etc/init.d/k8s /etc/rc.d/rc3.d/S50sshd
         '
+    - name: libtasn1-4.20.0
+      archive_file: /sources/libtasn1-4.20.0.tar.gz
+      source_dir: /sources/libtasn1-4.20.0
+      description: |
+        libtasn1 is a library that provides support for the ASN.1 data serialization format. This job builds libtasn1, which is essential for handling certificates in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building libtasn1.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/libtasn1-4.20.0
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        sudo rm -rf /mnt/lfs/sources/libtasn1-4.20.0 || echo "Removing libtasn1-4.20.0 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/libtasn1-4.20.0.tar.gz
+        {{ chroot_start_command }} -c '
+          cd /sources/libtasn1-4.20.0
+          ./configure --prefix=/usr --disable-static
+          make
+          make install
+          make -C doc/reference install-data-local
+        '
     - name: p11-kit-0.25.5
       archive_file: /sources/p11-kit-0.25.5.tar.xz
       source_dir: /sources/p11-kit-0.25.5
@@ -3066,7 +3176,7 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/p11-kit-0.25.5 || echo "Removing p11-kit-0.25.5 directory failed, continuing anyway"
+        sudo rm -rf /mnt/lfs/sources/p11-kit-0.25.5 || echo "Removing p11-kit-0.25.5 directory failed, continuing anyway"
         tar -xf /mnt/lfs/sources/p11-kit-0.25.5.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/p11-kit-0.25.5
@@ -3083,7 +3193,8 @@ jenkins_jobs:
           meson setup ..            \
                 --prefix=/usr       \
                 --buildtype=release \
-                -D trust_paths=/etc/pki/anchors
+                -D trust_paths=/etc/pki/anchors \
+                -D trust_module=enabled
           ninja
 
           ninja install
