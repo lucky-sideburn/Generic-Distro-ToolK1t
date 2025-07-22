@@ -34,23 +34,11 @@
     dest: /mnt/lfs/sources/prepare_image.sh
     mode: '0755'
 
-- name: Copy k8s init script
-  ansible.builtin.copy:
-    src: k8s.init
-    dest: /mnt/lfs/sources/k8s.init
-    mode: '0755'
-
-- name: Copy etcd init script
-  ansible.builtin.copy:
-    src: etcd.init
-    dest: /mnt/lfs/sources/etcd.init
-    mode: '0755'
-
-- name: Copy fake-csr
-  ansible.builtin.copy:
-    src: fake-csr.conf
-    dest: /tmp/fake-csr.conf
-    mode: '0755'
+# - name: Copy fake-csr
+#   ansible.builtin.copy:
+#     src: fake-csr.conf
+#     dest: /tmp/fake-csr.conf
+#     mode: '0755'
 
 - name: Copy sshd init script
   ansible.builtin.copy:
@@ -105,3 +93,51 @@
     src: policy.json
     dest: /mnt/lfs/sources/conf_tmp/policy.json
     mode: '0644'
+
+- name: Copy environment file
+  ansible.builtin.copy:
+    src: environment
+    dest: /mnt/lfs/sources/conf_tmp/environment
+    mode: '0644'
+
+- name: Copy etcd.yaml
+  ansible.builtin.copy:
+    src: etcd.yaml
+    dest: /mnt/lfs/sources/conf_tmp/etcd.yaml
+    mode: '0644'
+
+- name: Copy kube-apiserver.yaml
+  ansible.builtin.copy:
+    src: kube-apiserver.yaml
+    dest: /mnt/lfs/sources/conf_tmp/kube-apiserver.yaml
+    mode: '0644'
+
+- name: Copy kube-controller-manager.yaml
+  ansible.builtin.copy:
+    src: kube-controller-manager.yaml
+    dest: /mnt/lfs/sources/conf_tmp/kube-controller-manager.yaml
+    mode: '0644'
+
+- name: Copy kube-scheduler.yaml
+  ansible.builtin.copy:   
+    src: kube-scheduler.yaml
+    dest: /mnt/lfs/sources/conf_tmp/kube-scheduler.yaml
+    mode: '0644'
+
+- name: Copy kubelet-config.yaml
+  ansible.builtin.copy:
+    src: kubelet-config.yaml
+    dest: /mnt/lfs/sources/conf_tmp/kubelet-config.yaml
+    mode: '0644'
+
+- name: Copy kubelet.conf
+  ansible.builtin.copy:
+    src: kubelet.conf
+    dest: /mnt/lfs/sources/conf_tmp/kubelet.conf
+    mode: '0644'
+
+- name: Copy kubelet.init
+  ansible.builtin.copy:
+    src: kubelet.init
+    dest: /mnt/lfs/sources/conf_tmp/kubelet.init
+    mode: '0755'

@@ -2928,6 +2928,7 @@ jenkins_jobs:
           make
           make install
           make crio
+          /bin/cp /sources/cri-o-1.33.1/bin/pinns /usr/local/bin
         '
   
     - name: libpsl-0.21.5 (Basic System Software)
@@ -3506,17 +3507,13 @@ jenkins_jobs:
         {{ chroot_start_command }} -c '
           
           cd /sources
-          mkdir /etc/kubernetes || echo "Directory /etc/kubernetes already exists"
-          mkdir /etc/kubernetes/certs || echo "Directory /etc/kubernetes/certs already exists"
-
+          [ -d /etc/kubernetes ] || mkdir /etc/kubernetes
+          [ -d /etc/kubernetes/certs ] || mkdir /etc/kubernetes/certs
+          [ -d /etc/kubernetes/manifests ] || mkdir /etc/kubernetes/manifests    
           /bin/cp ca.crt ca.key server.crt server.key service-account-key.pem /etc/kubernetes/certs
 
           cd /etc/kubernetes/certs
 
-          /bin/cp /sources/k8s.init /etc/init.d/k8s
-          /bin/cp /sources/etcd.init /etc/init.d/etcd
-          ls /etc/rc.d/rc3.d/S40k8s || ln -s /etc/init.d/k8s /etc/rc.d/rc3.d/S40k8s
-          ls /etc/rc.d/rc3.d/S30etcd || ln -s /etc/init.d/etcd /etc/rc.d/rc3.d/S30etcd
           export PATH="$PATH:/usr/local/bin"
           
           # kubeconfig
@@ -3540,3 +3537,4 @@ jenkins_jobs:
           kubectl config use-context default --kubeconfig=kubeconfig
 
         '
+        

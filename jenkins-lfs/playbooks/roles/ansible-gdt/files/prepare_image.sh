@@ -124,7 +124,7 @@ EOF
 cat > $CONF_TMP/resolv.conf << "EOF"
 # Begin /etc/resolv.conf
 
-domain accolx.local
+domain 0xHrtx.local
 nameserver 8.8.8.8
 nameserver 8.8.4.4
 
@@ -173,13 +173,37 @@ sudo cp $CONF_TMP/hostname          $LFS_ROOT/etc/hostname
 sudo cp $CONF_TMP/profile           $LFS_ROOT/etc/profile
 sudo cp $CONF_TMP/sysctl.conf       $LFS_ROOT/etc/sysctl.conf
 sudo cp $CONF_TMP/hosts             $LFS_ROOT/etc/hosts
+sudo cp $CONF_TMP/environment       $LFS_ROOT/etc/environment
 
 # Containers and CRI-O configuration
-ls $LFS_ROOT/etc/crio && sudo cp $CONF_TMP/crio.conf $LFS_ROOT/etc/crio/crio.conf
-ls $LFS_ROOT/etc/containers || sudo mkdir -p $LFS_ROOT/etc/containers
-sudo cp $CONF_TMP/policy.json      $LFS_ROOT/etc/containers/policy.json
-sudo cp $CONF_TMP/crio.init         $LFS_ROOT/etc/init.d/crio
+[ -d $LFS_ROOT/etc/containers ] || sudo mkdir -p $LFS_ROOT/etc/containers
+[ -d $LFS_ROOT/etc/crio ]       || sudo mkdir -p $LFS_ROOT/etc/crio
+[ -d $LFS_ROOT/usr/lib/cni ]       || sudo mkdir -p $LFS_ROOT/usr/lib/cni
+[ -d $LFS_ROOT/etc/kubernetes ] || sudo mkdir -p $LFS_ROOT/etc/kubernetes
+[ -d $LFS_ROOT/etc/kubernetes/certs ] || sudo mkdir -p $LFS_ROOT/etc/kubernetes/certs
+[ -d $LFS_ROOT/etc/kubernetes/manifests ] || sudo mkdir -p $LFS_ROOT/etc/kubernetes/manifests
+      
 
+
+sudo cp $CONF_TMP/kube-apiserver.yaml          $LFS_ROOT/etc/kubernetes/manifests/kube-apiserver.yaml
+sudo cp $CONF_TMP/kube-controller-manager.yaml $LFS_ROOT/etc/kubernetes/manifests/kube-controller-manager.yaml
+sudo cp $CONF_TMP/kube-scheduler.yaml          $LFS_ROOT/etc/kubernetes/manifests/kube-scheduler.yaml
+sudo cp $CONF_TMP/etcd.yaml                    $LFS_ROOT/etc/kubernetes/manifests/etcd.yaml
+sudo cp $CONF_TMP/kubelet.conf                 $LFS_ROOT/etc/kubernetes/kubelet.conf
+sudo cp $CONF_TMP/kubelet-config.yaml          $LFS_ROOT/etc/kubernetes/kubelet-config.yaml
+
+sudo cp $CONF_TMP/kubelet.init                 $LFS_ROOT/etc/init.d/kubelet
+sudo cp $CONF_TMP/sshd.init                    $LFS_ROOT/etc/init.d/sshd
+sudo cp $CONF_TMP/crio.init                    $LFS_ROOT/etc/init.d/crio
+
+sudo cp $CONF_TMP/crio.conf                    $LFS_ROOT/etc/crio/crio.conf
+sudo cp $CONF_TMP/policy.json                  $LFS_ROOT/etc/containers/policy.json
+
+echo "[INFO] List init scripts in /etc/init.d..."
+sudo ls -l $LFS_ROOT/etc/init.d/
+
+[ -f cni-plugins-linux-amd64-v1.3.0.tgz ] || curl -O -L --silent https://github.com/containernetworking/plugins/releases/download/v1.3.0/cni-plugins-linux-amd64-v1.3.0.tgz
+sudo tar -xzf cni-plugins-linux-amd64-v1.3.0.tgz -C $LFS_ROOT/usr/lib/cni/
 
 sudo chroot "$LFS" /usr/bin/env -i   \
     HOME=/root                  \
@@ -190,10 +214,18 @@ sudo chroot "$LFS" /usr/bin/env -i   \
     TESTSUITEFLAGS="-j$(nproc)" \
     /bin/bash \
     -c '
-      ln -s /etc/init.d/crio /etc/rc.d/rc3.d/S91crio
-      ln -s /etc/init.d/crio /etc/rc.d/rc5.d/S91crio
-      ln -s /etc/init.d/crio /etc/rc.d/rc0.d/K91crio
-      ln -s /etc/init.d/crio /etc/rc.d/rc6.d/K91crio
+
+      chmod +x /etc/init.d/crio
+      ls /etc/rc.d/rc3.d/S91crio || ln -s /etc/init.d/crio /etc/rc.d/rc3.d/S91crio
+      ls /etc/rc.d/rc5.d/S91crio || ln -s /etc/init.d/crio /etc/rc.d/rc5.d/S91crio
+      ls /etc/rc.d/rc0.d/K91crio || ln -s /etc/init.d/crio /etc/rc.d/rc0.d/K91crio
+      ls /etc/rc.d/rc6.d/K91crio || ln -s /etc/init.d/crio /etc/rc.d/rc6.d/K91crio
+
+      chmod +x /etc/init.d/kubelet
+      ls /etc/rc.d/rc3.d/S92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc3.d/S92kubelet
+      ls /etc/rc.d/rc5.d/S92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc5.d/S92kubelet
+      ls /etc/rc.d/rc0.d/K92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc0.d/K92kubelet
+      ls /etc/rc.d/rc6.d/K92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc6.d/K92kubelet
     '
 
 sudo mkdir $LFS_ROOT/boot

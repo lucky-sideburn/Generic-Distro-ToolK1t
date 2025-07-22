@@ -10,40 +10,36 @@
 # Description:       CRI-O is a lightweight container runtime for Kubernetes
 ### END INIT INFO
 
-CRIO_BIN="/usr/local/bin/crio"
+CRIO_BIN="/usr/local/bin/crio -c /etc/crio/crio.conf"
 CRIO_PIDFILE="/var/run/crio.pid"
 CRIO_LOGFILE="/var/log/crio.log"
-. /etc/environment
-
-GREEN="\033[38;2;0;255;0m"
-NC="\033[0m" # No Color
 
 start() {
-  echo -e "  ${GREEN}*${NC}   Starting CRI-O... [${GREEN}OK${NC}]${NC}"
+  echo "Starting CRI-O..."
   if [ -f "$CRIO_PIDFILE" ] && kill -0 $(cat "$CRIO_PIDFILE") 2>/dev/null; then
-    echo -e "  ${GREEN}*${NC}   CRI-O is already running. [${GREEN}OK${NC}]${NC}"
+    echo "CRI-O is already running."
     return 0
   fi
   nohup "$CRIO_BIN" > "$CRIO_LOGFILE" 2>&1 &
   echo $! > "$CRIO_PIDFILE"
-  echo -e "  ${GREEN}*${NC}   CRI-O started. [${GREEN}OK${NC}]${NC}"
+  echo "CRI-O started."
 }
 
 stop() {
-  echo -e "  ${GREEN}*${NC}   Stopping CRI-O... [${GREEN}OK${NC}]${NC}"
+  echo "Stopping CRI-O..."
   if [ -f "$CRIO_PIDFILE" ] && kill -0 $(cat "$CRIO_PIDFILE") 2>/dev/null; then
     kill $(cat "$CRIO_PIDFILE") && rm -f "$CRIO_PIDFILE"
-    echo -e "  ${GREEN}*${NC}   CRI-O stopped. [${GREEN}OK${NC}]${NC}"
+    echo "CRI-O stopped."
   else
-    echo -e "  ${GREEN}*${NC}   CRI-O is not running. [${GREEN}OK${NC}]${NC}"
+    echo "CRI-O is not running."
   fi
- }
+}
 
 status() {
   if [ -f "$CRIO_PIDFILE" ] && kill -0 $(cat "$CRIO_PIDFILE") 2>/dev/null; then
-    echo -e " ${GREEN}*${NC}    CRI-O is running (PID: $(cat "$CRIO_PIDFILE")). [${GREEN}OK${NC}]${NC}"
+    echo "CRI-O is running (PID: $(cat "$CRIO_PIDFILE"))."
   else
-    echo -e " ${GREEN}*${NC}    CRI-O is not running. [${GREEN}OK${NC}]${NC}"
+    echo "CRI-O is not running."
   fi
 }
 
@@ -62,7 +58,7 @@ case "$1" in
     status
     ;;
   *)
-    echo -e "${GREEN}*${NC} Usage: $0 {start|stop|restart|status} [${GREEN}OK${NC}]${NC}"
+    echo "Usage: $0 {start|stop|restart|status}"
     exit 1
     ;;
 esac
