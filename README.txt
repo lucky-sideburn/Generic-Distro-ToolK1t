@@ -22,13 +22,13 @@ Maybe the distro will be named 0XHrtz.
 Wanna join the elite? Open a GitHub issue for access to these tools:
 
   - Jenkins Instance:  https://jenkins.garantideltalento.it/
-      Automate builds and system config like a boss.
+      Automate builds and system configs
   
   - Cockpit Interface: https://cockpit.garantideltalento.it/
       Direct console access to your custom OS images.
   
   - Redmine Instance:  https://academy.garantideltalento.it/
-      Track every mission in your distro-building campaign.
+      Track everythings...
 
 ========================================================================
 How to Use
