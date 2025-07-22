@@ -3,8 +3,8 @@
 
 What is GDT?
 ------------
-The *Generic Distro Toolkit (GDT)* is a cutting-edge project under the
-**Garanti Del Talento** initiative. It empowers you to craft your own
+The Generic Distro Toolkit (GDT) is a e project under the
+Garanti Del Talento (https://garantideltalento.it) initiative. It empowers you to craft your own
 custom GNU/Linux distro from scratch using the power of:
 
   - Linux From Scratch (LFS): https://www.linuxfromscratch.org/
@@ -13,14 +13,11 @@ custom GNU/Linux distro from scratch using the power of:
 
 OxHrtz - GNU/Linux Distro
 -------------------------
-Working on **OxHrtz**, a GNU/Linux distro designed for powerful container
-and Kubernetes (k8s) integration.
+I am using runc, cri-o, and static manifests with kubelet to set up a Kubernetes instance.
 
-A distro that simplifies container management and orchestration,
-perfect for cloud-native and DevOps warriors.
+Maybe the distro will be named 0XHrtz.
 
-========================================================================
-*This project is LIVE and cooking!*  
+========================================================================  
 
 Wanna join the elite? Open a GitHub issue for access to these tools:
 
