@@ -55,7 +55,7 @@
 - name: Copy sshd init script
   ansible.builtin.copy:
     src: sshd.init
-    dest: /mnt/lfs/sources/sshd.init
+    dest: /mnt/lfs/sources/conf_tmp/sshd.init
     mode: '0755'
 
 - name: Copy sshd_config
@@ -86,4 +86,22 @@
   ansible.builtin.copy:
     src: hosts
     dest: /mnt/lfs/sources/conf_tmp/hosts
+    mode: '0644'
+
+- name: Copy crio.conf
+  ansible.builtin.copy:
+    src: crio.conf
+    dest: /mnt/lfs/sources/conf_tmp/crio.conf
+    mode: '0644'
+
+- name: Copy crio.init
+  ansible.builtin.copy:
+    src: crio.init
+    dest: /mnt/lfs/sources/conf_tmp/crio.init
+    mode: '0755'
+
+- name: Copy policy.json
+  ansible.builtin.copy:
+    src: policy.json
+    dest: /mnt/lfs/sources/conf_tmp/policy.json
     mode: '0644'

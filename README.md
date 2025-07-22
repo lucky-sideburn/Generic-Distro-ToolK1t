@@ -2,7 +2,13 @@
 
 ## Description
 The Generic Distro Toolkit (GDT) is part of the Garanti Del Talento initiative. It facilitates the creation of a custom GNU/Linux distribution based on Linux From Scratch (LFS) ([LFS website](https://www.linuxfromscratch.org/)) by using Ansible and Jenkins.
+## Contributing
 
+This project is currently in progress. If you want to contribute, please contact me via a GitHub issue to gain access to the following resources:
+
+- [Jenkins Instance](https://jenkins.garantideltalento.it/): Used for building packages and performing system configuration.
+- [Cockpit Interface](https://cockpit.garantideltalento.it/): Provides console access to the built OS images.
+- [Redmine Instance](https://academy.garantideltalento.it/): Tracks all tasks involved in building a GNU/Linux Operating System from scratch.
 
 - [Binutils - Pass 1 (Cross Toolchain) ](https://github.com/lucky-sideburn/gdt/blob/main/jenkins-lfs/playbooks/roles/ansible-gdt/vars/main.yml)
 - [GCC-14.2.0 - Pass 1 (Cross Toolchain) ](https://github.com/lucky-sideburn/gdt/blob/main/jenkins-lfs/playbooks/roles/ansible-gdt/vars/main.yml)

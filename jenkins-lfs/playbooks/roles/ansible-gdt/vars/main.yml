@@ -1014,28 +1014,20 @@ jenkins_jobs:
         patch -Np1 -i ../glib-skip_warnings-1.patch
 
         {{ chroot_start_command }} -c '
+          export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/sources/glib-2.84.3/build/gio:/sources/glib-2.84.3/build/glib/:/sources/glib-2.84.3/build/gobject"
           cd /sources/glib-2.84.3
           mkdir build
           cd    build
-
+          export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
           meson setup ..                  \
-                --prefix=/usr             \
-                --buildtype=release       \
-                -D introspection=disabled \
-                -D glib_debug=disabled    \
-                -D man-pages=enabled      \
-                -D sysprof=disabled
-          ninja
-          ninja install
-          tar xf ../../gobject-introspection-1.84.0.tar.xz
-
-          meson setup gobject-introspection-1.84.0 gi-build \
-                      --prefix=/usr --buildtype=release
-          ninja -C gi-build
-          ninja -C gi-build install
-          meson configure -D introspection=enabled
-          ninja
-          ninja install
+                  --prefix=/usr             \
+                  --buildtype=release       \
+                  -D introspection=disabled \
+                  -D glib_debug=disabled    \
+                  -D man-pages=disabled      \
+                  -D sysprof=disabled
+            ninja
+            ninja install
         '
     - name: Zlib-1.3.1 (Basic System Software)
       archive_file: /sources/zlib-1.3.1.tar.xz
@@ -2994,10 +2986,10 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/libunistring-1.30 || echo "Removing libunistring-1.30 directory failed, continuing anyway"
+        rm -rf /mnt/lfs/sources/libunistring-1.3 || echo "Removing libunistring-1.3 directory failed, continuing anyway"
         tar -xf /mnt/lfs/sources/libunistring-1.3.tar.xz
         {{ chroot_start_command }} -c '
-          cd /sources/libunistring-1.30
+          cd /sources/libunistring-1.3
           ./configure --prefix=/usr --disable-static
           make
           make install
@@ -3026,71 +3018,103 @@ jenkins_jobs:
           make
           make install
         '
-
-  system_configuration:
-    - name: LFS-Bootscripts-20240825 (Basic System Software)
-      archive_file: /sources/lfs-bootscripts-20240825.tar.xz
-      source_dir: /sources/lfs-bootscripts-20240825
+    - name: asciidoc-9.1.0 (Basic System Software)
+      archive_file: /sources/asciidoc-9.1.0.tar.gz
+      source_dir: /sources/asciidoc-9.1.0
       description: |
-        LFS-Bootscripts is a collection of scripts used to boot the LFS system. This job installs the LFS-Bootscripts, which is essential for booting the LFS system.
+        Asciidoc is a text document format for writing documentation, articles, books, and more. This job builds Asciidoc, which is essential for generating documentation in the LFS environment.
       category:
-        This job is part of the basic system software setup, specifically for installing LFS-Bootscripts.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/LFS-Bootscripts-20240825
+        This job is part of the basic system software setup, specifically for building Asciidoc.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Asciidoc-9.1.0
       exec_command: echo
       build_tool: true
       build_command: |
         cd /mnt/lfs/sources
-        ls /mnt/lfs/usr/local/go || sudo mkdir -p /mnt/lfs/usr/local/go
-        rm -rf /mnt/sources/lfs-bootscripts-20240825 || echo "Removing lfs-bootscripts-20240825 directory failed, continuing anyway"  
-        tar -xf /mnt/lfs/sources/lfs-bootscripts-20240825.tar.xz
+        sudo rm -rf /mnt/lfs/sources/asciidoc-9.1.0 || echo "Removing asciidoc-9.1.0 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/asciidoc-9.1.0.tar.gz
         {{ chroot_start_command }} -c '
-          cd /sources/lfs-bootscripts-20240825
+          cd /sources/asciidoc-9.1.0
+          sed -i 's:doc/testasciidoc.1::' Makefile.in
+          rm -f doc/testasciidoc.1.txt
+          ./configure --prefix=/usr     \
+                      --sysconfdir=/etc \
+                      --docdir=/usr/share/doc/asciidoc-9.1.0
+          make
+          make install
+          make docs
+        '
+
+    - name: libxslt-1.1.43 (Basic System Software)
+      archive_file: /sources/libxslt-1.1.43.tar.xz
+      source_dir: /sources/libxslt-1.1.43
+      description: |
+        Libxslt is a library for transforming XML documents using XSLT stylesheets. This job builds Libxslt, which is essential for XML processing in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building Libxslt.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libxslt-1.1.43
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        sudo rm -rf /mnt/lfs/sources/libxslt-1.1.43 || echo "Removing libxslt-1.1.43 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/libxslt-1.1.43.tar.xz
+        {{ chroot_start_command }} -c '
+          cd /sources/libxslt-1.1.43
+          ./configure --prefix=/usr    \
+                      --disable-static \
+                      --docdir=/usr/share/doc/libxslt-1.1.43
+          make
           make install
         '
 
-    - name: Linux-6.13.4 (Basic System Software)
-      archive_file: /sources/linux-6.13.4.tar.xz
-      source_dir: /sources/linux-6.13.4
+    - name: libxml2-2.14.5 (Basic System Software)
+      archive_file: /sources/libxml2-2.14.5.tar.xz
+      source_dir: /sources/libxml2-2.14.5
       description: |
-        Linux is the kernel of the LFS system. This job builds the Linux kernel, which is essential for the LFS system to function.
+        Libxml2 is a library for parsing XML and HTML documents. It provides a wide range of features for working with XML data. This job builds Libxml2, which is essential for XML processing in the LFS environment.
       category:
-        This job is part of the basic system software setup, specifically for building the Linux kernel.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Linux-6.13.4
+        This job is part of the basic system software setup, specifically for building Libxml2.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libxml2-2.14.5
       exec_command: echo
       build_tool: true
       build_command: |
         cd /mnt/lfs/sources
-        sudo rm -rf /mnt/lfs/sources/linux-6.13.4 || echo "Removing linux-6.13.4 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/linux-6.13.4.tar.xz
+        sudo rm -rf /mnt/lfs/sources/libxml2-2.14.5 || echo "Removing libxml2-2.14.5 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/libxml2-2.14.5.tar.xz
         {{ chroot_start_command }} -c '
-          
-          cd /sources/linux-6.13.4
-          
-          make clean
-          /bin/cp /sources/kernel_configs/kernel_config_x86_64 .config
-          make -j$(nproc)
-
-          if [ -f /boot/vmlinuz-6.13.4-lfs-12.3 ]; then
-            rm -f /boot/vmlinuz-6.13.4-lfs-12.3
-          fi
-
-          if [ -f /boot/System.map-6.13.4 ]; then
-            rm -f /boot/System.map-6.13.4
-          fi
-          
-          if [ -f /boot/config-6.13.4 ]; then
-            rm -f /boot/config-6.13.4
-          fi
-
-          if [ -d /usr/share/doc/linux-6.13.4 ]; then
-            rm -rf /usr/share/doc/linux-6.13.4
-          fi
-
-          cp -iv arch/x86/boot/bzImage /boot/vmlinuz-6.13.4-lfs-12.3
-          cp -iv System.map /boot/System.map-6.13.4
-          cp -iv .config /boot/config-6.13.4
-          cp -r Documentation -T /usr/share/doc/linux-6.13.4
+          cd /sources/libxml2-2.14.5
+          ./configure --prefix=/usr     \
+                      --sysconfdir=/etc \
+                      --disable-static  \
+                      --with-history    \
+                      --with-icu        \
+                      PYTHON=/usr/bin/python3 \
+                      --docdir=/usr/share/doc/libxml2-2.14.5
+          make
+          make install
         '
+
+    - name: icu4c-77_1-src (Basic System Software)
+      archive_file: /sources/icu4c-77_1-src.tgz
+      source_dir: /sources/icu4c-77_1-src
+      description: |
+        ICU (International Components for Unicode) is a set of C/C++ and Java libraries providing Unicode and Globalization support for software applications. This job builds ICU, which is essential for internationalization in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building ICU.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/ICU-77_1
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        sudo rm -rf /mnt/lfs/sources/icu4c-77_1-src || echo "Removing icu4c-77_1-src directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/icu4c-77_1-src.tgz
+        {{ chroot_start_command }} -c '
+          cd /sources/icu/source
+          ./configure --prefix=/usr
+          make
+          make install
+        '
+
     - name: git-2.49.0
       archive_file: /sources/git-2.49.0.tar.xz
       source_dir: /sources/git-2.49.0
@@ -3106,11 +3130,32 @@ jenkins_jobs:
         cd /mnt/lfs/sources
         tar -xf /mnt/lfs/sources/git-2.49.0.tar.xz
         {{ chroot_start_command }} -c '
-          cd /sources/git-2.49.0
+          cd /sources/git
           make configure
           ./configure --prefix=/usr --with-openssl --with-libpcre2 --with-zlib --with-curl --with-expat --with-perl=/usr/bin/perl
-          make all doc info
-          make install install-doc install-html install-info
+          make all
+          make install
+        '
+  
+    - name: libseccomp-2.6.0
+      archive_file: /sources/libseccomp
+      source_dir: /sources/libseccomp
+      description: |
+        libseccomp is a library that provides an easy-to-use interface for filtering a process's system calls using the Linux kernel's seccomp feature. This job builds libseccomp, which is essential for security in the LFS environment.
+      category:
+        This job is part of the container setup, specifically for building libseccomp.
+      jenkins_job_url: http://localhost:8080/job/containers/libseccomp-2.6.0
+      build_tool: true
+      exec_command: echo
+      build_command: |  
+        cd /mnt/lfs/sources/libseccomp
+        git checkout v2.6.0
+        {{ chroot_start_command }} -c '
+          cd /sources/libseccomp
+          bash autogen.sh
+          ./configure --prefix=/usr --host=$LFS_TGT
+          make
+          make install
         '
 
     - name: openssh-10.0p1
@@ -3140,8 +3185,6 @@ jenkins_jobs:
           /bin/cp /sources/conf_tmp/sshd_config /etc/ssh/sshd_config
           groupadd -g 33 sshd || echo "Group sshd already exists, continuing anyway"
           useradd -c "sshd Privsep" -d /var/lib/sshd -g sshd -s /bin/false -u 33 sshd || echo "User sshd already exists, continuing anyway"
-          /bin/cp /sources/sshd.init /etc/init.d/sshd
-          ls /etc/rc.d/rc3.d/S50sshd || ln -s /etc/init.d/k8s /etc/rc.d/rc3.d/S50sshd
         '
     - name: libtasn1-4.20.0
       archive_file: /sources/libtasn1-4.20.0.tar.gz
@@ -3224,6 +3267,111 @@ jenkins_jobs:
           install -vdm755 /etc/ssl/local
           /usr/sbin/make-ca -g
         '
+    - name: iptables-1.8.11 (Basic System Software)
+      archive_file: /sources/iptables-1.8.11.tar.xz
+      source_dir: /sources/iptables-1.8.11
+      description: |
+        Iptables is a user-space utility program that allows a system administrator to configure the IP packet filter rules of the Linux kernel firewall. This job builds Iptables, which is essential for network security in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building Iptables.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Iptables-1.8.11
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        sudo rm -rf /mnt/lfs/sources/iptables-1.8.11 || echo "Removing iptables-1.8.11 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/iptables-1.8.11.tar.xz
+        {{ chroot_start_command }} -c '
+          cd /sources/iptables-1.8.11
+          ./configure --prefix=/usr      \
+                      --disable-nftables \
+                      --enable-libipq
+          make
+          make install
+        '
+  
+  system_configuration:
+    - name: LFS-Bootscripts-20240825
+      archive_file: /sources/lfs-bootscripts-20240825.tar.xz
+      source_dir: /sources/lfs-bootscripts-20240825
+      description: |
+        LFS-Bootscripts is a collection of scripts used to boot the LFS system. This job installs the LFS-Bootscripts, which is essential for booting the LFS system.
+      category:
+        This job is part of the basic system software setup, specifically for installing LFS-Bootscripts.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/LFS-Bootscripts-20240825
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        ls /mnt/lfs/usr/local/go || sudo mkdir -p /mnt/lfs/usr/local/go
+        rm -rf /mnt/sources/lfs-bootscripts-20240825 || echo "Removing lfs-bootscripts-20240825 directory failed, continuing anyway"  
+        tar -xf /mnt/lfs/sources/lfs-bootscripts-20240825.tar.xz
+        {{ chroot_start_command }} -c '
+          cd /sources/lfs-bootscripts-20240825
+          make install
+        '
+    - name: BLFS-bootscripts-20250225 (iptables)
+      archive_file: /sources/blfs-bootscripts-20250225.tar.xz
+      source_dir: /sources/blfs-bootscripts-20250225
+      description: |
+        BLFS-Bootscripts is a collection of scripts used to boot the BLFS system. This job installs the BLFS-Bootscripts, which is essential for booting the BLFS system.
+      category:
+        This job is part of the basic system software setup, specifically for installing BLFS-Bootscripts.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/BLFS-Bootscripts-20250225
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        rm -rf /mnt/lfs/sources/blfs-bootscripts-20250225 || echo "Removing blfs-bootscripts-20250225 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/blfs-bootscripts-20250225.tar.xz
+        {{ chroot_start_command }} -c '
+          cd /sources/blfs-bootscripts-20250225
+          make install-iptables
+        '
+  
+    - name: Linux-6.13.4 (Basic System Software)
+      archive_file: /sources/linux-6.13.4.tar.xz
+      source_dir: /sources/linux-6.13.4
+      description: |
+        Linux is the kernel of the LFS system. This job builds the Linux kernel, which is essential for the LFS system to function.
+      category:
+        This job is part of the basic system software setup, specifically for building the Linux kernel.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Linux-6.13.4
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        sudo rm -rf /mnt/lfs/sources/linux-6.13.4 || echo "Removing linux-6.13.4 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/linux-6.13.4.tar.xz
+        {{ chroot_start_command }} -c '
+          
+          cd /sources/linux-6.13.4
+          
+          make clean
+          /bin/cp /sources/kernel_configs/kernel_config_x86_64 .config
+          make -j$(nproc)
+
+          if [ -f /boot/vmlinuz-6.13.4-lfs-12.3 ]; then
+            rm -f /boot/vmlinuz-6.13.4-lfs-12.3
+          fi
+
+          if [ -f /boot/System.map-6.13.4 ]; then
+            rm -f /boot/System.map-6.13.4
+          fi
+          
+          if [ -f /boot/config-6.13.4 ]; then
+            rm -f /boot/config-6.13.4
+          fi
+
+          if [ -d /usr/share/doc/linux-6.13.4 ]; then
+            rm -rf /usr/share/doc/linux-6.13.4
+          fi
+
+          cp -iv arch/x86/boot/bzImage /boot/vmlinuz-6.13.4-lfs-12.3
+          cp -iv System.map /boot/System.map-6.13.4
+          cp -iv .config /boot/config-6.13.4
+          cp -r Documentation -T /usr/share/doc/linux-6.13.4
+        '
 
     - name: Prepare System Image
       archive_file: /mnt/lfs/sources/empty.tar.xz
@@ -3240,27 +3388,6 @@ jenkins_jobs:
         ./prepare_image.sh
   
   containers:
-    - name: libseccomp-2.6.0
-      archive_file: /sources/libseccomp
-      source_dir: /sources/libseccomp
-      description: |
-        libseccomp is a library that provides an easy-to-use interface for filtering a process's system calls using the Linux kernel's seccomp feature. This job builds libseccomp, which is essential for security in the LFS environment.
-      category:
-        This job is part of the container setup, specifically for building libseccomp.
-      jenkins_job_url: http://localhost:8080/job/containers/libseccomp-2.6.0
-      build_tool: true
-      exec_command: echo
-      build_command: |  
-        cd /mnt/lfs/sources/libseccomp
-        git checkout v2.6.0
-        {{ chroot_start_command }} -c '
-          cd /sources/libseccomp
-          bash autogen.sh
-          ./configure --prefix=/usr --host=$LFS_TGT
-          make
-          make install
-        '
-
     - name: runc-1.3.0
       archive_file: /sources/runc-1.3.0.tar.xz
       source_dir: /sources/runc-1.3.0

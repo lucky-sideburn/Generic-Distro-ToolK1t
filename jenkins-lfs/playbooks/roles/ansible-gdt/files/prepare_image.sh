@@ -174,6 +174,28 @@ sudo cp $CONF_TMP/profile           $LFS_ROOT/etc/profile
 sudo cp $CONF_TMP/sysctl.conf       $LFS_ROOT/etc/sysctl.conf
 sudo cp $CONF_TMP/hosts             $LFS_ROOT/etc/hosts
 
+# Containers and CRI-O configuration
+ls $LFS_ROOT/etc/crio && sudo cp $CONF_TMP/crio.conf $LFS_ROOT/etc/crio/crio.conf
+ls $LFS_ROOT/etc/containers || sudo mkdir -p $LFS_ROOT/etc/containers
+sudo cp $CONF_TMP/policy.json      $LFS_ROOT/etc/containers/policy.json
+sudo cp $CONF_TMP/crio.init         $LFS_ROOT/etc/init.d/crio
+
+
+sudo chroot "$LFS" /usr/bin/env -i   \
+    HOME=/root                  \
+    TERM="$TERM"                \
+    PS1='(lfs chroot) \u:\w\$ ' \
+    PATH=/usr/bin:/usr/sbin     \
+    MAKEFLAGS="-j$(nproc)"      \
+    TESTSUITEFLAGS="-j$(nproc)" \
+    /bin/bash \
+    -c '
+      ln -s /etc/init.d/crio /etc/rc.d/rc3.d/S91crio
+      ln -s /etc/init.d/crio /etc/rc.d/rc5.d/S91crio
+      ln -s /etc/init.d/crio /etc/rc.d/rc0.d/K91crio
+      ln -s /etc/init.d/crio /etc/rc.d/rc6.d/K91crio
+    '
+
 sudo mkdir $LFS_ROOT/boot
 echo "[INFO] Content copied successfully."
 
@@ -220,8 +242,8 @@ echo "[INFO] Preparing LFS image completed successfully."
 echo "[INFO] Info of image file:"
 sudo ls -lh $IMAGE_PATH
 
-echo "[INFO] Copying CA certificates to LFS image completed successfully."
-sudo cp /etc/ssl/certs/ca-certificates.crt /mnt/lfs/etc/ssl/certs/
+#echo "[INFO] Copying CA certificates to LFS image completed successfully."
+#sudo cp /etc/ssl/certs/ca-certificates.crt /mnt/lfs/etc/ssl/certs/
 
 echo "[INFO] Creating a virtual machine to import LFS image..."
 sudo -i -u ubuntu virt-install \
