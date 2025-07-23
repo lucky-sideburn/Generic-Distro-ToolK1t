@@ -297,7 +297,9 @@ sudo -i -u ubuntu virt-install \
   --network network=$VIRSH_NETWORK,model=virtio \
   --graphics vnc,listen=0.0.0.0 \
   --import \
-  --noautoconsole
+  --noautoconsole \
+  --video virtio
+
 
 echo "[INFO] Starting a virtual machine that boots from Alpine ISO..."
 sudo -i -u ubuntu virt-install \
@@ -310,7 +312,8 @@ sudo -i -u ubuntu virt-install \
   --network network=$VIRSH_NETWORK,model=virtio \
   --graphics vnc,listen=0.0.0.0 \
   --import \
-  --noautoconsole
+  --noautoconsole \
+  --video virtio
 
 echo "[INFO] Virtual machine alpine-vm started successfully."
 echo "[INFO] Virtual machine $VM_NAME created successfully."
