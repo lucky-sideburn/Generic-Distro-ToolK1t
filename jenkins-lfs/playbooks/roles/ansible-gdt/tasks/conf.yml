@@ -141,3 +141,9 @@
     src: kubelet.init
     dest: /mnt/lfs/sources/conf_tmp/kubelet.init
     mode: '0755'
+
+- name: Copy bash_profile
+  ansible.builtin.copy:
+    src: bash_profile
+    dest: /mnt/lfs/sources/conf_tmp/bash_profile
+    mode: '0644'

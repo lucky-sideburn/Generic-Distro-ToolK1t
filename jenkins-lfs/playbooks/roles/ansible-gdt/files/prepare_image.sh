@@ -13,6 +13,7 @@ LOOP_DEVICE=$(losetup -l | grep "$IMAGE_PATH" | awk '{print $1}')
 CONF_TMP="/mnt/lfs/sources/conf_tmp"
 GDT_HOSTNAME="0xHrtz"
 LFS_ROOT="/mnt/lfs-root"
+export PATH="$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/go/bin"
 
 (mount | grep '/mnt/lfs/proc')    && sudo umount /mnt/lfs/proc
 (mount | grep '/mnt/lfs/sys')     && sudo umount /mnt/lfs/sys
@@ -174,6 +175,7 @@ sudo cp $CONF_TMP/profile           $LFS_ROOT/etc/profile
 sudo cp $CONF_TMP/sysctl.conf       $LFS_ROOT/etc/sysctl.conf
 sudo cp $CONF_TMP/hosts             $LFS_ROOT/etc/hosts
 sudo cp $CONF_TMP/environment       $LFS_ROOT/etc/environment
+sudo cp $CONF_TMP/bash_profile      $LFS_ROOT/root/.bash_profile
 
 # Containers and CRI-O configuration
 [ -d $LFS_ROOT/etc/containers ] || sudo mkdir -p $LFS_ROOT/etc/containers
@@ -201,6 +203,14 @@ sudo cp $CONF_TMP/policy.json                  $LFS_ROOT/etc/containers/policy.j
 
 echo "[INFO] List init scripts in /etc/init.d..."
 sudo ls -l $LFS_ROOT/etc/init.d/
+
+echo "[INFO] Building service manager"
+old_pwd=$(pwd)
+cd /home/ubuntu/gdt/service-manager && sudo ./build.sh
+sudo cp service-manager $LFS_ROOT/usr/local/bin/service-manager
+sudo chmod +x $LFS_ROOT/usr/local/bin/service-manager
+echo "[INFO] Service manager built and copied to $LFS_ROOT/usr/local/bin/service-manager"
+cd $old_pwd
 
 [ -f cni-plugins-linux-amd64-v1.3.0.tgz ] || curl -O -L --silent https://github.com/containernetworking/plugins/releases/download/v1.3.0/cni-plugins-linux-amd64-v1.3.0.tgz
 sudo tar -xzf cni-plugins-linux-amd64-v1.3.0.tgz -C $LFS_ROOT/usr/lib/cni/
