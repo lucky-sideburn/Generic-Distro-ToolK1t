@@ -11,7 +11,8 @@ custom GNU/Linux distro from scratch using the power of:
   - Ansible
   - Jenkins
 
-OxHrtz - GNU/Linux Distro
+
+??? (I have to find a name...) - GNU/Linux Distro
 -------------------------
 I am using runc, cri-o, and static manifests with kubelet to set up a Kubernetes instance.
 
