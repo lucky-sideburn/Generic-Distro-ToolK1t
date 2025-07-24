@@ -43,11 +43,11 @@ fi
 
 sudo qemu-img create -f raw $IMAGE_PATH 25G
 
-sudo ls $IMAGE_CLONE_PATH && sudo rm -f $IMAGE_CLONE_PATH || true
+[ -d $IMAGE_CLONE_PATH ] && sudo rm -f $IMAGE_CLONE_PATH 
 
 echo "Unmounting existing partitions..."
-sudo ls /mnt/lfs-boot && sudo rm -rf /mnt/lfs-boot/* || true
-sudo ls /mnt/lfs-root && sudo rm -rf /mnt/lfs-root/* || true
+[ -d /mnt/lfs-boot ] && sudo rm -rf /mnt/lfs-boot/*
+[ -d /mnt/lfs-root ] && sudo rm -rf /mnt/lfs-root/* 
 
 echo "[INFO] Unmounting all loop devices..."
 LOOP_DEVICES=$(losetup -l | awk '{print $1}' | grep '/dev/loop')
@@ -178,14 +178,12 @@ sudo cp $CONF_TMP/environment       $LFS_ROOT/etc/environment
 sudo cp $CONF_TMP/bash_profile      $LFS_ROOT/root/.bash_profile
 
 # Containers and CRI-O configuration
-[ -d $LFS_ROOT/etc/containers ] || sudo mkdir -p $LFS_ROOT/etc/containers
-[ -d $LFS_ROOT/etc/crio ]       || sudo mkdir -p $LFS_ROOT/etc/crio
-[ -d $LFS_ROOT/usr/lib/cni ]       || sudo mkdir -p $LFS_ROOT/usr/lib/cni
-[ -d $LFS_ROOT/etc/kubernetes ] || sudo mkdir -p $LFS_ROOT/etc/kubernetes
-[ -d $LFS_ROOT/etc/kubernetes/certs ] || sudo mkdir -p $LFS_ROOT/etc/kubernetes/certs
+[ -d $LFS_ROOT/etc/containers ]           || sudo mkdir -p $LFS_ROOT/etc/containers
+[ -d $LFS_ROOT/etc/crio ]                 || sudo mkdir -p $LFS_ROOT/etc/crio
+[ -d $LFS_ROOT/usr/lib/cni ]              || sudo mkdir -p $LFS_ROOT/usr/lib/cni
+[ -d $LFS_ROOT/etc/kubernetes ]           || sudo mkdir -p $LFS_ROOT/etc/kubernetes
+[ -d $LFS_ROOT/etc/kubernetes/certs ]     || sudo mkdir -p $LFS_ROOT/etc/kubernetes/certs
 [ -d $LFS_ROOT/etc/kubernetes/manifests ] || sudo mkdir -p $LFS_ROOT/etc/kubernetes/manifests
-      
-
 
 sudo cp $CONF_TMP/kube-apiserver.yaml          $LFS_ROOT/etc/kubernetes/manifests/kube-apiserver.yaml
 sudo cp $CONF_TMP/kube-controller-manager.yaml $LFS_ROOT/etc/kubernetes/manifests/kube-controller-manager.yaml
@@ -215,7 +213,7 @@ cd $old_pwd
 [ -f cni-plugins-linux-amd64-v1.3.0.tgz ] || curl -O -L --silent https://github.com/containernetworking/plugins/releases/download/v1.3.0/cni-plugins-linux-amd64-v1.3.0.tgz
 sudo tar -xzf cni-plugins-linux-amd64-v1.3.0.tgz -C $LFS_ROOT/usr/lib/cni/
 
-sudo chroot "$LFS" /usr/bin/env -i   \
+sudo chroot "$LFS_ROOT" /usr/bin/env -i   \
     HOME=/root                  \
     TERM="$TERM"                \
     PS1='(lfs chroot) \u:\w\$ ' \
@@ -224,18 +222,17 @@ sudo chroot "$LFS" /usr/bin/env -i   \
     TESTSUITEFLAGS="-j$(nproc)" \
     /bin/bash \
     -c '
+        chmod +x /etc/init.d/crio
+        ls /etc/rc.d/rc3.d/S91crio || ln -s /etc/init.d/crio /etc/rc.d/rc3.d/S91crio
+        ls /etc/rc.d/rc5.d/S91crio || ln -s /etc/init.d/crio /etc/rc.d/rc5.d/S91crio
+        ls /etc/rc.d/rc0.d/K91crio || ln -s /etc/init.d/crio /etc/rc.d/rc0.d/K91crio
+        ls /etc/rc.d/rc6.d/K91crio || ln -s /etc/init.d/crio /etc/rc.d/rc6.d/K91crio
 
-      chmod +x /etc/init.d/crio
-      ls /etc/rc.d/rc3.d/S91crio || ln -s /etc/init.d/crio /etc/rc.d/rc3.d/S91crio
-      ls /etc/rc.d/rc5.d/S91crio || ln -s /etc/init.d/crio /etc/rc.d/rc5.d/S91crio
-      ls /etc/rc.d/rc0.d/K91crio || ln -s /etc/init.d/crio /etc/rc.d/rc0.d/K91crio
-      ls /etc/rc.d/rc6.d/K91crio || ln -s /etc/init.d/crio /etc/rc.d/rc6.d/K91crio
-
-      chmod +x /etc/init.d/kubelet
-      ls /etc/rc.d/rc3.d/S92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc3.d/S92kubelet
-      ls /etc/rc.d/rc5.d/S92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc5.d/S92kubelet
-      ls /etc/rc.d/rc0.d/K92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc0.d/K92kubelet
-      ls /etc/rc.d/rc6.d/K92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc6.d/K92kubelet
+        chmod +x /etc/init.d/kubelet
+        ls /etc/rc.d/rc3.d/S92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc3.d/S92kubelet
+        ls /etc/rc.d/rc5.d/S92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc5.d/S92kubelet
+        ls /etc/rc.d/rc0.d/K92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc0.d/K92kubelet
+        ls /etc/rc.d/rc6.d/K92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc6.d/K92kubelet
     '
 
 sudo mkdir $LFS_ROOT/boot
@@ -245,6 +242,7 @@ echo "[INFO] Installing GRUB on /mnt/lfs-boot..."
 sudo grub-install --boot-directory=/mnt/lfs-boot/boot --root-directory=/mnt/lfs-boot --target=i386-pc $LOOP_DEVICE
 echo "[INFO] GRUB installation completed successfully with specified root directory."
 echo "[INFO] Partitions mounted successfully."
+
 echo "[INFO] Copying content from /mnt/lfs/boot to /mnt/lfs-boot..."
 sudo cp -a /mnt/lfs/boot/* /mnt/lfs-boot/
 echo "[INFO] Content copied successfully."
@@ -252,11 +250,12 @@ echo "[INFO] Content copied successfully."
 sudo cat > $CONF_TMP/grub.cfg << "EOF"
 # Begin /boot/grub/grub.cfg
 set default=0
-set timeout=5
+set timeout=10
 
 menuentry "GNU/Linux, Linux 6.13.4-lfs-12.3" {
-        set root=(hd0,msdos1)
-        linux /vmlinuz-6.13.4-lfs-12.3 root=/dev/vda2 ro
+  set loglevel=7
+  set root=(hd0,msdos1)
+  linux /vmlinuz-6.13.4-lfs-12.3 root=/dev/vda2 ro
 }
 
 EOF
@@ -297,9 +296,7 @@ sudo -i -u ubuntu virt-install \
   --network network=$VIRSH_NETWORK,model=virtio \
   --graphics vnc,listen=0.0.0.0 \
   --import \
-  --noautoconsole \
-  --video virtio
-
+  --noautoconsole
 
 echo "[INFO] Starting a virtual machine that boots from Alpine ISO..."
 sudo -i -u ubuntu virt-install \
@@ -312,8 +309,7 @@ sudo -i -u ubuntu virt-install \
   --network network=$VIRSH_NETWORK,model=virtio \
   --graphics vnc,listen=0.0.0.0 \
   --import \
-  --noautoconsole \
-  --video virtio
+  --noautoconsole
 
 echo "[INFO] Virtual machine alpine-vm started successfully."
 echo "[INFO] Virtual machine $VM_NAME created successfully."
