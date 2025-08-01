@@ -14,6 +14,7 @@ custom GNU/Linux distro from scratch using the power of:
 
 ??? (I have to find a name...) - GNU/Linux Distro
 -------------------------
+
 I am using runc, cri-o, and static manifests with kubelet to set up a Kubernetes instance.
 
 Maybe the distro will be named 0XHrtz.
@@ -58,3 +59,7 @@ Every LFS step & extra config detailed here:
 ⚠️ WARNING: This toolkit is under heavy development.
 Pull requests welcome.
 ========================================================================
+<<<<<<< HEAD
+=======
+
+>>>>>>> e4be505 (change README)
