@@ -3292,6 +3292,28 @@ jenkins_jobs:
         '
   
   system_configuration:
+    - name: cpio-2.15
+      archive_file: /sources/cpio-2.15.tar.bz2
+      source_dir: /sources/cpio-2.15
+      description: |
+        Cpio is a tool for creating and extracting archives. This job builds Cpio, which is essential for managing file archives in the LFS environment.
+      category:
+        This job is part of the system configuration setup, specifically for building Cpio.
+      jenkins_job_url: http://localhost:8080/job/system_configuration/Cpio-2.15
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        cd /mnt/lfs/sources
+        sudo rm -rf /mnt/lfs/sources/cpio-2.15 || echo "Removing cpio-2.15 directory failed, continuing anyway"
+        tar -xf /mnt/lfs/sources/cpio-2.15.tar.bz2
+        {{ chroot_start_command }} -c '
+          cd /sources/cpio-2.15
+          ./configure --prefix=/usr \
+                      --enable-mt   \
+                      --with-rmt=/usr/libexec/rmt
+          make
+          make install
+        '
     - name: LFS-Bootscripts-20240825
       archive_file: /sources/lfs-bootscripts-20240825.tar.xz
       source_dir: /sources/lfs-bootscripts-20240825

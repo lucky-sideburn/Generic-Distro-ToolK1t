@@ -34,12 +34,6 @@
     dest: /mnt/lfs/sources/prepare_image.sh
     mode: '0755'
 
-# - name: Copy fake-csr
-#   ansible.builtin.copy:
-#     src: fake-csr.conf
-#     dest: /tmp/fake-csr.conf
-#     mode: '0755'
-
 - name: Copy sshd init script
   ansible.builtin.copy:
     src: sshd.init
@@ -147,3 +141,15 @@
     src: bash_profile
     dest: /mnt/lfs/sources/conf_tmp/bash_profile
     mode: '0644'
+
+- name: Copy mkinitramfs
+  ansible.builtin.copy:
+    src: mkinitramfs
+    dest: /mnt/lfs/sources/conf_tmp/mkinitramfs
+    mode: '0755'
+
+- name: Copy init.in
+  ansible.builtin.copy:
+    src: init.in
+    dest: /mnt/lfs/sources/conf_tmp/init.in
+    mode: '0755'

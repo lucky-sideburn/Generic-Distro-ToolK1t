@@ -166,16 +166,16 @@ EOF
 echo $GDT_HOSTNAME > $CONF_TMP/hostname
 
 echo "[INFO] Copying configuration files to $LFS_ROOT..."
-sudo cp $CONF_TMP/inittab           $LFS_ROOT/etc/inittab
-sudo cp $CONF_TMP/clock             $LFS_ROOT/etc/sysconfig/clock
-sudo cp $CONF_TMP/fstab             $LFS_ROOT/etc/fstab
-sudo cp $CONF_TMP/ifconfig.ens3     $LFS_ROOT/etc/sysconfig/ifconfig.ens3
-sudo cp $CONF_TMP/hostname          $LFS_ROOT/etc/hostname
-sudo cp $CONF_TMP/profile           $LFS_ROOT/etc/profile
-sudo cp $CONF_TMP/sysctl.conf       $LFS_ROOT/etc/sysctl.conf
-sudo cp $CONF_TMP/hosts             $LFS_ROOT/etc/hosts
-sudo cp $CONF_TMP/environment       $LFS_ROOT/etc/environment
-sudo cp $CONF_TMP/bash_profile      $LFS_ROOT/root/.bash_profile
+sudo /bin/cp $CONF_TMP/inittab           $LFS_ROOT/etc/inittab
+sudo /bin/cp $CONF_TMP/clock             $LFS_ROOT/etc/sysconfig/clock
+sudo /bin/cp $CONF_TMP/fstab             $LFS_ROOT/etc/fstab
+sudo /bin/cp $CONF_TMP/ifconfig.ens3     $LFS_ROOT/etc/sysconfig/ifconfig.ens3
+sudo /bin/cp $CONF_TMP/hostname          $LFS_ROOT/etc/hostname
+sudo /bin/cp $CONF_TMP/profile           $LFS_ROOT/etc/profile
+sudo /bin/cp $CONF_TMP/sysctl.conf       $LFS_ROOT/etc/sysctl.conf
+sudo /bin/cp $CONF_TMP/hosts             $LFS_ROOT/etc/hosts
+sudo /bin/cp $CONF_TMP/environment       $LFS_ROOT/etc/environment
+sudo /bin/cp $CONF_TMP/bash_profile      $LFS_ROOT/root/.bash_profile
 
 # Containers and CRI-O configuration
 [ -d $LFS_ROOT/etc/containers ]           || sudo mkdir -p $LFS_ROOT/etc/containers
@@ -184,20 +184,32 @@ sudo cp $CONF_TMP/bash_profile      $LFS_ROOT/root/.bash_profile
 [ -d $LFS_ROOT/etc/kubernetes ]           || sudo mkdir -p $LFS_ROOT/etc/kubernetes
 [ -d $LFS_ROOT/etc/kubernetes/certs ]     || sudo mkdir -p $LFS_ROOT/etc/kubernetes/certs
 [ -d $LFS_ROOT/etc/kubernetes/manifests ] || sudo mkdir -p $LFS_ROOT/etc/kubernetes/manifests
+[ -d $LFS_ROOT/usr/share/mkinitramfs ]    || sudo mkdir -p $LFS_ROOT/usr/share/mkinitramfs
 
-sudo cp $CONF_TMP/kube-apiserver.yaml          $LFS_ROOT/etc/kubernetes/manifests/kube-apiserver.yaml
-sudo cp $CONF_TMP/kube-controller-manager.yaml $LFS_ROOT/etc/kubernetes/manifests/kube-controller-manager.yaml
-sudo cp $CONF_TMP/kube-scheduler.yaml          $LFS_ROOT/etc/kubernetes/manifests/kube-scheduler.yaml
-sudo cp $CONF_TMP/etcd.yaml                    $LFS_ROOT/etc/kubernetes/manifests/etcd.yaml
-sudo cp $CONF_TMP/kubelet.conf                 $LFS_ROOT/etc/kubernetes/kubelet.conf
-sudo cp $CONF_TMP/kubelet-config.yaml          $LFS_ROOT/etc/kubernetes/kubelet-config.yaml
+sudo /bin/cp $CONF_TMP/kube-apiserver.yaml          $LFS_ROOT/etc/kubernetes/manifests/kube-apiserver.yaml
+sudo /bin/cp $CONF_TMP/kube-controller-manager.yaml $LFS_ROOT/etc/kubernetes/manifests/kube-controller-manager.yaml
+sudo /bin/cp $CONF_TMP/kube-scheduler.yaml          $LFS_ROOT/etc/kubernetes/manifests/kube-scheduler.yaml
+sudo /bin/cp $CONF_TMP/etcd.yaml                    $LFS_ROOT/etc/kubernetes/manifests/etcd.yaml
+sudo /bin/cp $CONF_TMP/kubelet.conf                 $LFS_ROOT/etc/kubernetes/kubelet.conf
+sudo /bin/cp $CONF_TMP/kubelet-config.yaml          $LFS_ROOT/etc/kubernetes/kubelet-config.yaml
 
-sudo cp $CONF_TMP/kubelet.init                 $LFS_ROOT/etc/init.d/kubelet
-sudo cp $CONF_TMP/sshd.init                    $LFS_ROOT/etc/init.d/sshd
-sudo cp $CONF_TMP/crio.init                    $LFS_ROOT/etc/init.d/crio
+sudo /bin/cp $CONF_TMP/kubelet.init                 $LFS_ROOT/etc/init.d/kubelet
+sudo /bin/cp $CONF_TMP/sshd.init                    $LFS_ROOT/etc/init.d/sshd
+sudo /bin/cp $CONF_TMP/crio.init                    $LFS_ROOT/etc/init.d/crio
 
-sudo cp $CONF_TMP/crio.conf                    $LFS_ROOT/etc/crio/crio.conf
-sudo cp $CONF_TMP/policy.json                  $LFS_ROOT/etc/containers/policy.json
+sudo /bin/cp $CONF_TMP/crio.conf                    $LFS_ROOT/etc/crio/crio.conf
+sudo /bin/cp $CONF_TMP/policy.json                  $LFS_ROOT/etc/containers/policy.json
+
+sudo /bin/cp $CONF_TMP/init.in                      $LFS_ROOT/usr/share/mkinitramfs/init.in
+sudo /bin/cp $CONF_TMP/mkinitramfs                  $LFS_ROOT/usr/sbin/mkinitramfs
+
+[ -L $LFS_ROOT/lib/libzstd.so.1 ] || sudo unlink $LFS_ROOT/lib/libzstd.so.1
+[ -f $LFS_ROOT/lib/libzstd.so.1 ] || sudo cp $LFS_ROOT/usr/local/lib/libzstd.so.1 $LFS_ROOT/lib/libzstd.so.1
+echo "[INFO] Check that $LFS_ROOT/lib/libzstd.so.1 esists"
+ls $LFS_ROOT/lib/libzstd.so.1 && echo "[INFO] $LFS_ROOT/lib/libzstd.so.1 exists"
+
+echo "[INFO] MD5 checksum of $LFS_ROOT/usr/sbin/mkinitramfs"
+md5sum $LFS_ROOT/usr/sbin/mkinitramfs
 
 echo "[INFO] List init scripts in /etc/init.d..."
 sudo ls -l $LFS_ROOT/etc/init.d/
@@ -212,6 +224,44 @@ cd $old_pwd
 
 [ -f cni-plugins-linux-amd64-v1.3.0.tgz ] || curl -O -L --silent https://github.com/containernetworking/plugins/releases/download/v1.3.0/cni-plugins-linux-amd64-v1.3.0.tgz
 sudo tar -xzf cni-plugins-linux-amd64-v1.3.0.tgz -C $LFS_ROOT/usr/lib/cni/
+
+sudo mkdir $LFS_ROOT/boot
+echo "[INFO] Content copied successfully."
+
+echo "[INFO] Installing GRUB on /mnt/lfs-boot..."
+sudo grub-install --boot-directory=/mnt/lfs-boot/boot --root-directory=/mnt/lfs-boot --target=i386-pc $LOOP_DEVICE
+echo "[INFO] GRUB installation completed successfully with specified root directory."
+echo "[INFO] Partitions mounted successfully."
+
+echo "[INFO] Copying content from /mnt/lfs/boot to /mnt/lfs-boot..."
+sudo cp -a /mnt/lfs/boot/* /mnt/lfs-boot/
+echo "[INFO] Content copied successfully."
+
+sudo cat > $CONF_TMP/grub.cfg << "EOF"
+set default=0
+set timeout=10
+
+menuentry "GNU/Linux, Linux 6.13.4-lfs-12.3" {
+  set gfxmode=1280x1024
+  set gfxpayload=keep
+
+  linux /vmlinuz-6.13.4-lfs-12.3 root=/dev/vda2 ro console=tty1
+  initrd /initrd.img-6.13.4
+  #nomodeset
+}
+EOF
+
+sudo cp $CONF_TMP/grub.cfg /mnt/lfs-boot/boot/grub/grub.cfg
+
+# mkdir -p initramfs/{bin,sbin,etc,proc,sys,newroot}
+# cat > initramfs/init << 'EOF'
+# #!/bin/sh
+# mount -t proc none /proc
+# mount -t sysfs none /sys
+# echo "Switching to real root..."
+# exec switch_root /newroot /sbin/init
+# EOF
+# chmod +x initramfs/init
 
 sudo chroot "$LFS_ROOT" /usr/bin/env -i   \
     HOME=/root                  \
@@ -233,34 +283,13 @@ sudo chroot "$LFS_ROOT" /usr/bin/env -i   \
         ls /etc/rc.d/rc5.d/S92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc5.d/S92kubelet
         ls /etc/rc.d/rc0.d/K92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc0.d/K92kubelet
         ls /etc/rc.d/rc6.d/K92kubelet || ln -s /etc/init.d/kubelet /etc/rc.d/rc6.d/K92kubelet
+
+        md5sum $LFS_ROOT/usr/sbin/mkinitramfs
+
+        ls /lib/libzstd.so.1
+  
+        /usr/sbin/mkinitramfs 6.13.4
     '
-
-sudo mkdir $LFS_ROOT/boot
-echo "[INFO] Content copied successfully."
-
-echo "[INFO] Installing GRUB on /mnt/lfs-boot..."
-sudo grub-install --boot-directory=/mnt/lfs-boot/boot --root-directory=/mnt/lfs-boot --target=i386-pc $LOOP_DEVICE
-echo "[INFO] GRUB installation completed successfully with specified root directory."
-echo "[INFO] Partitions mounted successfully."
-
-echo "[INFO] Copying content from /mnt/lfs/boot to /mnt/lfs-boot..."
-sudo cp -a /mnt/lfs/boot/* /mnt/lfs-boot/
-echo "[INFO] Content copied successfully."
-
-sudo cat > $CONF_TMP/grub.cfg << "EOF"
-# Begin /boot/grub/grub.cfg
-set default=0
-set timeout=10
-
-menuentry "GNU/Linux, Linux 6.13.4-lfs-12.3" {
-  set loglevel=7
-  set root=(hd0,msdos1)
-  linux /vmlinuz-6.13.4-lfs-12.3 root=/dev/vda2 ro
-}
-
-EOF
-
-sudo cp $CONF_TMP/grub.cfg /mnt/lfs-boot/boot/grub/grub.cfg
 
 sudo umount /mnt/lfs-boot
 sudo umount /mnt/lfs-root
@@ -296,7 +325,8 @@ sudo -i -u ubuntu virt-install \
   --network network=$VIRSH_NETWORK,model=virtio \
   --graphics vnc,listen=0.0.0.0 \
   --import \
-  --noautoconsole
+  --noautoconsole \
+  --video virtio
 
 echo "[INFO] Starting a virtual machine that boots from Alpine ISO..."
 sudo -i -u ubuntu virt-install \
