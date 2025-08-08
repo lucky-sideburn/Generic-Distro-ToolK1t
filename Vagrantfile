@@ -14,14 +14,15 @@ Vagrant.configure("2") do |config|
     ansible.become = true
 
     ansible.extra_vars = {
-      "jenkins_agent_jar" => "/opt/jenkins-agent/agent.jar",
-      "jenkins_master_url" => "http://jenkins-master:8080",
+      "jenkins_agent_jar" => "/opt/jenkins/agent/agent.jar",
+      "jenkins_master_url" => "https://jenkins.garantideltalento.it",
       "jenkins_user" => "jenkins",  
       "jenkins_group" => "jenkins",
       "jenkins_agent_workdir" => "/opt/jenkins/workdir",
       "jenkins_agent_home" => "/opt/jenkins/home",
       "jenkins_agent_name" => "ubuntu-arm-lfs",
-      "jenkins_agent_secret" => ENV['JENKINS_AGENT_SECRET'] 
+      "jenkins_agent_secret" => ENV['JENKINS_AGENT_SECRET'],
+      "lfs_repo_url" => "http://repo.garantideltalento.it",
       }
   end
 

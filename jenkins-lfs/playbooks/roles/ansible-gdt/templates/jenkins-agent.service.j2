@@ -7,7 +7,7 @@ Type=simple
 User={{ jenkins_user }}
 Group={{ jenkins_group }}
 Environment="JENKINS_AGENT_HOME={{ jenkins_agent_home }}"
-ExecStart=/usr/bin/java -jar {{ jenkins_agent_jar }} -jnlpUrl {{ jenkins_master_url }}/computer/{{ jenkins_agent_name }}/jenkins-agent.jnlp -secret {{ jenkins_agent_secret }} -workDir {{ jenkins_agent_workdir }}
+ExecStart=/usr/bin/java -jar {{ jenkins_agent_jar }} -url {{ jenkins_master_url }} -secret {{ jenkins_agent_secret }} -name {{ jenkins_agent_name }} -webSocket -workDir {{ jenkins_agent_workdir }}
 Restart=always
 
 [Install]

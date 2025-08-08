@@ -36,6 +36,14 @@
     name: openjdk-17-jdk
     state: present
 
+- name: Copy agent.jar to Jenkins home
+  ansible.builtin.copy:
+    src: agent.jar
+    dest: /opt/jenkins/agent/agent.jar
+    owner: jenkins
+    group: jenkins
+    mode: '0644'
+  
 - name: Create SystemD unit for start Jenkins agent
   ansible.builtin.template:
     src: jenkins-agent.service.j2
@@ -43,9 +51,82 @@
     owner: root
     group: root
     mode: '0644'
+  notify:
+    - Reload systemd
+    - Restart Jenkins agent
 
 - name: Start and enable Jenkins agent service
   ansible.builtin.systemd:
     name: jenkins-agent
     state: started
     enabled: true
+
+- name: Create /mnt/lfs directory
+  ansible.builtin.file:
+    path: /mnt/lfs
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: '0755'
+
+- name: Create /mnt/lfs/sources directory
+  ansible.builtin.file:
+    path: /mnt/lfs/sources
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: '0755'
+
+- name: Download cross_toolchain archive files
+  ansible.builtin.get_url:
+    url: "{{ lfs_repo_url }}/{{ item.archive_file | basename }}"
+    dest: /mnt/lfs/sources/
+    owner: jenkins
+    group: jenkins
+    mode: '0644'
+  loop: "{{ jenkins_jobs.cross_toolchain }}"
+
+- name: Download cross_compiling_temporary_tools archive files
+  ansible.builtin.get_url:
+    url: "{{ lfs_repo_url }}/{{ item.archive_file | basename }}"
+    dest: /mnt/lfs/sources/
+    owner: jenkins
+    group: jenkins
+    mode: '0644'
+  loop: "{{ jenkins_jobs.cross_compiling_temporary_tools }}"
+
+- name: Download chroot_and_building_additional_temporary_tools archive files
+  ansible.builtin.get_url:
+    url: "{{ lfs_repo_url }}/{{ item.archive_file | basename }}"
+    dest: /mnt/lfs/sources/
+    owner: jenkins
+    group: jenkins
+    mode: '0644'
+  loop: "{{ jenkins_jobs.chroot_and_building_additional_temporary_tools }}"
+
+- name: Download basic_system_software archive files
+  ansible.builtin.get_url:
+    url: "{{ lfs_repo_url }}/{{ item.archive_file | basename }}"
+    dest: /mnt/lfs/sources/
+    owner: jenkins
+    group: jenkins
+    mode: '0644'
+  loop: "{{ jenkins_jobs.basic_system_software }}"
+
+- name: Download system_configuration archive files
+  ansible.builtin.get_url:
+    url: "{{ lfs_repo_url }}/{{ item.archive_file | basename }}"
+    dest: /mnt/lfs/sources/
+    owner: jenkins
+    group: jenkins
+    mode: '0644'
+  loop: "{{ jenkins_jobs.system_configuration }}"
+
+- name: Download containers archive files
+  ansible.builtin.get_url:
+    url: "{{ lfs_repo_url }}/{{ item.archive_file | basename }}"
+    dest: /mnt/lfs/sources/
+    owner: jenkins
+    group: jenkins
+    mode: '0644'
+  loop: "{{ jenkins_jobs.containers }}"
