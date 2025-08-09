@@ -37,7 +37,7 @@ chroot_start_command: |-
       PATH=/usr/bin:/usr/sbin     \
       MAKEFLAGS="-j$(nproc)"      \
       TESTSUITEFLAGS="-j$(nproc)" \
-      /bin/bash \
+      /bin/bash
 
 amd64_build_start_command: |-
   echo "Linux From Scratch - Version 12.3"
@@ -363,10 +363,10 @@ jenkins_jobs:
             make
             make DESTDIR=$LFS install
             mv -v $LFS/usr/bin/chroot              $LFS/usr/sbin
-            mkdir -pv $LFS/usr/share/man/man8 || echo "Creating directory /usr/share
-            mv -v $LFS/usr/share/man/man1/chroot.1 $LFS/usr/share/man/man8/chroot.8 || echo "Moving chroot.1 to chroot.8 failed, continuing anyway"
-            sed -i 's/"1"/"8"/'                    $LFS/usr/share/man/man8/chroot.8
-
+      # TODO - I have commented this out, think if I need it man pages for chroot            
+      # mkdir -pv $LFS/usr/share/man/man8 || echo "Creating directory /usr/share
+      # mv -v $LFS/usr/share/man/man1/chroot.1 $LFS/usr/share/man/man8/chroot.8 || echo "Moving chroot.1 to chroot.8 failed, continuing anyway"
+      # sed -i 's/"1"/"8"/'                    $LFS/usr/share/man/man8/chroot.8
 
     - name: Diffutils-3.11 (Cross Compiling Temporary Tools)
       archive_file: /mnt/lfs/sources/diffutils-3.11.tar.xz
@@ -644,6 +644,8 @@ jenkins_jobs:
         case $(uname -m) in
           x86_64) sudo chown --from lfs -R root:root $LFS/lib64 ;;
         esac
+        [ -d /mnt/lfs/dev ] || sudo mkdir -pv $LFS/dev || echo "Creating directory /dev failed, continuing anyway"
+
         sudo mount -v --bind /dev $LFS/dev
         sudo mount -vt devpts devpts -o gid=5,mode=0620 $LFS/dev/pts || echo "Mounting devpts failed, continuing anyway"
         sudo mount -vt proc proc $LFS/proc || echo "Mounting proc failed, continuing anyway"

@@ -74,17 +74,19 @@
           <hudson.tasks.Shell>
         <command>{{ aarch64_common_build_start_command }}
 
-      if [ -d "{{ item.source_dir | basename }}" ]; then
-        rm -rf "{{ item.source_dir | basename }}"
-      fi
-
-      tar -xf "{{ item.archive_file | basename }}"
-
-      cd "{{ item.source_dir | basename }}"
+        if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+          if [ -d {{ item.source_dir | basename }} ]; then
+            rm -rf {{ item.source_dir | basename }}
+          fi
       
-      pwd
+          tar -xvf {{ item.archive_file | basename }}
+          cd "{{ item.source_dir | basename }}"
 
-      {{ item.build_command }}
+        fi
+      
+        pwd
+
+        {{ item.build_command }}
         </command>
           </hudson.tasks.Shell>
         </builders>
@@ -126,18 +128,19 @@
         <builders>
           <hudson.tasks.Shell>
         <command>{{ aarch64_common_build_start_command }}
-
-      if [ -d "{{ item.source_dir | basename }}" ]; then
-        rm -rf "{{ item.source_dir | basename }}"
-      fi
-
-      tar -xf "{{ item.archive_file | basename }}"
-
-      cd "{{ item.source_dir | basename }}"
+        if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+          if [ -d {{ item.source_dir | basename }} ]; then
+            rm -rf {{ item.source_dir | basename }}
+          fi
       
-      pwd
+          tar -xvf {{ item.archive_file | basename }}
+          cd {{ item.source_dir | basename }}
+        
+        fi
+    
+        pwd
 
-      {{ item.build_command }}
+        {{ item.build_command }}
         </command>
           </hudson.tasks.Shell>
         </builders>
@@ -179,23 +182,25 @@
         <builders>
           <hudson.tasks.Shell>
             <command>{{ aarch64_common_build_start_command }}
-
-            if [ -d "{{ item.source_dir | basename }}" ]; then
-              rm -rf "{{ item.source_dir | basename }}"
+          
+          if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+            if [ -d {{ item.source_dir | basename }} ]; then
+              rm -rf {{ item.source_dir | basename }}
             fi
-
-            tar -xf "{{ item.archive_file | basename }}"
-
-            cd "{{ item.source_dir | basename }}"
-            
-            pwd
-            
-            BUILD_TOOL={{ item.build_tool }}
-            if [ $BUILD_TOOL = "True" ]; then
-              {{ item.build_command }}
-            else
-              {{ item.exec_command }}
-            fi
+        
+            tar -xvf {{ item.archive_file | basename }}
+            cd {{ item.source_dir | basename }}
+          
+          fi
+          
+          pwd
+          
+          BUILD_TOOL={{ item.build_tool }}
+          if [ $BUILD_TOOL = "True" ]; then
+            {{ item.build_command }}
+          else
+            {{ item.exec_command }}
+          fi
             </command>
           </hudson.tasks.Shell>
         </builders>
@@ -238,14 +243,16 @@
           <hudson.tasks.Shell>
             <command>{{ aarch64_common_build_start_command }}
 
-            if [ -d "{{ item.source_dir | basename }}" ]; then
-              rm -rf "{{ item.source_dir | basename }}"
+            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+              if [ -d {{ item.source_dir | basename }} ]; then
+                rm -rf {{ item.source_dir | basename }}
+              fi
+          
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+
             fi
 
-            tar -xf "{{ item.archive_file | basename }}"
-
-            cd "{{ item.source_dir | basename }}"
-            
             pwd
             
             BUILD_TOOL={{ item.build_tool }}
@@ -296,14 +303,16 @@
           <hudson.tasks.Shell>
             <command>{{ aarch64_common_build_start_command }}
 
-            if [ -d "{{ item.source_dir | basename }}" ]; then
-              rm -rf "{{ item.source_dir | basename }}"
+            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+              if [ -d {{ item.source_dir | basename }} ]; then
+                rm -rf {{ item.source_dir | basename }}
+              fi
+          
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+
             fi
 
-            tar -xf "{{ item.archive_file | basename }}"
-
-            cd "{{ item.source_dir | basename }}"
-            
             pwd
             
             BUILD_TOOL={{ item.build_tool }}
