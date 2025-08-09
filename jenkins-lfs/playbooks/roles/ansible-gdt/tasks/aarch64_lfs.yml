@@ -217,6 +217,13 @@
     group: jenkins
     mode: '0755'
 
+- name: Add Jenkins to sudoers with no password
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    line: "jenkins ALL=(ALL) NOPASSWD:ALL"
+    state: present
+    validate: 'visudo -cf %s'
+
 - name: Install additional packages
   ansible.builtin.apt:
     name: "{{ item }}"
