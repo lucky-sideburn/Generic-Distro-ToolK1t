@@ -1,4 +1,5 @@
-# gDT - Generic Distro Toolk1t
+# gdt - Generic Distro Toolk1t 
+![Tux Logo](https://upload.wikimedia.org/wikipedia/commons/a/af/Tux.png)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -6,7 +7,7 @@
 
 I’m building GNU/Linux following LFS (Linux From Scratch) with Ansible and Jenkins. This project is a general-purpose framework for building Linux distributions in a semi-automated and DevOps way.
 
-gDT (Generic Distro Toolkit) is a work-in-progress.
+gdt (Generic Distro Toolkit) is a work-in-progress.
 
 ### Step 0 - Install required tools
 
