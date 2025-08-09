@@ -71,8 +71,7 @@
         <concurrentBuild>false</concurrentBuild>
         <builders>
           <hudson.tasks.Shell>
-            <command>
-              {{ common_build_start_command }}
+            <command>{{ common_build_start_command }}
               if [ -d "{{ item.source_dir | basename }}" ]; then
                 rm -rf "{{ item.source_dir | basename }}"
               fi
@@ -120,8 +119,7 @@
         <concurrentBuild>false</concurrentBuild>
         <builders>
           <hudson.tasks.Shell>
-            <command>
-              {{ common_build_start_command }}
+            <command>{{ common_build_start_command }}
               if [ -d "{{ item.source_dir }}" ]; then
                 cd "{{ item.source_dir }}"
               else
@@ -169,8 +167,7 @@
         <concurrentBuild>false</concurrentBuild>
         <builders>
           <hudson.tasks.Shell>
-            <command>
-            BUILD_TOOL={{ item.build_tool }}
+            <command>BUILD_TOOL={{ item.build_tool }}
             if [ $BUILD_TOOL = "True" ]; then
               {{ item.build_command }}
             else
@@ -216,8 +213,7 @@
         <concurrentBuild>false</concurrentBuild>
         <builders>
           <hudson.tasks.Shell>
-            <command>
-            BUILD_TOOL={{ item.build_tool }}
+            <command>BUILD_TOOL={{ item.build_tool }}
             if [ $BUILD_TOOL = "True" ]; then
               {{ item.build_command }}
             else
@@ -263,8 +259,7 @@
         <concurrentBuild>false</concurrentBuild>
         <builders>
           <hudson.tasks.Shell>
-            <command>
-            BUILD_TOOL={{ item.build_tool }}
+            <command>BUILD_TOOL={{ item.build_tool }}
             if [ $BUILD_TOOL = "True" ]; then
               {{ item.build_command }}
             else
@@ -310,8 +305,7 @@
         <concurrentBuild>false</concurrentBuild>
         <builders>
           <hudson.tasks.Shell>
-            <command>
-            BUILD_TOOL={{ item.build_tool }}
+            <command>BUILD_TOOL={{ item.build_tool }}
             if [ $BUILD_TOOL = "True" ]; then
               {{ item.build_command }}
             else
