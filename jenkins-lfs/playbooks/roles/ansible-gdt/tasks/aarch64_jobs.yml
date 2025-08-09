@@ -73,13 +73,17 @@
         <builders>
           <hudson.tasks.Shell>
         <command>{{ aarch64_common_build_start_command }}
-          if [ -d "{{ item.source_dir | basename }}" ]; then
-            rm -rf "{{ item.source_dir | basename }}"
-          fi
-          tar -xf "{{ item.archive_file | basename }}"
-          cd "{{ item.source_dir | basename }}"
-          pwd
-          {{ item.build_command }}
+
+      if [ -d "{{ item.source_dir | basename }}" ]; then
+        rm -rf "{{ item.source_dir | basename }}"
+      fi
+
+      tar -xf "{{ item.archive_file | basename }}"
+
+      cd "{{ item.source_dir | basename }}"
+      pwd
+
+      {{ item.build_command }}
         </command>
           </hudson.tasks.Shell>
         </builders>
