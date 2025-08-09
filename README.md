@@ -1,5 +1,4 @@
 # gdt - Generic Distro Toolk1t 
-![Tux Logo](https://upload.wikimedia.org/wikipedia/commons/a/af/Tux.png)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
