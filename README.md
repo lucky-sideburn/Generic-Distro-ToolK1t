@@ -24,6 +24,7 @@ gDT (Generic Distro Toolkit) is a work-in-progress.
 
 The operating system can be built following Jenkins numbered builds...
 
+```bash
 aarch64_cross_toolchain - amd64_cross_toolchain
  └─0001 - Binutils Pass 1     (Cross Toolchain)
  └─0002 - GCC Pass 1          (Cross Toolchain)
@@ -185,6 +186,7 @@ aarch64_containers - amd64_containers
  └─0003 - etcd             (Containers)
  └─0004 - kubernetes       (Containers)
  └─0005 - kubernetes-setup (Containers)
+```
 
 #### LFS Numbered Folders (follow the order)
 
