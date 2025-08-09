@@ -8,7 +8,54 @@ A comprehensive toolkit for building custom GNU/Linux distributions following th
 
 GDt (Generic Distro Toolkit) is a work-in-progress project aimed at simplifying the complex process of building a GNU/Linux operating system from scratch. It combines the educational aspects of Linux From Scratch with modern automation tools to create a reproducible and maintainable build environment.
 
-### Step 1 - Create Jenkins Folder
+### Step 0 - Install required tools
+
+### LFS Build Server
+* Jenkins
+* Redmine
+* Enable KVM
+* Libvirt, QEMU
+* Cockpit
+* Redmine (if you want track your progress)
+
+### LFS Build Node aarch64
+
+```bash
+[foobar@homer]:~/WORK/Generic-Distro-ToolK1t $ vagrant provision
+==> ubuntu-arm-lfs: Running provisioner: ansible...
+    ubuntu-arm-lfs: Running ansible-playbook...
+
+PLAY [Print node name] *********************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ubuntu-arm-lfs]
+
+TASK [Display the node name] ***************************************************
+ok: [ubuntu-arm-lfs] => {
+    "msg": "Node name: ubuntu-arm-lfs"
+}
+...
+```
+
+### Step 1 - Provision an aarch64 build node
+
+´´´
+[eugenio@MacBook-Pro-di-Eugenio-2.fritz.box]:~/WORK/Generic-Distro-ToolK1t $ vagrant provision
+==> ubuntu-arm-lfs: Running provisioner: ansible...
+    ubuntu-arm-lfs: Running ansible-playbook...
+
+PLAY [Print node name] *********************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ubuntu-arm-lfs]
+
+TASK [Display the node name] ***************************************************
+ok: [ubuntu-arm-lfs] => {
+    "msg": "Node name: ubuntu-arm-lfs"
+}
+````
+
+### Step 2 - Create Jenkins Folder
 
 ```bash
 

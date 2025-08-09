@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
   end
   
   config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "./jenkins-lfs/playbooks/setup_arm.yml"
+    ansible.playbook = "./jenkins-lfs/playbooks/aarch64_lfs.yml"
     ansible.become = true
 
     ansible.extra_vars = {
@@ -23,7 +23,7 @@ Vagrant.configure("2") do |config|
       "jenkins_agent_name" => "ubuntu-arm-lfs",
       "jenkins_agent_secret" => ENV['JENKINS_AGENT_SECRET'],
       "lfs_repo_url" => "http://repo.garantideltalento.it",
-      }
+    }
   end
 
   config.vm.network "private_network", type: "dhcp"
