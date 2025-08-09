@@ -1,12 +1,14 @@
-# GDt - Generic Distro Toolkit
+# gDT - Generic Distro Toolk1t
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A comprehensive toolkit for building custom GNU/Linux distributions following the Linux From Scratch (LFS) methodology. This project provides automation tools, service management utilities, and infrastructure-as-code solutions for creating and managing custom Linux distributions.
+
 
 ## Project Overview
 
-GDt (Generic Distro Toolkit) is a work-in-progress project aimed at simplifying the complex process of building a GNU/Linux operating system from scratch. It combines the educational aspects of Linux From Scratch with modern automation tools to create a reproducible and maintainable build environment.
+I’m building GNU/Linux following LFS (Linux From Scratch) with Ansible and Jenkins. This project is a general-purpose framework for building Linux distributions in a semi-automated and DevOps way.
+
+gDT (Generic Distro Toolkit) is a work-in-progress.
 
 ### Step 0 - Install required tools
 
@@ -18,6 +20,13 @@ GDt (Generic Distro Toolkit) is a work-in-progress project aimed at simplifying 
 * Libvirt, QEMU
 * Cockpit
 * Redmine (if you want track your progress)
+
+#### LFS Numbered Folders (follow the order)
+
+Ensure you follow the sequence of numbered folders during the LFS build process. Each folder corresponds to a specific step, and skipping or rearranging them may lead to errors or inconsistencies in the build.
+
+![LFS Numbered Folders](images/numbered_folders.png)
+
 
 #### LFS Build Node aarch64
 
