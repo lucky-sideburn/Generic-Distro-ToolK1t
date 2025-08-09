@@ -47,7 +47,7 @@
 # CROSS TOOLCHAIN
 - name: "Create Jenkins Jobs - Cross Toolchain Jobs (amd64)"
   ansible.builtin.uri:
-    url: "{{ jenkins_url }}/job/amd64_cross_toolchain/createItem?name={{ item.name | urlencode }}"
+    url: "{{ jenkins_url }}/job/2.1%20-%20amd64_cross_toolchain/createItem?name={{ item.name | urlencode }}"
     method: POST
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
@@ -99,7 +99,7 @@
 
 - name: "Create Jenkins Jobs - Cross Compiling Temporary Tools (amd64)"
   ansible.builtin.uri:
-    url: "{{ jenkins_url }}/job/amd64_cross_compiling_temporary_tools/createItem?name={{ item.name | urlencode }}"
+    url: "{{ jenkins_url }}/job/2.2%20-%20amd64_cross_compiling_temporary_tools/createItem?name={{ item.name | urlencode }}"
     method: POST
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
@@ -151,7 +151,7 @@
 
 - name: "Create Jenkins Jobs - Chroot And Building Additional Temporary Tools (amd64)"
   ansible.builtin.uri:
-    url: "{{ jenkins_url }}/job/amd64_chroot_and_building_additional_temporary_tools/createItem?name={{ item.name | urlencode }}"
+    url: "{{ jenkins_url }}/job/2.3%20-%20amd64_chroot_and_building_additional_temporary_tools/createItem?name={{ item.name | urlencode }}"
     method: POST
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
@@ -206,7 +206,7 @@
 
 - name: "Create Jenkins Jobs - Basic System Software (amd64)"
   ansible.builtin.uri:
-    url: "{{ jenkins_url }}/job/amd64_basic_system_software/createItem?name={{ item.name | urlencode }}"
+    url: "{{ jenkins_url }}/job/2.4%20-%20amd64_basic_system_software/createItem?name={{ item.name | urlencode }}"
     method: POST
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
@@ -262,9 +262,9 @@
     - amd64_basic_system_software
     - amd64_jobs
 
-- name: "Create Jenkins Jobs - Basic System Configuration (amd64)"
+- name: "Create Jenkins Jobs - System Configuration (amd64)"
   ansible.builtin.uri:
-    url: "{{ jenkins_url }}/job/amd64_system_configuration/createItem?name={{ item.name | urlencode }}"
+    url: "{{ jenkins_url }}/job/2.5%20-%20amd64_system_configuration/createItem?name={{ item.name | urlencode }}"
     method: POST
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
@@ -321,7 +321,7 @@
 
 - name: "Create Jenkins Jobs - Containers (amd64)"
   ansible.builtin.uri:
-    url: "{{ jenkins_url }}/job/amd64_containers/createItem?name={{ item.name | urlencode }}"
+    url: "{{ jenkins_url }}/job/2.6%20-%20amd64_containers/createItem?name={{ item.name | urlencode }}"
     method: POST
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"

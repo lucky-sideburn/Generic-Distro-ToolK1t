@@ -81,13 +81,6 @@ dedicated_build_dir: |-
   cd build
 
 jenkins_jobs:
-  amd64_folders:
-    - 2.1 - amd64_cross_toolchain
-    - 2.2 - amd64_cross_compiling_temporary_tools
-    - 2.3 - amd64_chroot_and_building_additional_temporary_tools
-    - 2.4 - amd64_basic_system_software
-    - 2.5 - amd64_system_configuration
-    - 2.6 - amd64_containers
   aarch64_folders:
     - 1.1 - aarch64_cross_toolchain
     - 1.2 - aarch64_cross_compiling_temporary_tools
@@ -95,6 +88,15 @@ jenkins_jobs:
     - 1.4 - aarch64_basic_system_software
     - 1.5 - aarch64_system_configuration
     - 1.6 - aarch64_containers
+
+  amd64_folders:
+    - 2.1 - amd64_cross_toolchain
+    - 2.2 - amd64_cross_compiling_temporary_tools
+    - 2.3 - amd64_chroot_and_building_additional_temporary_tools
+    - 2.4 - amd64_basic_system_software
+    - 2.5 - amd64_system_configuration
+    - 2.6 - amd64_containers
+
   setup:
     - Host System Requirements
     - Final Preparation
@@ -127,7 +129,7 @@ jenkins_jobs:
         sudo -i -u ubuntu ansible-playbook -i /home/ubuntu/gdt/jenkins-lfs/inventories/host_prod.ini  /home/ubuntu/gdt/jenkins-lfs/playbooks/start.yml --tags basic_system_software
   
   cross_toolchain:
-    - name: 1.1 - Binutils Pass 1 (Cross Toolchain)
+    - name: 0001 - Binutils Pass 1 (Cross Toolchain)
       version: 2.44
       archive_file: /mnt/lfs/sources/binutils-2.44.tar.xz
       source_dir: /mnt/lfs/sources/binutils-2.44
@@ -149,7 +151,7 @@ jenkins_jobs:
         make
         make install
 
-    - name: 1.2 - GCC Pass 1 (Cross Toolchain)
+    - name: 0002 - GCC Pass 1 (Cross Toolchain)
       archive_file: /mnt/lfs/sources/gcc-14.2.0.tar.xz
       version: 14.2.0
       source_dir: /mnt/lfs/sources/gcc-14.2.0
@@ -204,7 +206,7 @@ jenkins_jobs:
         make
         make install
 
-    - name: 1.3 - Linux API Headers (Cross Toolchain)
+    - name: 0003 - Linux API Headers (Cross Toolchain)
       archive_file: /mnt/lfs/sources/linux-6.13.4.tar.xz
       version: 6.13.4
       source_dir: /mnt/lfs/sources/linux-6.13.4
@@ -219,7 +221,7 @@ jenkins_jobs:
         find usr/include -type f ! -name '*.h' -delete
         cp -rv usr/include $LFS/usr
 
-    - name: 1.4 - Glibc (Cross Toolchain)
+    - name: 0004 - Glibc (Cross Toolchain)
       archive_file: /mnt/lfs/sources/glibc-2.41.tar.xz
       version: 2.41
       source_dir: /mnt/lfs/sources/glibc-2.41
@@ -257,7 +259,7 @@ jenkins_jobs:
         echo 'int main(){}' | $LFS_TGT-gcc -xc -
         readelf -l a.out | grep ld-linux
 
-    - name: 1.5 - Libstdc++ from GCC  (Cross Toolchain)
+    - name: 0005 - Libstdc++ from GCC  (Cross Toolchain)
       version: 14.2.0
       archive_file: /mnt/lfs/sources/gcc-14.2.0.tar.xz
       source_dir: /mnt/lfs/sources/gcc-14.2.0
@@ -284,7 +286,7 @@ jenkins_jobs:
         rm -v $LFS/usr/lib/lib{stdc++{,exp,fs},supc++}.la || echo "Removing libstdc++ libraries failed, continuing anyway"
 
   cross_compiling_temporary_tools:
-    - name: 1.1 - M4 (Cross Compiling Temporary Tools)
+    - name: 0001 - M4 (Cross Compiling Temporary Tools)
       version: 1.4.19
       archive_file: /mnt/lfs/sources/m4-1.4.19.tar.xz
       source_dir: /mnt/lfs/sources/m4-1.4.19
@@ -300,7 +302,7 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-    - name: 1.2 - Ncurses (Cross Compiling Temporary Tools)
+    - name: 0002 - Ncurses (Cross Compiling Temporary Tools)
       version: 6.5
       archive_file: /mnt/lfs/sources/ncurses-6.5.tar.gz
       source_dir: /mnt/lfs/sources/ncurses-6.5
@@ -336,7 +338,7 @@ jenkins_jobs:
               -i $LFS/usr/include/curses.h
 
     # TODO = During ARM build  CFLAGS="-Wno-implicit-function-declaration", why?
-    - name: 1.3 - Bash (Cross Compiling Temporary Tools)
+    - name: 0003 - Bash (Cross Compiling Temporary Tools)
       version: 5.2.37
       archive_file: /mnt/lfs/sources/bash-5.2.37.tar.gz
       source_dir: /mnt/lfs/sources/bash-5.2.37
@@ -354,7 +356,7 @@ jenkins_jobs:
         make DESTDIR=$LFS install
         ln -sv bash $LFS/bin/sh || echo "Symlink bash to sh failed, continuing anyway"
 
-    - name: 1.4 - Coreutils (Cross Compiling Temporary Tools)
+    - name: 0004 - Coreutils (Cross Compiling Temporary Tools)
       version: 9.6
       archive_file: /mnt/lfs/sources/coreutils-9.6.tar.xz
       source_dir: /mnt/lfs/sources/coreutils-9.6
@@ -377,7 +379,7 @@ jenkins_jobs:
       # mv -v $LFS/usr/share/man/man1/chroot.1 $LFS/usr/share/man/man8/chroot.8 || echo "Moving chroot.1 to chroot.8 failed, continuing anyway"
       # sed -i 's/"1"/"8"/'                    $LFS/usr/share/man/man8/chroot.8
 
-    - name: 1.5 - Diffutils (Cross Compiling Temporary Tools)
+    - name: 0005 - Diffutils (Cross Compiling Temporary Tools)
       version: 3.11
       archive_file: /mnt/lfs/sources/diffutils-3.11.tar.xz
       source_dir: /mnt/lfs/sources/diffutils-3.11
@@ -393,7 +395,7 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-    - name: 1.6 - File (Cross Compiling Temporary Tools)
+    - name: 0006 - File (Cross Compiling Temporary Tools)
       version: 5.46
       archive_file: /mnt/lfs/sources/file-5.46.tar.gz
       source_dir: /mnt/lfs/sources/file-5.46
@@ -416,7 +418,7 @@ jenkins_jobs:
         make DESTDIR=$LFS install
         rm -v $LFS/usr/lib/libmagic.la
   
-    - name: 1.7 Findutils (Cross Compiling Temporary Tools)
+    - name: 0007 - Findutils (Cross Compiling Temporary Tools)
       version: 4.10.0
       archive_file: /mnt/lfs/sources/findutils-4.10.0.tar.xz
       source_dir: /mnt/lfs/sources/findutils-4.10.0
@@ -433,7 +435,7 @@ jenkins_jobs:
           make
           make DESTDIR=$LFS install  
 
-    - name: 1.8 - Gawk (Cross Compiling Temporary Tools)
+    - name: 0008 - Gawk (Cross Compiling Temporary Tools)
       version: 5.3.1
       archive_file: /mnt/lfs/sources/gawk-5.3.1.tar.xz
       source_dir: /mnt/lfs/sources/gawk-5.3.1
@@ -450,7 +452,7 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-    - name: 1.9 - Grep (Cross Compiling Temporary Tools)
+    - name: 0009 - Grep (Cross Compiling Temporary Tools)
       version: 3.11
       archive_file: /mnt/lfs/sources/grep-3.11.tar.xz
       source_dir: /mnt/lfs/sources/grep-3.11
@@ -466,7 +468,7 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-    - name: 1.10 - Gzip (Cross Compiling Temporary Tools)
+    - name: 0010 - Gzip (Cross Compiling Temporary Tools)
       version: 1.13
       archive_file: /mnt/lfs/sources/gzip-1.13.tar.xz
       source_dir: /mnt/lfs/sources/gzip-1.13
@@ -480,7 +482,7 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-    - name: 1.11 - Make (Cross Compiling Temporary Tools)
+    - name: 0011 - Make (Cross Compiling Temporary Tools)
       version: 4.4.1
       archive_file: /mnt/lfs/sources/make-4.4.1.tar.gz
       source_dir: /mnt/lfs/sources/make-4.4.1
@@ -497,7 +499,7 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-    - name: 1.12 - Patch (Cross Compiling Temporary Tools)
+    - name: 0012 - Patch (Cross Compiling Temporary Tools)
       version: 2.7.6
       archive_file: /mnt/lfs/sources/patch-2.7.6.tar.xz
       source_dir: /mnt/lfs/sources/patch-2.7.6
@@ -513,7 +515,7 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-    - name: 1.13 - Sed (Cross Compiling Temporary Tools)
+    - name: 0013 - Sed (Cross Compiling Temporary Tools)
       version: 4.9 
       archive_file: /mnt/lfs/sources/sed-4.9.tar.xz
       source_dir: /mnt/lfs/sources/sed-4.9
@@ -529,7 +531,7 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-    - name: 1.14 - Tar (Cross Compiling Temporary Tools)
+    - name: 0014 - Tar (Cross Compiling Temporary Tools)
       version: 1.35
       archive_file: /mnt/lfs/sources/tar-1.35.tar.xz
       source_dir: /mnt/lfs/sources/tar-1.35
@@ -545,7 +547,7 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-    - name: 1.15 - Xz (Cross Compiling Temporary Tools)
+    - name: 0015 - Xz (Cross Compiling Temporary Tools)
       version: 5.6.4
       archive_file: /mnt/lfs/sources/xz-5.6.4.tar.xz
       source_dir: /mnt/lfs/sources/xz-5.6.4
@@ -564,7 +566,7 @@ jenkins_jobs:
         make DESTDIR=$LFS install
         rm -v $LFS/usr/lib/liblzma.la
 
-    - name: 1.16 - Binutils (Cross Compiling Temporary Tools)
+    - name: 0016 - Binutils (Cross Compiling Temporary Tools)
       version: 2.44
       buid_tool: true
       archive_file: /mnt/lfs/sources/binutils-2.44.tar.xz
@@ -597,7 +599,7 @@ jenkins_jobs:
         make DESTDIR=$LFS install
         rm -v $LFS/usr/lib/lib{bfd,ctf,ctf-nobfd,opcodes,sframe}.{a,la}
 
-    - name: 1.16 - GCC Pass 2 (Cross Compiling Temporary Tools)
+    - name: 0017 - GCC Pass 2 (Cross Compiling Temporary Tools)
       archive_file: /mnt/lfs/sources/gcc-14.2.0.tar.xz
       source_dir: /mnt/lfs/sources/gcc-14.2.0
       buid_tool: true
@@ -650,7 +652,7 @@ jenkins_jobs:
             ln -sv gcc $LFS/usr/bin/cc
   
   chroot_and_building_additional_temporary_tools:
-    - name: 1.1 - *** Changing Ownership and Preparing Virtual Kernel File Systems (Chroot and Building Additional Temporary Tools) ***
+    - name: 0001 - Changing Ownership and Preparing Virtual Kernel File Systems (Chroot and Building Additional Temporary Tools)
       version: 1.0
       archive_file: /mnt/lfs/sources/empty.tar.xz
       source_dir: /mnt/lfs/sources
@@ -756,7 +758,7 @@ jenkins_jobs:
         {{ chroot_start_command }} -c 'chmod -v 664  /var/log/lastlog'
         {{ chroot_start_command }} -c 'chmod -v 600  /var/log/btmp'
 
-    - name: 1.2 - Gettext (Chroot and Building Additional Temporary Tools)
+    - name: 0002 - Gettext (Chroot and Building Additional Temporary Tools)
       version: 0.24
       archive_file: /sources/gettext-0.24.tar.xz
       source_dir: /sources/gettext-0.24
@@ -775,7 +777,7 @@ jenkins_jobs:
           cp -v gettext-tools/src/{msgfmt,msgmerge,xgettext} /usr/bin
         '
 
-    - name: 1.3 - Bison (Chroot and Building Additional Temporary Tools)
+    - name: 0003 - Bison (Chroot and Building Additional Temporary Tools)
       version: 3.8.2
       archive_file: /sources/bison-3.8.2.tar.xz
       source_dir: /sources/bison-3.8.2
@@ -795,7 +797,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.4 - Perl (Chroot and Building Additional Temporary Tools)
+    - name: 0004 - Perl (Chroot and Building Additional Temporary Tools)
       version: 5.40.1
       archive_file: /sources/perl-5.40.1.tar.xz
       source_dir: /sources/perl-5.40.1
@@ -823,7 +825,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.5 - Python (Chroot and Building Additional Temporary Tools)
+    - name: 0005 - Python (Chroot and Building Additional Temporary Tools)
       version: 3.13.2
       archive_file: /sources/Python-3.13.2.tar.xz
       source_dir: /sources/Python-3.13.2
@@ -844,7 +846,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.6 - Texinfo (Chroot and Building Additional Temporary Tools)
+    - name: 0006 - Texinfo (Chroot and Building Additional Temporary Tools)
       version: 7.2
       archive_file: /sources/texinfo-7.2.tar.xz
       source_dir: /sources/texinfo-7.2
@@ -863,7 +865,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.7 - Util-linux (Chroot and Building Additional Temporary Tools)
+    - name: 0007 - Util-linux (Chroot and Building Additional Temporary Tools)
       version: 2.40.4
       archive_file: /sources/util-linux-2.40.4.tar.xz
       source_dir: /sources/util-linux-2.40.4
@@ -896,7 +898,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.8 - *** Cleaning up and Saving the Temporary System (Chroot and Building Additional Temporary Tools) ***
+    - name: 0008 - Cleaning up and Saving the Temporary System (Chroot and Building Additional Temporary Tools)
       version: 1.0
       archive_file: /mnt/lfs/sources/empty.tar.xz
       source_dir: /mnt/lfs/sources
@@ -915,7 +917,7 @@ jenkins_jobs:
         '
   
   basic_system_software:
-    - name: 1.1 - Man-pages (Basic System Software)
+    - name: 0001 - Man-pages (Basic System Software)
       version: 6.12
       archive_file: /sources/man-pages-6.12.tar.xz  
       source_dir: /sources/man-pages-6.12
@@ -933,7 +935,7 @@ jenkins_jobs:
           make -R GIT=false prefix=/usr install
         '
 
-    - name: 1.2 - Iana-Etc (Basic System Software)
+    - name: 0002 - Iana-Etc (Basic System Software)
       version: 20250123
       archive_file: /sources/iana-etc-20250123.tar.xz
       source_dir: /sources/iana-etc-20250123
@@ -950,7 +952,7 @@ jenkins_jobs:
           cp services protocols /etc
         '
 
-    - name: 1.3 - Glibc (Basic System Software)
+    - name: 0003 - Glibc (Basic System Software)
       version: 2.41
       archive_file: /sources/glibc-2.41.tar.xz
       source_dir: /sources/glibc-2.41
@@ -1056,7 +1058,7 @@ jenkins_jobs:
           echo \"/usr/local/lib\" >> /etc/ld.so.conf
           echo \"/opt/lib\" >> /etc/ld.so.conf
           "
-    - name: 1.4 - Zlib (Basic System Software)
+    - name: 0004 - Zlib (Basic System Software)
       version: 1.3.1
       archive_file: /sources/zlib-1.3.1.tar.xz
       source_dir: /sources/zlib-1.3.1
@@ -1076,7 +1078,7 @@ jenkins_jobs:
           rm -fv /usr/lib/libz.a
         '
 
-    - name: 1.5 - Bzip2 (Basic System Software)
+    - name: 0005 - Bzip2 (Basic System Software)
       version: 1.0.8
       archive_file: /sources/bzip2-1.0.8.tar.gz
       source_dir: /sources/bzip2-1.0.8
@@ -1109,7 +1111,7 @@ jenkins_jobs:
         '
 
 
-    - name: 1.6 - Xz (Basic System Software)
+    - name: 0006 - Xz (Basic System Software)
       version: 5.6.4
       archive_file: /sources/xz-5.6.4.tar.xz
       source_dir: /sources/xz-5.6.4
@@ -1134,7 +1136,7 @@ jenkins_jobs:
           ln -svf ../../lib/$(readlink /usr/lib/liblzma.so) /usr/lib/liblzma.so
         '
 
-    - name: 1.7 - Lz4 (Basic System Software)
+    - name: 0007 - Lz4 (Basic System Software)
       version: 1.10.0
       archive_file: /sources/lz4-1.10.0.tar.gz
       source_dir: /sources/lz4-1.10.0
@@ -1152,7 +1154,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.8 - Zstd (Basic System Software)
+    - name: 0008 - Zstd (Basic System Software)
       version: 1.5.7
       archive_file: /sources/zstd-1.5.7.tar.gz
       source_dir: /sources/zstd-1.5.7
@@ -1170,7 +1172,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.9 - File (Basic System Software)
+    - name: 0009 - File (Basic System Software)
       version: 5.46
       archive_file: /sources/file-5.46.tar.gz
       source_dir: /sources/file-5.46
@@ -1189,7 +1191,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.10 - Readline (Basic System Software)
+    - name: 0010 - Readline (Basic System Software)
       version: 8.2.13
       archive_file: /sources/readline-8.2.13.tar.gz
       source_dir: /sources/readline-8.2.13  
@@ -1211,7 +1213,7 @@ jenkins_jobs:
           ln -sfv ../../lib/$(readlink /usr/lib/libhistory.so) /usr/lib/libhistory.so
         '
 
-    - name: 1.11 - M4 (Basic System Software)
+    - name: 0011 - M4 (Basic System Software)
       version: 1.4.19
       archive_file: /sources/m4-1.4.19.tar.xz
       source_dir: /sources/m4-1.4.19
@@ -1230,7 +1232,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.12 - Bc (Basic System Software)
+    - name: 0012 - Bc (Basic System Software)
       version: 7.0.3
       archive_file: /sources/bc-7.0.3.tar.xz
       source_dir: /sources/bc-7.0.3
@@ -1250,7 +1252,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.13 - Flex (Basic System Software)
+    - name: 0013 - Flex (Basic System Software)
       version: 2.6.4
       archive_file: /sources/flex-2.6.4.tar.gz
       source_dir: /sources/flex-2.6.4
@@ -1270,7 +1272,7 @@ jenkins_jobs:
           ln -sv flex /usr/bin/lex
         '
 
-    - name: 1.14 - Tcl (Basic System Software)
+    - name: 0014 - Tcl (Basic System Software)
       version: 8.6.16
       archive_file: /sources/tcl8.6.16-src.tar.gz
       source_dir: /sources/tcl8.6.16
@@ -1292,7 +1294,7 @@ jenkins_jobs:
           ln -sfv tclsh8.6 /usr/bin/tclsh
         '
 
-    - name: 1.15 - Expect (Basic System Software)
+    - name: 0015 - Expect (Basic System Software)
       version: 5.45.4
       archive_file: /sources/expect5.45.4.tar.gz
       source_dir: /sources/expect5.45.4
@@ -1323,7 +1325,7 @@ jenkins_jobs:
           ln -svf expect5.45.4/libexpect5.45.4.so /usr/lib
         '
 
-    - name: 1.16 - DejaGNU (Basic System Software)
+    - name: 0016 - DejaGNU (Basic System Software)
       version: 1.6.3
       archive_file: /sources/dejagnu-1.6.3.tar.gz
       source_dir: /sources/dejagnu-1.6.3
@@ -1341,7 +1343,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.17 - Pkgconf (Basic System Software)
+    - name: 0017 - Pkgconf (Basic System Software)
       version: 2.3.0
       archive_file: /sources/pkgconf-2.3.0.tar.xz
       source_dir: /sources/pkgconf-2.3.0
@@ -1360,7 +1362,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.18 - Binutils (Basic System Software)
+    - name: 0018 - Binutils (Basic System Software)
       version: 2.44
       archive_file: /sources/binutils-2.44.tar.xz
       source_dir: /sources/binutils-2.44
@@ -1382,7 +1384,7 @@ jenkins_jobs:
           rm -fv /usr/lib/lib{bfd,ctf,ctf-nobfd,opcodes,sframe}.a
         '
 
-    - name: 1.19 - GMP (Basic System Software)
+    - name: 0019 - GMP (Basic System Software)
       version: 6.3.0
       archive_file: /sources/gmp-6.3.0.tar.xz
       source_dir: /sources/gmp-6.3.0
@@ -1403,7 +1405,7 @@ jenkins_jobs:
           make install-html
         '
 
-    - name: 1.20 - MPFR (Basic System Software)
+    - name: 0020 - MPFR (Basic System Software)
       version: 4.2.1
       archive_file: /sources/mpfr-4.2.1.tar.xz
       source_dir: /sources/mpfr-4.2.1
@@ -1424,7 +1426,7 @@ jenkins_jobs:
           make install-html
         '
 
-    - name: 1.21 - MPC (Basic System Software)
+    - name: 0021 - MPC (Basic System Software)
       version: 1.3.1
       archive_file: /sources/mpc-1.3.1.tar.gz
       source_dir: /sources/mpc-1.3.1
@@ -1445,7 +1447,7 @@ jenkins_jobs:
           make install-html
         '
 
-    - name: 1.22 - Attr (Basic System Software)
+    - name: 0022 - Attr (Basic System Software)
       version: 2.5.2
       archive_file: /sources/attr-2.5.2.tar.gz
       source_dir: /sources/attr-2.5.2
@@ -1464,7 +1466,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.23 - Acl (Basic System Software)
+    - name: 0023 - Acl (Basic System Software)
       version: 2.3.2
       archive_file: /sources/acl-2.3.2.tar.xz
       source_dir: /sources/acl-2.3.2
@@ -1483,7 +1485,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.24 - Libcap (Basic System Software)
+    - name: 0024 - Libcap (Basic System Software)
       version: 2.73
       archive_file: /sources/libcap-2.73.tar.xz
       source_dir: /sources/libcap-2.73
@@ -1501,7 +1503,7 @@ jenkins_jobs:
           make lib=lib install
         '
 
-    - name: 1.25 - Libxcrypt-4.4.38 (Basic System Software)
+    - name: 0025 - Libxcrypt-4.4.38 (Basic System Software)
       version: 4.4.38
       archive_file: /sources/libxcrypt-4.4.38.tar.xz
       source_dir: /sources/libxcrypt-4.4.38
@@ -1520,7 +1522,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.26 - Shadow (Basic System Software)
+    - name: 0026 - Shadow (Basic System Software)
       version: 4.17.3
       archive_file: /sources/shadow-4.17.3.tar.xz
       source_dir: /sources/shadow-4.17.3
@@ -1539,7 +1541,7 @@ jenkins_jobs:
           ./shadow-4.17.3.sh
         '
 
-    - name: 1.27 - GCC (Basic System Software)
+    - name: 0027 - GCC (Basic System Software)
       version: 14.2.0
       archive_file: /sources/gcc-14.2.0.tar.xz
       source_dir: /sources/gcc-14.2.0
@@ -1588,7 +1590,7 @@ jenkins_jobs:
 
         '
 
-    - name: 1.28 - Ncurses (Basic System Software)
+    - name: 0028 - Ncurses (Basic System Software)
       version: 6.5
       archive_file: /sources/ncurses-6.5.tar.gz
       source_dir: /sources/ncurses-6.5
@@ -1620,7 +1622,7 @@ jenkins_jobs:
           cp -v -R doc/* /usr/share/doc/ncurses-6.5
         '
 
-    - name: 1.29 - Sed (Basic System Software)
+    - name: 0029 - Sed (Basic System Software)
       version: 4.9
       archive_file: /sources/sed-4.9.tar.xz
       source_dir: /sources/sed-4.9
@@ -1643,7 +1645,7 @@ jenkins_jobs:
           install -m644 doc/sed.html /usr/share/doc/sed-4.9
         '
 
-    - name: 1.30 - Psmisc (Basic System Software)
+    - name: 0030 - Psmisc (Basic System Software)
       version: 23.7
       archive_file: /sources/psmisc-23.7.tar.xz
       source_dir: /sources/psmisc-23.7
@@ -1662,7 +1664,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.31 - Gettext (Basic System Software)
+    - name: 0031 - Gettext (Basic System Software)
       version: 0.24
       archive_file: /sources/gettext-0.24.tar.xz
       source_dir: /sources/gettext-0.24
@@ -1681,7 +1683,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.32 - Bison (Basic System Software)
+    - name: 0032 - Bison (Basic System Software)
       version: 3.8.2
       archive_file: /sources/bison-3.8.2.tar.xz
       source_dir: /sources/bison-3.8.2
@@ -1700,7 +1702,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.33 - Grep (Basic System Software)
+    - name: 0033 - Grep (Basic System Software)
       version: 3.11
       archive_file: /sources/grep-3.11.tar.xz
       source_dir: /sources/grep-3.11
@@ -1720,7 +1722,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.34 - Bash-5.2.37 (Basic System Software)
+    - name: 0034 - Bash-5.2.37 (Basic System Software)
       version: 5.2.37
       archive_file: /sources/bash-5.2.37.tar.gz
       source_dir: /sources/bash-5.2.37
@@ -1743,7 +1745,7 @@ jenkins_jobs:
           ln -sv bash /bin/sh
         '
 
-    - name: 1.35 - Libtool (Basic System Software)
+    - name: 0035 - Libtool (Basic System Software)
       version: 2.5.4
       archive_file: /sources/libtool-2.5.4.tar.xz
       source_dir: /sources/libtool-2.5.4
@@ -1762,7 +1764,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.36 - GDBM (Basic System Software)
+    - name: 0036 - GDBM (Basic System Software)
       version: 1.24
       archive_file: /sources/gdbm-1.24.tar.gz
       source_dir: /sources/gdbm-1.24
@@ -1781,7 +1783,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.37 - Gperf (Basic System Software)
+    - name: 0037 - Gperf (Basic System Software)
       version: 3.1
       archive_file: /sources/gperf-3.1.tar.gz
       source_dir: /sources/gperf-3.1
@@ -1800,7 +1802,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.38 - Expat (Basic System Software) (OPTIONAL)
+    - name: 0038 - Expat (Basic System Software)
       version: 2.7.1
       archive_file: /sources/expat-2.7.1.tar.xz
       source_dir: /sources/expat-2.7.1
@@ -1823,7 +1825,7 @@ jenkins_jobs:
           install -v -m644 doc/*.{html,css} /usr/share/doc/expat-2.7.1
         '
 
-    - name: 1.39 - Inetutils (Basic System Software)
+    - name: 0039 - Inetutils (Basic System Software)
       version: 2.6
       archive_file: /sources/inetutils-2.6.tar.xz
       source_dir: /sources/inetutils-2.6
@@ -1842,7 +1844,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.40 - Less (Basic System Software)
+    - name: 0040 - Less (Basic System Software)
       version: 668
       archive_file: /sources/less-668.tar.gz
       source_dir: /sources/less-668
@@ -1861,7 +1863,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.41 - Perl (Basic System Software)
+    - name: 0041 - Perl (Basic System Software)
       version: 5.40.1
       archive_file: /sources/perl-5.40.1.tar.xz
       source_dir: /sources/perl-5.40.1
@@ -1880,7 +1882,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.42 - XML::Parser (Basic System Software)
+    - name: 0042 - XML Parser (Basic System Software)
       version: 2.47
       archive_file: /sources/XML-Parser-2.47.tar.gz
       source_dir: /sources/XML-Parser-2.47
@@ -1900,7 +1902,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.43 - Intltool (Basic System Software)
+    - name: 0043 - Intltool (Basic System Software)
       version: 0.51.0
       archive_file: /sources/intltool-0.51.0.tar.gz
       source_dir: /sources/intltool-0.51.0
@@ -1919,7 +1921,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.44 - Autoconf (Basic System Software)
+    - name: 0044 - Autoconf (Basic System Software)
       version: 2.72
       archive_file: /sources/autoconf-2.72.tar.xz
       source_dir: /sources/autoconf-2.72
@@ -1938,7 +1940,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.45 - Automake (Basic System Software)
+    - name: 0045 - Automake (Basic System Software)
       version: 1.17
       archive_file: /sources/automake-1.17.tar.xz
       source_dir: /sources/automake-1.17
@@ -1957,7 +1959,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.46 - OpenSSL (Basic System Software)
+    - name: 0046 - OpenSSL (Basic System Software)
       version: 3.4.1
       archive_file: /sources/openssl-3.4.1.tar.gz
       source_dir: /sources/openssl-3.4.1
@@ -1975,7 +1977,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.47 - Libelf (Basic System Software)
+    - name: 0047 - Libelf (Basic System Software)
       version: 0.192
       archive_file: /sources/elfutils-0.192.tar.bz2
       source_dir: /sources/elfutils-0.192
@@ -2000,7 +2002,7 @@ jenkins_jobs:
           rm /usr/lib/libelf.a
         '
 
-    - name: 1.48 - Libffi (Basic System Software)
+    - name: 0048 - Libffi (Basic System Software)
       version: 3.4.7
       archive_file: /sources/libffi-3.4.7.tar.gz
       source_dir: /sources/libffi-3.4.7
@@ -2019,7 +2021,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.49 - Python (Basic System Software)
+    - name: 0049 - Python (Basic System Software)
       version: 3.13.2
       archive_file: /sources/Python-3.13.2.tar.xz
       source_dir: /sources/Python-3.13.2
@@ -2052,7 +2054,7 @@ jenkins_jobs:
           fi
         '
 
-    - name: 1.50 - Flit-Core (Basic System Software)
+    - name: 0050 - Flit-Core (Basic System Software)
       version: 3.11.0
       archive_file: /sources/flit_core-3.11.0.tar.gz
       source_dir: /sources/flit_core-3.11.0
@@ -2069,9 +2071,9 @@ jenkins_jobs:
           python3 -m pip install .
         '
 
-    - name: 1.51 - Wheel (Basic System Software)
+    - name: 0051 - Wheel (Basic System Software)
       version: 0.45.1
-      archive_file: /sources/wheel-0.45.1.tar.gz
+      archive_file: /sources/wheel-0.45.tar.gz
       description: |
         Wheel is a built-package format for Python that helps in distributing and installing Python packages. This job builds Wheel, which is essential for packaging Python projects in the LFS environment.
       category:
@@ -2087,7 +2089,7 @@ jenkins_jobs:
           pip3 install --no-index --find-links dist wheel
         '
 
-    - name: 1.52 - Setuptools (Basic System Software)
+    - name: 0052 - Setuptools (Basic System Software)
       version: 75.8.1
       archive_file: /sources/setuptools-75.8.1.tar.gz
       source_dir: /sources/setuptools-75.8.1
@@ -2104,7 +2106,7 @@ jenkins_jobs:
           python3 -m pip install .
         '
 
-    - name: 1.53 - Ninja (Basic System Software)
+    - name: 0053 - Ninja (Basic System Software)
       version: 1.12.1
       archive_file: /sources/ninja-1.12.1.tar.gz
       source_dir: /sources/ninja-1.12.1
@@ -2122,7 +2124,7 @@ jenkins_jobs:
           install -vm755 ninja /usr/bin/
         '
 
-    - name: 1.54 - Meson (Basic System Software)
+    - name: 0054 - Meson (Basic System Software)
       version: 1.7.0
       archive_file: /sources/meson-1.7.0.tar.gz
       source_dir: /sources/meson-1.7.0
@@ -2142,7 +2144,7 @@ jenkins_jobs:
           install -vDm644 data/shell-completions/zsh/_meson /usr/share/zsh/site-functions/_meson
         '
 
-    - name: 1.55 - Kmod (Basic System Software)
+    - name: 0055 - Kmod (Basic System Software)
       version: 34
       archive_file: /sources/kmod-34.tar.xz
       source_dir: /sources/kmod-34
@@ -2169,7 +2171,7 @@ jenkins_jobs:
           ninja install
         '
 
-    - name: 1.56 - Coreutils (Basic System Software)
+    - name: 0056 - Coreutils (Basic System Software)
       version: 9.6
       archive_file: /sources/coreutils-9.6.tar.xz
       source_dir: /sources/coreutils-9.6
@@ -2201,7 +2203,7 @@ jenkins_jobs:
           sed -i 's/"1"/"8"/' /usr/share/man/man8/chroot.8
           '
 
-    - name: 1.57 - Check (Basic System Software)
+    - name: 0057 - Check (Basic System Software)
       version: 0.15.2
       archive_file: /sources/check-0.15.2.tar.gz
       source_dir: /sources/check-0.15.2
@@ -2220,7 +2222,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.58 - Diffutils (Basic System Software)
+    - name: 0058 - Diffutils (Basic System Software)
       version: 3.11
       source_dir: /sources/diffutils-3.11
       exec_command: echo
@@ -2240,7 +2242,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.59 - Gawk (Basic System Software)
+    - name: 0059 - Gawk (Basic System Software)
       version: 5.3.1
       archive_file: /sources/gawk-5.3.1.tar.xz
       source_dir: /sources/gawk-5.3.1
@@ -2259,7 +2261,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.60 - Findutils (Basic System Software)
+    - name: 0060 - Findutils (Basic System Software)
       version: 4.10.0
       archive_file: /sources/findutils-4.10.0.tar.xz
       source_dir: /sources/findutils-4.10.0
@@ -2279,7 +2281,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.61 - Groff (Basic System Software)
+    - name: 0061 - Groff (Basic System Software)
       version: 1.23.0
       archive_file: /sources/groff-1.23.0.tar.gz
       source_dir: /sources/groff-1.23.0
@@ -2299,7 +2301,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.62 - GRUB (Basic System Software)
+    - name: 0062 - GRUB (Basic System Software)
       version: 2.12
       archive_file: /sources/grub-2.12.tar.xz
       source_dir: /sources/grub-2.12
@@ -2324,7 +2326,7 @@ jenkins_jobs:
           mv -v /etc/bash_completion.d/grub /usr/share/bash-completion/completions
         '
 
-    - name: 1.63 - Gzip (Basic System Software)
+    - name: 0063 - Gzip (Basic System Software)
       version: 1.13
       archive_file: /sources/gzip-1.13.tar.xz
       source_dir: /sources/gzip-1.13
@@ -2343,7 +2345,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.64 - IPRoute2 (Basic System Software)
+    - name: 0064 - IPRoute2 (Basic System Software)
       version: 6.13.0
       archive_file: /sources/iproute2-6.13.0.tar.xz
       source_dir: /sources/iproute2-6.13.0
@@ -2362,7 +2364,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.65 - Kbd (Basic System Software)
+    - name: 0065 - Kbd (Basic System Software)
       version: 2.7.1
       archive_file: /sources/kbd-2.7.1.tar.xz
       source_dir: /sources/kbd-2.7.1
@@ -2381,7 +2383,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.66 - Libpipeline (Basic System Software)
+    - name: 0066 - Libpipeline (Basic System Software)
       version: 1.5.8
       archive_file: /sources/libpipeline-1.5.8.tar.gz
       source_dir: /sources/libpipeline-1.5.8
@@ -2400,7 +2402,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.67 - Make (Basic System Software)
+    - name: 0067 - Make (Basic System Software)
       version: 4.4.1
       archive_file: /sources/make-4.4.1.tar.gz
       source_dir: /sources/make-4.4.1
@@ -2419,7 +2421,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.68 - Patch (Basic System Software)
+    - name: 0068 - Patch (Basic System Software)
       version: 2.7.6
       archive_file: /sources/patch-2.7.6.tar.xz
       source_dir: /sources/patch-2.7.6
@@ -2442,7 +2444,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.69 - Tar (Basic System Software)
+    - name: 0069 - Tar (Basic System Software)
       version: 1.35
       archive_file: /sources/tar-1.35.tar.xz
       description: |
@@ -2461,7 +2463,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.70 - Texinfo (Basic System Software)
+    - name: 0070 - Texinfo (Basic System Software)
       version: 7.2
       archive_file: /sources/texinfo-7.2.tar.xz
       source_dir: /sources/texinfo-7.2
@@ -2480,7 +2482,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.71 - Vim (Basic System Software)
+    - name: 0071 - Vim (Basic System Software)
       version: 9.1.1166
       archive_file: /sources/vim-9.1.1166.tar.gz
       source_dir: /sources/vim-9.1.1166
@@ -2499,7 +2501,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.72 - MarkupSafe (Basic System Software)
+    - name: 0072 - MarkupSafe (Basic System Software)
       version: 3.0.2
       archive_file: /sources/markupsafe-3.0.2.tar.gz
       source_dir: /sources/markupsafe-3.0.2
@@ -2517,7 +2519,7 @@ jenkins_jobs:
           pip3 install --no-index --find-links dist Markupsafe
         '
 
-    - name: 1.73 - Jinja2 (Basic System Software)
+    - name: 0073 - Jinja2 (Basic System Software)
       version: 3.1.5
       archive_file: /sources/jinja2-3.1.5.tar.gz
       source_dir: /sources/jinja2-3.1.5
@@ -2535,7 +2537,7 @@ jenkins_jobs:
           pip3 install --no-index --find-links dist Jinja2
         '
 
-    - name: 1.74 - Udev from Systemd (Basic System Software)
+    - name: 0074 - Udev from Systemd (Basic System Software)
       version: 257.3
       archive_file: /sources/systemd-257.3.tar.gz
       source_dir: /sources/systemd-257.3
@@ -2562,7 +2564,7 @@ jenkins_jobs:
           ./udev_systemd-257.3.sh 
         '
 
-    - name: 1.75 - Man-DB (Basic System Software)
+    - name: 0075 - Man-DB (Basic System Software)
       version: 2.13.0
       archive_file: /sources/man-db-2.13.0.tar.xz
       source_dir: /sources/man-db-2.13.0
@@ -2581,7 +2583,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.76 - Procps-ng (Basic System Software)
+    - name: 0076 - Procps-ng (Basic System Software)
       version: 4.0.5
       archive_file: /sources/procps-ng-4.0.5.tar.xz
       source_dir: /sources/procps-ng-4.0.5
@@ -2601,7 +2603,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.77 - Util-linux (Basic System Software)
+    - name: 0077 - Util-linux (Basic System Software)
       version: 2.40.4
       archive_file: /sources/util-linux-2.40.4.tar.xz
       source_dir: /sources/util-linux-2.40.4
@@ -2620,7 +2622,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.78 - E2fsprogs (Basic System Software)
+    - name: 0078 - E2fsprogs (Basic System Software)
       version: 1.47.2
       archive_file: /sources/e2fsprogs-1.47.2.tar.gz
       source_dir: /sources/e2fsprogs-1.47.2
@@ -2653,7 +2655,7 @@ jenkins_jobs:
           sed "s/metadata_csum_seed,//" -i /etc/mke2fs.conf
         '
 
-    - name: 1.79 - Sysklogd (Basic System Software)
+    - name: 0079 - Sysklogd (Basic System Software)
       version: 2.7.0
       archive_file: /sources/sysklogd-2.7.0.tar.gz
       source_dir: /sources/sysklogd-2.7.0
@@ -2672,7 +2674,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.80 - SysVinit (Basic System Software)
+    - name: 0080 - SysVinit (Basic System Software)
       version: 3.14
       archive_file: /sources/sysvinit-3.14.tar.xz
       source_dir: /sources/sysvinit-3.14
@@ -2693,7 +2695,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.81 - openssh (Basic System Software)
+    - name: 0081 - openssh (Basic System Software)
       version: 10.0p1
       archive_file: /sources/openssh-10.0p1.tar.gz
       source_dir: /sources/openssh-10.0p1
@@ -2719,7 +2721,7 @@ jenkins_jobs:
           useradd -c "sshd Privsep" -d /var/lib/sshd -g sshd -s /bin/false -u 33 sshd || echo "User sshd already exists, continuing anyway"
         '
 
-    - name: 1.82 - *** Stripping (Basic System Software) ***
+    - name: 0082 - Stripping (Basic System Software)
       version: 1.0
       archive_file: /sources/empty.tar.gz
       source_dir: /sources
@@ -2737,7 +2739,7 @@ jenkins_jobs:
           ./strip.sh
         '
 
-    - name: 1.83 - *** Cleaning Up (Basic System Software) ***
+    - name: 0083 - Cleaning Up (Basic System Software)
       version: 1.0
       archive_file: /sources/empty.tar.gz
       source_dir: /sources
@@ -2756,7 +2758,7 @@ jenkins_jobs:
           find /usr -depth -name $(uname -m)-lfs-linux-gnu\* | xargs rm -rf
         '
 
-    - name: 9.1 - (OPTIONAL) libgcrypt (Basic System Software) (OPTIONAL)
+    - name: 0084 - libgcrypt (Basic System Software) OPTIONAL
       version: 1.11.1
       archive_file: /sources/libgcrypt-1.11.1.tar.bz2
       source_dir: /sources/libgcrypt-1.11.1
@@ -2789,7 +2791,7 @@ jenkins_jobs:
                               /usr/share/doc/libgcrypt-1.11.1
         '
 
-    - name: 9.2 - (OPTIONAL) (OPTIONAL)libksba (Basic System Software) (OPTIONAL)
+    - name: 0085 - OPTIONALlibksba (Basic System Software) OPTIONAL
       version: 1.6.7
       archive_file: /sources/libksba-1.6.7.tar.bz2
       source_dir: /sources/libksba-1.6.7
@@ -2808,7 +2810,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 9.3 - (OPTIONAL) npth (Basic System Software) (OPTIONAL)
+    - name: 0086 - npth (Basic System Software) OPTIONAL
       version: 1.8
       archive_file: /sources/npth-1.8.tar.bz2
       source_dir: /sources/npth-1.8
@@ -2826,7 +2828,7 @@ jenkins_jobs:
           make
           make install
         '
-    - name: 9.4 - (OPTIONAL) libgpg-error (Basic System Software) (OPTIONAL)
+    - name: 0087 - libgpg-error (Basic System Software) OPTIONAL
       version: 1.55
       archive_file: /sources/libgpg-error-1.55.tar.bz2
       source_dir: /sources/libgpg-error-1.55
@@ -2846,7 +2848,7 @@ jenkins_jobs:
           install -v -m644 -D README /usr/share/doc/libgpg-error-1.55/README
         '
 
-    - name: 9.5 - (OPTIONAL) gpgme (Basic System Software) (OPTIONAL)
+    - name: 0088 - gpgme (Basic System Software) OPTIONAL
       version: 2.0.0
       archive_file: /sources/gpgme-2.0.0.tar.bz2
       source_dir: /sources/gpgme-2.0.0
@@ -2867,7 +2869,7 @@ jenkins_jobs:
           make install  
         '
 
-    - name: 9.6 - (OPTIONAL) libassuan (Basic System Software) (OPTIONAL)
+    - name: 0089 - libassuan (Basic System Software) OPTIONAL
       version: 3.0.2
       archive_file: /sources/libassuan-3.0.2.tar.bz2
       source_dir: /sources/libassuan-3.0.2
@@ -2894,7 +2896,7 @@ jenkins_jobs:
           install -v -m644 doc/assuan.{txt,texi} /usr/share/doc/libassuan-3.0.2
         '
   
-    - name: 9.7 - (OPTIONAL) gnupg (Basic System Software) (OPTIONAL)
+    - name: 0090 - gnupg (Basic System Software) OPTIONAL
       version: 2.4.8
       archive_file: /sources/gnupg-2.4.8.tar.bz2
       source_dir: /sources/gnupg-2.4.8
@@ -2934,7 +2936,7 @@ jenkins_jobs:
                           /usr/share/doc/gnupg-2.4.8
         '
 
-    - name: 9.8 - (OPTIONAL) glib (Basic System Software) (OPTIONAL)
+    - name: 0091 - glib (Basic System Software) OPTIONAL
       version: 2.84.3
       archive_file: /sources/glib-2.84.3.tar.xz
       source_dir: /sources/glib-2.84.3
@@ -2970,7 +2972,7 @@ jenkins_jobs:
             ninja install
         '
 
-    - name: 9.9 - (OPTIONAL) GO (Basic System Software) (OPTIONAL)
+    - name: 0092 - GO (Basic System Software) OPTIONAL
       version: 1.22.9
       archive_file: /sources/empty.tar.gz
       source_dir: /sources/empty.tar.gz
@@ -2989,7 +2991,7 @@ jenkins_jobs:
 
         ls /usr/bin/go || sudo apt-get reinstall golang
 
-        ls goroot &> /dev/null || git clone https://go.googlesource.com/go goroot
+        ls goroot || git clone https://go.googlesource.com/go goroot
         cd goroot
         git checkout origin/release-branch.go1.24
         export GOROOT=/mnt/lfs/sources/goroot
@@ -3003,7 +3005,7 @@ jenkins_jobs:
           ln -s /usr/local/go/bin/go /usr/local/bin/go 
         '
 
-    - name: 9.10 - (OPTIONAL) conmon-v2.1.13 (Basic System Software) (OPTIONAL)
+    - name: 0093 - conmon (Basic System Software) OPTIONAL
       version: 2.1.13
       archive_file: /sources/conmon-v2.1.13.tar.gz
       source_dir: /sources/conmon-v2.1.13
@@ -3023,7 +3025,7 @@ jenkins_jobs:
           /bin/cp /sources/cri-o-1.33.1/bin/pinns /usr/local/bin
         '
 
-    - name: 9.11 - (OPTIONAL) libpsl-0.21.5 (Basic System Software) (OPTIONAL)
+    - name: 0094 - libpsl (Basic System Software) OPTIONAL
       version: 0.21.5
       archive_file: /sources/libpsl-0.21.5.tar.gz
       source_dir: /sources/libpsl-0.21.5
@@ -3044,7 +3046,7 @@ jenkins_jobs:
           ninja install
         '
 
-    - name: 9.12 - (OPTIONAL) libidn2-2.3.8 (Basic System Software) (OPTIONAL)
+    - name: 0095 - libidn2 (Basic System Software) OPTIONAL
       version: 2.3.8
       archive_file: /sources/libidn2-2.3.8.tar.gz
       source_dir: /sources/libidn2-2.3.8
@@ -3063,7 +3065,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 9.13 - (OPTIONAL) libunistring-1.3 (Basic System Software) (OPTIONAL)
+    - name: 0096 - libunistring (Basic System Software) OPTIONAL
       version: 1.3
       archive_file: /sources/libunistring-1.3.tar.xz
       source_dir: /sources/libunistring-1.3.tar.xz
@@ -3082,7 +3084,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 9.14 - (OPTIONAL) curl-8.15.0 (Basic System Software) (OPTIONAL)
+    - name: 0097 - curl (Basic System Software) OPTIONAL
       version: 8.15.0
       archive_file: /sources/curl-8.15.0.tar.xz
       source_dir: /sources/curl-8.15.0
@@ -3103,7 +3105,7 @@ jenkins_jobs:
           make
           make install
         '
-    - name: 9.15 - (OPTIONAL) asciidoc-9.1.0 (Basic System Software) (OPTIONAL)
+    - name: 0098 - asciidoc (Basic System Software) OPTIONAL
       version: 9.1.0
       archive_file: /sources/asciidoc-9.1.0.tar.gz
       source_dir: /sources/asciidoc-9.1.0
@@ -3127,7 +3129,7 @@ jenkins_jobs:
           make docs
         '
 
-    - name: 9.16 - (OPTIONAL) libxslt-1.1.43 (Basic System Software) (OPTIONAL)
+    - name: 0099 - libxslt (Basic System Software) OPTIONAL
       version: 1.1.43
       archive_file: /sources/libxslt-1.1.43.tar.xz
       source_dir: /sources/libxslt-1.1.43
@@ -3148,7 +3150,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 9.17 - (OPTIONAL) libxml2-2.14.5 (Basic System Software) (OPTIONAL)
+    - name: 0100 - libxml2 (Basic System Software) OPTIONAL
       version: 2.14.5
       archive_file: /sources/libxml2-2.14.5.tar.xz
       source_dir: /sources/libxml2-2.14.5
@@ -3173,7 +3175,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 9.18 - (OPTIONAL) icu4c (Basic System Software) (OPTIONAL)
+    - name: 0101 - icu4c (Basic System Software) OPTIONAL
       version: 77.1_1
       archive_file: /sources/icu4c-77_1-src.tgz
       source_dir: /sources/icu4c-77_1-src
@@ -3192,7 +3194,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 9.19 - (OPTIONAL) git-2.49.0 (Basic System Software) (OPTIONAL)
+    - name: 0102 - git (Basic System Software) OPTIONAL
       version: 2.49.0
       archive_file: /sources/git-2.49.0.tar.xz
       source_dir: /sources/git-2.49.0
@@ -3212,7 +3214,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 9.20 - (OPTIONAL) libseccomp (OPTIONAL)
+    - name: 0103 - libseccomp (Basic System Software) OPTIONAL
       version: 2.6.0
       archive_file: /sources/libseccomp
       source_dir: /sources/libseccomp
@@ -3234,7 +3236,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 9.21 - (OPTIONAL) libtasn1 (OPTIONAL)
+    - name: 0104 - libtasn1 (Basic System Software) OPTIONAL
       version: 4.20.0
       archive_file: /sources/libtasn1-4.20.0.tar.gz
       source_dir: /sources/libtasn1-4.20.0
@@ -3254,7 +3256,7 @@ jenkins_jobs:
           make -C doc/reference install-data-local
         '
 
-    - name: 9.22 - (OPTIONAL) p11-kit-0.25.5 (OPTIONAL)
+    - name: 0105 - p11-kit (Basic System Software) OPTIONAL
       version: 0.25.5
       archive_file: /sources/p11-kit-0.25.5.tar.xz
       source_dir: /sources/p11-kit-0.25.5
@@ -3292,7 +3294,7 @@ jenkins_jobs:
         ln -sfv ./pkcs11/p11-kit-trust.so /usr/lib/libnssckbi.so
 
         '
-    - name: 9.23 - (OPTIONAL) make-ca (Certificate Authorities) (OPTIONAL)
+    - name: 0106 - make-ca (Basic System Software) OPTIONAL
       version: 1.16.1
       archive_file: /sources/make-ca-1.16.1.tar.gz
       source_dir: /sources/make-ca-1.16.1
@@ -3311,7 +3313,7 @@ jenkins_jobs:
           /usr/sbin/make-ca -g
         '
 
-    - name: 9.24 - (OPTIONAL) iptables (Basic System Software) (OPTIONAL)
+    - name: 0107 - iptables (Basic System Software) OPTIONAL
       version: 1.8.11
       archive_file: /sources/iptables-1.8.11.tar.xz
       source_dir: /sources/iptables-1.8.11
@@ -3332,7 +3334,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 9.25 - (OPTIONAL) pkg-config (Basic System Software) (OPTIONAL)
+    - name: 0108 - pkg-config (Basic System Software) OPTIONAL
       version: 0.29.2
       archive_file: /sources/pkg-config-0.29.2.tar.gz
       source_dir: /sources/pkg-config-0.29.2
@@ -3355,7 +3357,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 9.26 - (OPTIONAL) cpio (Basic System Software) (OPTIONAL)
+    - name: 0109 - cpio (Basic System Software) OPTIONAL
       version: 2.15
       archive_file: /sources/cpio-2.15.tar.bz2
       source_dir: /sources/cpio-2.15
@@ -3377,7 +3379,7 @@ jenkins_jobs:
         '
 
   system_configuration:
-    - name: 1.1 - LFS-Bootscripts-20240825
+    - name: 0001 - LFS-Bootscripts (System Configuration)
       version: 20240825
       archive_file: /sources/lfs-bootscripts-20240825.tar.xz
       source_dir: /sources/lfs-bootscripts-20240825
@@ -3394,7 +3396,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 1.2 - (OPTIONAL) BLFS-bootscripts-20250225 ONLY WITH IPTABLES (OPTIONAL)
+    - name: 0002 - BLFS-bootscripts-IPTABLES OPTIONAL (System Configuration)
       version: 20250225
       archive_file: /sources/blfs-bootscripts-20250225.tar.xz
       source_dir: /sources/blfs-bootscripts-20250225
@@ -3411,7 +3413,7 @@ jenkins_jobs:
           make install-iptables
         '
 
-    - name: 1.3 - Linux
+    - name: 0003 - Linux (System Configuration)
       version: 6.13.4
       archive_file: /sources/linux-6.13.4.tar.xz
       source_dir: /sources/linux-6.13.4
@@ -3453,7 +3455,7 @@ jenkins_jobs:
           cp -r Documentation -T /usr/share/doc/linux-6.13.4
         '
 
-    - name: 1.4 - Prepare System Image
+    - name: 0004 - Prepare System Image (System Configuration)
       version: 1.0
       archive_file: /mnt/lfs/sources/empty.tar.xz
       source_dir: /mnt/lfs/sources
@@ -3469,7 +3471,7 @@ jenkins_jobs:
         ./prepare_image.sh
   
   containers:
-    - name: 1.1 runc (Containers)
+    - name: 0001 - runc (Containers)
       version: 1.3.0
       archive_file: /sources/runc-1.3.0.tar.xz
       source_dir: /sources/runc-1.3.0
@@ -3491,7 +3493,7 @@ jenkins_jobs:
         rm -f /mnt/lfs/usr/local/sbin/runc || echo "Removing existing runc failed, continuing anyway"
         sudo cp -p /usr/local/sbin/runc /mnt/lfs/usr/local/sbin/runc
   
-    - name: 1.2 - cri-o (Containers)
+    - name: 0002 - cri-o (Containers)
       version: 1.33.1
       archive_file: /sources/cri-o-1.33.1.tar.xz
       source_dir: /sources/cri-o-1.33.1
@@ -3519,7 +3521,7 @@ jenkins_jobs:
           make install PREFIX=/usr/local
         '
 
-    - name: 1.3 - etcd (Containers)
+    - name: 0003 - etcd (Containers)
       version: 3.6.1
       archive_file: /sources/etcd
       source_dir: /sources/etcd
@@ -3539,7 +3541,7 @@ jenkins_jobs:
           /bin/cp etcd etcdctl /usr/local/bin/
         '
 
-    - name: 1.4 - kubernetes (Containers)
+    - name: 0004 - kubernetes (Containers)
       version: 1.33
       archive_file: /sources/kubernetes
       source_dir: /sources/kubernetes
@@ -3558,7 +3560,7 @@ jenkins_jobs:
         cd _output/release-stage/server/linux-amd64/kubernetes/server/bin
         sudo /bin/cp kubeadm kube-apiserver kube-controller-manager kube-scheduler kube-proxy kubectl kubelet /mnt/lfs/usr/local/bin/
           
-    - name: 1.5 - kubernetes-setup (Containers)
+    - name: 0005 - kubernetes-setup (Containers)
       version: 1.33
       archive_file: /sources/kubernetes
       source_dir: /sources/kubernetes
