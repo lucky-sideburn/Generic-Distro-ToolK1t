@@ -3,15 +3,16 @@ ansible_cmd="ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-
 
 function show_menu() {
   echo "Select an option:"
-  echo "1) Build AMD64 all Jenkins Jobs"
-  echo "2) Build AMD64 cross_toolchain Jenkins Jobs"
-  echo "3) Build AMD64 cross_compiling_temporary_tools Jenkins Jobs"
-  echo "4) Build AMD64 chroot_and_building_additional_temporary_tools Jenkins Jobs"
-  echo "5) Build AMD64 basic_system_software Jenkins Jobs"
-  echo "6) Build AMD64 system_configuration Jenkins Jobs"
-  echo "7) Build AMD64 containers Jenkins Jobs"
-  echo "8) Build AARCH64 all Jenkins Jobs"
-  echo "9) Build AARCH64 cross_toolchain Jenkins Jobs"
+  echo "0)  Create Jenkins Folders" 
+  echo "1)  Build AMD64 all Jenkins Jobs"
+  echo "2)  Build AMD64 cross_toolchain Jenkins Jobs"
+  echo "3)  Build AMD64 cross_compiling_temporary_tools Jenkins Jobs"
+  echo "4)  Build AMD64 chroot_and_building_additional_temporary_tools Jenkins Jobs"
+  echo "5)  Build AMD64 basic_system_software Jenkins Jobs"
+  echo "6)  Build AMD64 system_configuration Jenkins Jobs"
+  echo "7)  Build AMD64 containers Jenkins Jobs"
+  echo "8)  Build AARCH64 all Jenkins Jobs"
+  echo "9)  Build AARCH64 cross_toolchain Jenkins Jobs"
   echo "10) Build AARCH64 cross_compiling_temporary_tools Jenkins Jobs"
   echo "11) Build AARCH64 chroot_and_building_additional_temporary_tools Jenkins Jobs"
   echo "12) Build AARCH64 basic_system_software Jenkins Jobs"
@@ -23,6 +24,11 @@ function show_menu() {
   read -p "Enter your choice: " choice
 
   case $choice in
+    0)
+      echo "Building Jenkins Folders..."
+      $ansible_cmd --tags amd64_folders,aarch64_folders
+    ;;
+
     1)
       echo "Building AMD64 all Jenkins Jobs..."
       $ansible_cmd --tags amd64_jobs

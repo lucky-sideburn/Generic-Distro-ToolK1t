@@ -39,7 +39,7 @@ chroot_start_command: |
       TESTSUITEFLAGS="-j$(nproc)" \
       /bin/bash \
 
-common_build_start_command: |
+amd64_build_start_command: |
   echo "Linux From Scratch - Version 12.3"
   echo "Current Directory: $(pwd)"
   echo "Current User: $(whoami)"
@@ -58,7 +58,7 @@ common_build_start_command: |
   cd $LFS/sources
   env
 
-arm_common_build_start_command: |
+aarch64_common_build_start_command: |
   echo "Linux From Scratch - Version 12.3"
   echo "Current Directory: $(pwd)"
   echo "Current User: $(whoami)"
@@ -83,21 +83,20 @@ common_build_command: |
   ls
 
 jenkins_jobs:
-  folders:
-    - cross_toolchain
-    - cross_compiling_temporary_tools
-    - chroot_and_building_additional_temporary_tools
-    - basic_system_software
-    - system_configuration
-    - containers
-    - ansible
-  arm_folders:
-    - arm_cross_toolchain
-    - arm_cross_compiling_temporary_tools
-    - arm_chroot_and_building_additional_temporary_tools
-    - arm_basic_system_software
-    - arm_system_configuration
-    - arm_containers
+  amd64_folders:
+    - amd64_cross_toolchain
+    - amd64_cross_compiling_temporary_tools
+    - amd64_chroot_and_building_additional_temporary_tools
+    - amd64_basic_system_software
+    - amd64_system_configuration
+    - amd64_containers
+  aarch64_folders:
+    - aarch64_cross_toolchain
+    - aarch64_cross_compiling_temporary_tools
+    - aarch64_chroot_and_building_additional_temporary_tools
+    - aarch64_basic_system_software
+    - aarch64_system_configuration
+    - aarch64_containers
   setup:
     - Host System Requirements
     - Final Preparation

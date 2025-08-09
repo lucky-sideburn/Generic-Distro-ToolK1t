@@ -6,7 +6,7 @@
   ansible.builtin.debug:
     msg: "Building AMD64 jobs"
 
-- name: "Create Jenkins Folder"
+- name: "Create Jenkins Folder (amd64)"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/createItem?name={{ item | urlencode }}" 
     method: POST
@@ -38,14 +38,14 @@
       </com.cloudbees.hudson.plugins.folder.Folder>
     body_format: raw
     timeout: 60
-  loop: "{{ jenkins_jobs.folders }}"
+  loop: "{{ jenkins_jobs.amd64_folders }}"
   ignore_errors: yes
   tags:
     - amd64_folders
     - amd64_jobs
   
 # CROSS TOOLCHAIN
-- name: "Create Jenkins Jobs - Cross Toolchain Jobs"
+- name: "Create Jenkins Jobs - Cross Toolchain Jobs (amd64)"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/job/cross_toolchain/createItem?name={{ item.name | urlencode }}"
     method: POST
@@ -63,7 +63,7 @@
         <properties/>
         <scm class="hudson.scm.NullSCM"/>
         <canRoam>true</canRoam>
-        <assignedNode>x86_64</assignedNode>
+        <assignedNode>amd64</assignedNode>
         <disabled>false</disabled>
         <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
         <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
@@ -94,7 +94,7 @@
     - amd64_cross_toolchain
     - amd64_jobs
 
-- name: "Create Jenkins Jobs - Cross Compiling Temporary Tools"
+- name: "Create Jenkins Jobs - Cross Compiling Temporary Tools (amd64)"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/job/cross_compiling_temporary_tools/createItem?name={{ item.name | urlencode }}"
     method: POST
@@ -112,7 +112,7 @@
         <properties/>
         <scm class="hudson.scm.NullSCM"/>
         <canRoam>true</canRoam>
-        <assignedNode>x86_64</assignedNode>
+        <assignedNode>amd64</assignedNode>
         <disabled>false</disabled>
         <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
         <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
@@ -143,7 +143,7 @@
     - amd64_cross_compiling_temporary_tools
     - amd64_jobs
 
-- name: "Create Jenkins Jobs - Chroot And Building Additional Temporary Tools"
+- name: "Create Jenkins Jobs - Chroot And Building Additional Temporary Tools (amd64)"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/job/chroot_and_building_additional_temporary_tools/createItem?name={{ item.name | urlencode }}"
     method: POST
@@ -161,7 +161,7 @@
         <properties/>
         <scm class="hudson.scm.NullSCM"/>
         <canRoam>true</canRoam>
-        <assignedNode>x86_64</assignedNode>
+        <assignedNode>amd64</assignedNode>
         <disabled>false</disabled>
         <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
         <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
@@ -190,7 +190,7 @@
     - amd64_chroot_and_building_additional_temporary_tools
     - amd64_jobs
 
-- name: "Create Jenkins Jobs - Basic System Software"
+- name: "Create Jenkins Jobs - Basic System Software (amd64)"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/job/basic_system_software/createItem?name={{ item.name | urlencode }}"
     method: POST
@@ -208,7 +208,7 @@
         <properties/>
         <scm class="hudson.scm.NullSCM"/>
         <canRoam>true</canRoam>
-        <assignedNode>x86_64</assignedNode>
+        <assignedNode>amd64</assignedNode>
         <disabled>false</disabled>
         <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
         <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
@@ -237,7 +237,7 @@
     - amd64_basic_system_software
     - amd64_jobs
 
-- name: "Create Jenkins Jobs - Basic System Configuration"
+- name: "Create Jenkins Jobs - Basic System Configuration (amd64)"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/job/system_configuration/createItem?name={{ item.name | urlencode }}"
     method: POST
@@ -255,7 +255,7 @@
         <properties/>
         <scm class="hudson.scm.NullSCM"/>
         <canRoam>true</canRoam>
-        <assignedNode>x86_64</assignedNode>
+        <assignedNode>amd64</assignedNode>
         <disabled>false</disabled>
         <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
         <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
@@ -284,7 +284,7 @@
     - amd64_system_configuration
     - amd64_jobs
 
-- name: "Create Jenkins Jobs - Containers"
+- name: "Create Jenkins Jobs - Containers (amd64)"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/job/containers/createItem?name={{ item.name | urlencode }}"
     method: POST
@@ -302,7 +302,7 @@
         <properties/>
         <scm class="hudson.scm.NullSCM"/>
         <canRoam>true</canRoam>
-        <assignedNode>x86_64</assignedNode>
+        <assignedNode>amd64</assignedNode>
         <disabled>false</disabled>
         <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
         <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>

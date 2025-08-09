@@ -2,12 +2,12 @@
   include_tasks: conf.yml
   tags: system_configuration
 
-- name: Print that is building ARM aarch64 jobs
+- name: Print that is building aarch64 aarch64 jobs
   ansible.builtin.debug:
-    msg: "Building ARM jobs"
+    msg: "Building aarch64 jobs"
   tags: aarch64_jobs
 
-- name: "Create Jenkins Folder"
+- name: "Create Jenkins Folder (aarch64)"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/createItem?name={{ item | urlencode }}" 
     method: POST
@@ -39,16 +39,16 @@
       </com.cloudbees.hudson.plugins.folder.Folder>
     body_format: raw
     timeout: 60
-  loop: "{{ jenkins_jobs.arm_folders }}"
+  loop: "{{ jenkins_jobs.aarch64_folders }}"
   ignore_errors: yes
   tags:
     - aarch64_jobs
     - aarch64_folders
   
 # CROSS TOOLCHAIN
-- name: "Create Jenkins Jobs - Cross Toolchain Jobs (ARM)"
+- name: "Create Jenkins Jobs - Cross Toolchain Jobs (aarch64)"
   ansible.builtin.uri:
-    url: "{{ jenkins_url }}/job/arm_cross_toolchain/createItem?name={{ item.name | urlencode }}"
+    url: "{{ jenkins_url }}/job/aarch64_cross_toolchain/createItem?name={{ item.name | urlencode }}"
     method: POST
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
@@ -64,7 +64,7 @@
         <properties/>
         <scm class="hudson.scm.NullSCM"/>
         <canRoam>false</canRoam>
-        <assignedNode>arm</assignedNode>
+        <assignedNode>aarch64</assignedNode>
         <disabled>false</disabled>
         <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
         <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
@@ -73,7 +73,7 @@
         <builders>
           <hudson.tasks.Shell>
         <command>
-          {{ arm_common_build_start_command }}
+          {{ aarch64_common_build_start_command }}
           if [ -d "{{ item.source_dir | basename }}" ]; then
             rm -rf "{{ item.source_dir | basename }}"
           fi
@@ -95,9 +95,9 @@
     - aarch64_jobs
     - aarch64_cross_toolchain
 
-- name: "Create Jenkins Jobs - Cross Compiling Temporary Tools (ARM)"
+- name: "Create Jenkins Jobs - Cross Compiling Temporary Tools (aarch64)"
   ansible.builtin.uri:
-    url: "{{ jenkins_url }}/job/arm_cross_compiling_temporary_tools/createItem?name={{ item.name | urlencode }}"
+    url: "{{ jenkins_url }}/job/aarch64_cross_compiling_temporary_tools/createItem?name={{ item.name | urlencode }}"
     method: POST
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
@@ -113,7 +113,7 @@
         <properties/>
         <scm class="hudson.scm.NullSCM"/>
         <canRoam>true</canRoam>
-        <assignedNode>arm</assignedNode>
+        <assignedNode>aarch64</assignedNode>
         <disabled>false</disabled>
         <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
         <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
@@ -122,7 +122,7 @@
         <builders>
           <hudson.tasks.Shell>
             <command>
-              {{ arm_common_build_start_command }}
+              {{ aarch64_common_build_start_command }}
               if [ -d "{{ item.source_dir }}" ]; then
                 cd "{{ item.source_dir }}"
               else
@@ -144,9 +144,9 @@
     - aarch64_jobs
     - aarch64_cross_compiling_temporary_tools
 
-- name: "Create Jenkins Jobs - Chroot And Building Additional Temporary Tools (ARM)"
+- name: "Create Jenkins Jobs - Chroot And Building Additional Temporary Tools (aarch64)"
   ansible.builtin.uri:
-    url: "{{ jenkins_url }}/job/arm_chroot_and_building_additional_temporary_tools/createItem?name={{ item.name | urlencode }}"
+    url: "{{ jenkins_url }}/job/aarch64_chroot_and_building_additional_temporary_tools/createItem?name={{ item.name | urlencode }}"
     method: POST
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
@@ -162,7 +162,7 @@
         <properties/>
         <scm class="hudson.scm.NullSCM"/>
         <canRoam>true</canRoam>
-        <assignedNode>arm</assignedNode>
+        <assignedNode>aarch64</assignedNode>
         <disabled>false</disabled>
         <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
         <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
@@ -191,9 +191,9 @@
     - aarch64_jobs
     - aarch64_chroot_and_building_additional_temporary_tools
 
-- name: "Create Jenkins Jobs - Basic System Software (ARM)"
+- name: "Create Jenkins Jobs - Basic System Software (aarch64)"
   ansible.builtin.uri:
-    url: "{{ jenkins_url }}/job/arm_basic_system_software/createItem?name={{ item.name | urlencode }}"
+    url: "{{ jenkins_url }}/job/aarch64_basic_system_software/createItem?name={{ item.name | urlencode }}"
     method: POST
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
@@ -209,7 +209,7 @@
         <properties/>
         <scm class="hudson.scm.NullSCM"/>
         <canRoam>true</canRoam>
-        <assignedNode>arm</assignedNode>
+        <assignedNode>aarch64</assignedNode>
         <disabled>false</disabled>
         <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
         <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
@@ -238,9 +238,9 @@
     - aarch64_jobs
     - aarch64_basic_system_software
 
-- name: "Create Jenkins Jobs - Basic System Configuration (ARM)"
+- name: "Create Jenkins Jobs - Basic System Configuration (aarch64)"
   ansible.builtin.uri:
-    url: "{{ jenkins_url }}/job/arm_system_configuration/createItem?name={{ item.name | urlencode }}"
+    url: "{{ jenkins_url }}/job/aarch64_system_configuration/createItem?name={{ item.name | urlencode }}"
     method: POST
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
@@ -256,7 +256,7 @@
         <properties/>
         <scm class="hudson.scm.NullSCM"/>
         <canRoam>true</canRoam>
-        <assignedNode>arm</assignedNode>
+        <assignedNode>aarch64</assignedNode>
         <disabled>false</disabled>
         <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
         <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
