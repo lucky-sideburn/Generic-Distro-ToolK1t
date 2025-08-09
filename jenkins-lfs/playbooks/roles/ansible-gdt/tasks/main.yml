@@ -4,6 +4,10 @@
 - name: "Include arm.yml tasks"
   include_tasks: arm.yml
 
+- name: Print that is building amd64 jobs
+  ansible.builtin.debug:
+    msg: "Building amd64 jobs"
+
 - name: "Create Jenkins Folder"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/createItem?name={{ item | urlencode }}" 
@@ -70,6 +74,8 @@
           <hudson.tasks.Shell>
             <command>
               {{ common_build_start_command }}
+              [ -d "{{ item.source_dir | basename }}" ] \&\& rm -rf "{{ item.source_dir | basename }}"
+
               if [ -d "{{ item.source_dir }}" ]; then
                 cd "{{ item.source_dir }}"
               else
