@@ -12,7 +12,7 @@ GDt (Generic Distro Toolkit) is a work-in-progress project aimed at simplifying 
 
 The project consists of several interconnected components:
 
-´´´bash
+```bash
 
 ubuntu@foobar:~/gdt$ bash start.sh
 
