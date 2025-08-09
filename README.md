@@ -8,19 +8,7 @@ I’m building GNU/Linux following LFS (Linux From Scratch) with Ansible and Jen
 
 gdt (Generic Distro Toolkit) is a work-in-progress.
 
-### Step 0 - Install required tools
-
-#### LFS Build Server
-
-* Jenkins
-* Redmine
-* Enable KVM
-* Libvirt, QEMU
-* Cockpit
-* Redmine (if you want track your progress)
-
-
-#### LFS Numbered Job Jenkins
+### LFS Numbered Job Jenkins
 
 The operating system can be built following Jenkins numbered builds...
 
@@ -195,6 +183,18 @@ Ensure you follow the sequence of numbered folders during the LFS build process.
 ![LFS Numbered Folders](images/numbered_folders.png)
 
 
+### Step 0 - Install required tools
+
+#### LFS Build Server
+
+* Jenkins
+* Redmine
+* Enable KVM
+* Libvirt, QEMU
+* Cockpit
+* Redmine (if you want track your progress)
+
+
 #### LFS Build Node aarch64
 
 ```bash
@@ -232,7 +232,7 @@ ok: [ubuntu-arm-lfs] => {
 }
 ```
 
-### Step 2 - Create Jenkins Folder
+### Step 2 - Create Jenkins Folder and jobs using start.sh
 
 ```bash
 
