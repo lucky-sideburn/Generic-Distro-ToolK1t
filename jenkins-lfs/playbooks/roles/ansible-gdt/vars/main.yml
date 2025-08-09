@@ -82,19 +82,19 @@ dedicated_build_dir: |-
 
 jenkins_jobs:
   amd64_folders:
-    - amd64_cross_toolchain
-    - amd64_cross_compiling_temporary_tools
-    - amd64_chroot_and_building_additional_temporary_tools
-    - amd64_basic_system_software
-    - amd64_system_configuration
-    - amd64_containers
+    - 2.1 - amd64_cross_toolchain
+    - 2.2 - amd64_cross_compiling_temporary_tools
+    - 2.3 - amd64_chroot_and_building_additional_temporary_tools
+    - 2.4 - amd64_basic_system_software
+    - 2.5 - amd64_system_configuration
+    - 2.6 - amd64_containers
   aarch64_folders:
-    - aarch64_cross_toolchain
-    - aarch64_cross_compiling_temporary_tools
-    - aarch64_chroot_and_building_additional_temporary_tools
-    - aarch64_basic_system_software
-    - aarch64_system_configuration
-    - aarch64_containers
+    - 1.1 - aarch64_cross_toolchain
+    - 1.2 - aarch64_cross_compiling_temporary_tools
+    - 1.3 - aarch64_chroot_and_building_additional_temporary_tools
+    - 1.4 - aarch64_basic_system_software
+    - 1.5 - aarch64_system_configuration
+    - 1.6 - aarch64_containers
   setup:
     - Host System Requirements
     - Final Preparation
@@ -127,7 +127,8 @@ jenkins_jobs:
         sudo -i -u ubuntu ansible-playbook -i /home/ubuntu/gdt/jenkins-lfs/inventories/host_prod.ini  /home/ubuntu/gdt/jenkins-lfs/playbooks/start.yml --tags basic_system_software
   
   cross_toolchain:
-    - name: Binutils - Pass 1 (Cross Toolchain)
+    - name: 1.1 - Binutils Pass 1 (Cross Toolchain)
+      version: 2.44
       archive_file: /mnt/lfs/sources/binutils-2.44.tar.xz
       source_dir: /mnt/lfs/sources/binutils-2.44
       description: |
@@ -148,8 +149,9 @@ jenkins_jobs:
         make
         make install
 
-    - name: GCC-14.2.0 - Pass 1 (Cross Toolchain)
+    - name: 1.2 - GCC Pass 1 (Cross Toolchain)
       archive_file: /mnt/lfs/sources/gcc-14.2.0.tar.xz
+      version: 14.2.0
       source_dir: /mnt/lfs/sources/gcc-14.2.0
       description: |
         The GCC (GNU Compiler Collection) is a compiler system that supports various programming languages. This job builds the first pass of GCC, which is essential for compiling other software in the LFS environment.
@@ -201,8 +203,10 @@ jenkins_jobs:
             --enable-languages=c,c++
         make
         make install
-    - name: Linux-6.13.4 API Headers (Cross Toolchain)
+
+    - name: 1.3 - Linux API Headers (Cross Toolchain)
       archive_file: /mnt/lfs/sources/linux-6.13.4.tar.xz
+      version: 6.13.4
       source_dir: /mnt/lfs/sources/linux-6.13.4
       description: |
         The Linux kernel provides the core of the operating system, and this job installs the necessary API headers for building software in the LFS environment. 
@@ -215,8 +219,9 @@ jenkins_jobs:
         find usr/include -type f ! -name '*.h' -delete
         cp -rv usr/include $LFS/usr
 
-    - name: Glibc-2.41 (Cross Toolchain)
+    - name: 1.4 - Glibc (Cross Toolchain)
       archive_file: /mnt/lfs/sources/glibc-2.41.tar.xz
+      version: 2.41
       source_dir: /mnt/lfs/sources/glibc-2.41
       description: |
         The GNU C Library (glibc) is the standard C library for the GNU operating system and provides essential system calls and basic functions for all programs. This job builds and installs glibc, which is crucial for the LFS environment.
@@ -252,7 +257,8 @@ jenkins_jobs:
         echo 'int main(){}' | $LFS_TGT-gcc -xc -
         readelf -l a.out | grep ld-linux
 
-    - name: Libstdc++ from GCC-14.2.0  (Cross Toolchain)
+    - name: 1.5 - Libstdc++ from GCC  (Cross Toolchain)
+      version: 14.2.0
       archive_file: /mnt/lfs/sources/gcc-14.2.0.tar.xz
       source_dir: /mnt/lfs/sources/gcc-14.2.0
       description: |
@@ -278,7 +284,8 @@ jenkins_jobs:
         rm -v $LFS/usr/lib/lib{stdc++{,exp,fs},supc++}.la || echo "Removing libstdc++ libraries failed, continuing anyway"
 
   cross_compiling_temporary_tools:
-    - name: M4-1.4.19 (Cross Compiling Temporary Tools)
+    - name: 1.1 - M4 (Cross Compiling Temporary Tools)
+      version: 1.4.19
       archive_file: /mnt/lfs/sources/m4-1.4.19.tar.xz
       source_dir: /mnt/lfs/sources/m4-1.4.19
       description: |
@@ -293,8 +300,8 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-
-    - name: Ncurses-6.5 (Cross Compiling Temporary Tools)
+    - name: 1.2 - Ncurses (Cross Compiling Temporary Tools)
+      version: 6.5
       archive_file: /mnt/lfs/sources/ncurses-6.5.tar.gz
       source_dir: /mnt/lfs/sources/ncurses-6.5
       description: |
@@ -329,7 +336,8 @@ jenkins_jobs:
               -i $LFS/usr/include/curses.h
 
     # TODO = During ARM build  CFLAGS="-Wno-implicit-function-declaration", why?
-    - name: Bash-5.2.37 (Cross Compiling Temporary Tools)
+    - name: 1.3 - Bash (Cross Compiling Temporary Tools)
+      version: 5.2.37
       archive_file: /mnt/lfs/sources/bash-5.2.37.tar.gz
       source_dir: /mnt/lfs/sources/bash-5.2.37
       description: |
@@ -346,7 +354,8 @@ jenkins_jobs:
         make DESTDIR=$LFS install
         ln -sv bash $LFS/bin/sh || echo "Symlink bash to sh failed, continuing anyway"
 
-    - name: Coreutils-9.6 (Cross Compiling Temporary Tools)
+    - name: 1.4 - Coreutils (Cross Compiling Temporary Tools)
+      version: 9.6
       archive_file: /mnt/lfs/sources/coreutils-9.6.tar.xz
       source_dir: /mnt/lfs/sources/coreutils-9.6
       description: |
@@ -368,7 +377,8 @@ jenkins_jobs:
       # mv -v $LFS/usr/share/man/man1/chroot.1 $LFS/usr/share/man/man8/chroot.8 || echo "Moving chroot.1 to chroot.8 failed, continuing anyway"
       # sed -i 's/"1"/"8"/'                    $LFS/usr/share/man/man8/chroot.8
 
-    - name: Diffutils-3.11 (Cross Compiling Temporary Tools)
+    - name: 1.5 - Diffutils (Cross Compiling Temporary Tools)
+      version: 3.11
       archive_file: /mnt/lfs/sources/diffutils-3.11.tar.xz
       source_dir: /mnt/lfs/sources/diffutils-3.11
       description: |
@@ -383,7 +393,8 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-    - name: File-5.46 (Cross Compiling Temporary Tools)
+    - name: 1.6 - File (Cross Compiling Temporary Tools)
+      version: 5.46
       archive_file: /mnt/lfs/sources/file-5.46.tar.gz
       source_dir: /mnt/lfs/sources/file-5.46
       description: |
@@ -405,7 +416,8 @@ jenkins_jobs:
         make DESTDIR=$LFS install
         rm -v $LFS/usr/lib/libmagic.la
   
-    - name: Findutils-4.10.0 (Cross Compiling Temporary Tools)
+    - name: 1.7 Findutils (Cross Compiling Temporary Tools)
+      version: 4.10.0
       archive_file: /mnt/lfs/sources/findutils-4.10.0.tar.xz
       source_dir: /mnt/lfs/sources/findutils-4.10.0
       description: |
@@ -421,7 +433,8 @@ jenkins_jobs:
           make
           make DESTDIR=$LFS install  
 
-    - name: Gawk-5.3.1 (Cross Compiling Temporary Tools)
+    - name: 1.8 - Gawk (Cross Compiling Temporary Tools)
+      version: 5.3.1
       archive_file: /mnt/lfs/sources/gawk-5.3.1.tar.xz
       source_dir: /mnt/lfs/sources/gawk-5.3.1
       description: |
@@ -437,7 +450,8 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-    - name: Grep-3.11 (Cross Compiling Temporary Tools)
+    - name: 1.9 - Grep (Cross Compiling Temporary Tools)
+      version: 3.11
       archive_file: /mnt/lfs/sources/grep-3.11.tar.xz
       source_dir: /mnt/lfs/sources/grep-3.11
       description: |
@@ -451,8 +465,9 @@ jenkins_jobs:
                     --build=$(./build-aux/config.guess)
         make
         make DESTDIR=$LFS install
-          
-    - name: Gzip-1.13 (Cross Compiling Temporary Tools)
+
+    - name: 1.10 - Gzip (Cross Compiling Temporary Tools)
+      version: 1.13
       archive_file: /mnt/lfs/sources/gzip-1.13.tar.xz
       source_dir: /mnt/lfs/sources/gzip-1.13
       description: |
@@ -465,7 +480,8 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-    - name: Make-4.4.1 (Cross Compiling Temporary Tools)
+    - name: 1.11 - Make (Cross Compiling Temporary Tools)
+      version: 4.4.1
       archive_file: /mnt/lfs/sources/make-4.4.1.tar.gz
       source_dir: /mnt/lfs/sources/make-4.4.1
       description: |
@@ -480,8 +496,9 @@ jenkins_jobs:
                     --build=$(build-aux/config.guess)
         make
         make DESTDIR=$LFS install
-  
-    - name: Patch-2.7.6 (Cross Compiling Temporary Tools)
+
+    - name: 1.12 - Patch (Cross Compiling Temporary Tools)
+      version: 2.7.6
       archive_file: /mnt/lfs/sources/patch-2.7.6.tar.xz
       source_dir: /mnt/lfs/sources/patch-2.7.6
       description: |
@@ -496,7 +513,8 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-    - name: Sed-4.9 (Cross Compiling Temporary Tools)
+    - name: 1.13 - Sed (Cross Compiling Temporary Tools)
+      version: 4.9 
       archive_file: /mnt/lfs/sources/sed-4.9.tar.xz
       source_dir: /mnt/lfs/sources/sed-4.9
       description: |
@@ -511,7 +529,8 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
 
-    - name: Tar-1.35 (Cross Compiling Temporary Tools)
+    - name: 1.14 - Tar (Cross Compiling Temporary Tools)
+      version: 1.35
       archive_file: /mnt/lfs/sources/tar-1.35.tar.xz
       source_dir: /mnt/lfs/sources/tar-1.35
       description: |
@@ -525,8 +544,9 @@ jenkins_jobs:
                     --build=$(build-aux/config.guess)
         make
         make DESTDIR=$LFS install
-  
-    - name: Xz-5.6.4 (Cross Compiling Temporary Tools)
+
+    - name: 1.15 - Xz (Cross Compiling Temporary Tools)
+      version: 5.6.4
       archive_file: /mnt/lfs/sources/xz-5.6.4.tar.xz
       source_dir: /mnt/lfs/sources/xz-5.6.4
       description: |
@@ -543,8 +563,9 @@ jenkins_jobs:
         make
         make DESTDIR=$LFS install
         rm -v $LFS/usr/lib/liblzma.la
-  
-    - name: Binutils-2.44 - Pass 2 (Cross Compiling Temporary Tools)
+
+    - name: 1.16 - Binutils (Cross Compiling Temporary Tools)
+      version: 2.44
       buid_tool: true
       archive_file: /mnt/lfs/sources/binutils-2.44.tar.xz
       source_dir: /mnt/lfs/sources/binutils-2.44
@@ -576,7 +597,7 @@ jenkins_jobs:
         make DESTDIR=$LFS install
         rm -v $LFS/usr/lib/lib{bfd,ctf,ctf-nobfd,opcodes,sframe}.{a,la}
 
-    - name: GCC-14.2.0 - Pass 2 (Cross Compiling Temporary Tools)
+    - name: 1.16 - GCC Pass 2 (Cross Compiling Temporary Tools)
       archive_file: /mnt/lfs/sources/gcc-14.2.0.tar.xz
       source_dir: /mnt/lfs/sources/gcc-14.2.0
       buid_tool: true
@@ -629,7 +650,8 @@ jenkins_jobs:
             ln -sv gcc $LFS/usr/bin/cc
   
   chroot_and_building_additional_temporary_tools:
-    - name: Changing Ownership (Chroot and Building Additional Temporary Tools)
+    - name: 1.1 - *** Changing Ownership and Preparing Virtual Kernel File Systems (Chroot and Building Additional Temporary Tools) ***
+      version: 1.0
       archive_file: /mnt/lfs/sources/empty.tar.xz
       source_dir: /mnt/lfs/sources
       description: |
@@ -734,7 +756,8 @@ jenkins_jobs:
         {{ chroot_start_command }} -c 'chmod -v 664  /var/log/lastlog'
         {{ chroot_start_command }} -c 'chmod -v 600  /var/log/btmp'
 
-    - name: Gettext-0.24 (Chroot and Building Additional Temporary Tools)
+    - name: 1.2 - Gettext (Chroot and Building Additional Temporary Tools)
+      version: 0.24
       archive_file: /sources/gettext-0.24.tar.xz
       source_dir: /sources/gettext-0.24
       description: |
@@ -752,7 +775,8 @@ jenkins_jobs:
           cp -v gettext-tools/src/{msgfmt,msgmerge,xgettext} /usr/bin
         '
 
-    - name: Bison-3.8.2 (Chroot and Building Additional Temporary Tools)
+    - name: 1.3 - Bison (Chroot and Building Additional Temporary Tools)
+      version: 3.8.2
       archive_file: /sources/bison-3.8.2.tar.xz
       source_dir: /sources/bison-3.8.2
       description: |
@@ -771,7 +795,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Perl-5.40.1 (Chroot and Building Additional Temporary Tools)
+    - name: 1.4 - Perl (Chroot and Building Additional Temporary Tools)
+      version: 5.40.1
       archive_file: /sources/perl-5.40.1.tar.xz
       source_dir: /sources/perl-5.40.1
       description: |
@@ -798,7 +823,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Python-3.13.2 (Chroot and Building Additional Temporary Tools)
+    - name: 1.5 - Python (Chroot and Building Additional Temporary Tools)
+      version: 3.13.2
       archive_file: /sources/Python-3.13.2.tar.xz
       source_dir: /sources/Python-3.13.2
       exec_command: echo
@@ -817,8 +843,9 @@ jenkins_jobs:
           make
           make install
         '
-      
-    - name: Texinfo-7.2 (Chroot and Building Additional Temporary Tools)
+
+    - name: 1.6 - Texinfo (Chroot and Building Additional Temporary Tools)
+      version: 7.2
       archive_file: /sources/texinfo-7.2.tar.xz
       source_dir: /sources/texinfo-7.2
       exec_command: echo
@@ -836,7 +863,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Util-linux-2.40.4 (Chroot and Building Additional Temporary Tools)
+    - name: 1.7 - Util-linux (Chroot and Building Additional Temporary Tools)
+      version: 2.40.4
       archive_file: /sources/util-linux-2.40.4.tar.xz
       source_dir: /sources/util-linux-2.40.4
       description: |
@@ -868,7 +896,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Cleaning up and Saving the Temporary System (Chroot and Building Additional Temporary Tools)
+    - name: 1.8 - *** Cleaning up and Saving the Temporary System (Chroot and Building Additional Temporary Tools) ***
+      version: 1.0
       archive_file: /mnt/lfs/sources/empty.tar.xz
       source_dir: /mnt/lfs/sources
       build_tool: false
@@ -880,13 +909,14 @@ jenkins_jobs:
       jenkins_job_url: http://localhost:8080/job/chroot_and_building_additional_temporary_tools/job/Cleaning%20up%20and%20Saving%20the%20Temporary%20System%20(Chroot%20and%20Building%20Additional%20Temporary%20Tools)/
       exec_command: |
         {{ chroot_start_command }} -c '
-        rm -rf /usr/share/{info,man,doc}/*'
-        find /usr/{lib,libexec} -name \*.la -delete'
-        rm -rf /tools
+        rm -rf /usr/share/{info,man,doc}/*
+        find /usr/{lib,libexec} -name \*.la -delete
+        echo "ATTENTION!! Think if you are ready for delete /tools directory or not!"
         '
-
+  
   basic_system_software:
-    - name: Man-pages-6.12 (Basic System Software)
+    - name: 1.1 - Man-pages (Basic System Software)
+      version: 6.12
       archive_file: /sources/man-pages-6.12.tar.xz  
       source_dir: /sources/man-pages-6.12
       category:
@@ -903,7 +933,8 @@ jenkins_jobs:
           make -R GIT=false prefix=/usr install
         '
 
-    - name: Iana-Etc-20250123 (Basic System Software)
+    - name: 1.2 - Iana-Etc (Basic System Software)
+      version: 20250123
       archive_file: /sources/iana-etc-20250123.tar.xz
       source_dir: /sources/iana-etc-20250123
       description: |
@@ -919,7 +950,8 @@ jenkins_jobs:
           cp services protocols /etc
         '
 
-    - name: Glibc-2.41 (Basic System Software)
+    - name: 1.3 - Glibc (Basic System Software)
+      version: 2.41
       archive_file: /sources/glibc-2.41.tar.xz
       source_dir: /sources/glibc-2.41
       exec_command: echo
@@ -1024,41 +1056,8 @@ jenkins_jobs:
           echo \"/usr/local/lib\" >> /etc/ld.so.conf
           echo \"/opt/lib\" >> /etc/ld.so.conf
           "
-    - name: glib-2.84.3 (Basic System Software)
-      archive_file: /sources/glib-2.84.3.tar.xz
-      source_dir: /sources/glib-2.84.3
-      exec_command: echo
-      description: |
-        Glib is a low-level core library that forms the basis for libraries such as GTK+ and GStreamer. This job builds Glib, which is essential for many applications in the LFS environment.
-      category:
-        This job is part of the basic system software setup, specifically for building Glib.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Glib-2.84.3
-      build_tool: true
-      build_command: |
-        cd /mnt/lfs/sources
-        curl -O https://www.linuxfromscratch.org/patches/blfs/svn/glib-skip_warnings-1.patch
-        rm -rf /mnt/lfs/sources/glib-2.84.3 || echo "Removing glib-2.84.3 directory failed, continuing anyway"
-        tar -xf ./glib-2.84.3.tar.xz
-        cd glib-2.84.3
-        patch -Np1 -i ../glib-skip_warnings-1.patch
-
-        {{ chroot_start_command }} -c '
-          export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/sources/glib-2.84.3/build/gio:/sources/glib-2.84.3/build/glib/:/sources/glib-2.84.3/build/gobject"
-          cd /sources/glib-2.84.3
-          mkdir build
-          cd    build
-          export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
-          meson setup ..                  \
-                  --prefix=/usr             \
-                  --buildtype=release       \
-                  -D introspection=disabled \
-                  -D glib_debug=disabled    \
-                  -D man-pages=disabled      \
-                  -D sysprof=disabled
-            ninja
-            ninja install
-        '
-    - name: Zlib-1.3.1 (Basic System Software)
+    - name: 1.4 - Zlib (Basic System Software)
+      version: 1.3.1
       archive_file: /sources/zlib-1.3.1.tar.xz
       source_dir: /sources/zlib-1.3.1
       exec_command: echo
@@ -1077,7 +1076,8 @@ jenkins_jobs:
           rm -fv /usr/lib/libz.a
         '
 
-    - name: Bzip2-1.0.8 (Basic System Software)
+    - name: 1.5 - Bzip2 (Basic System Software)
+      version: 1.0.8
       archive_file: /sources/bzip2-1.0.8.tar.gz
       source_dir: /sources/bzip2-1.0.8
       exec_command: echo
@@ -1109,7 +1109,8 @@ jenkins_jobs:
         '
 
 
-    - name: Xz-5.6.4 (Basic System Software)
+    - name: 1.6 - Xz (Basic System Software)
+      version: 5.6.4
       archive_file: /sources/xz-5.6.4.tar.xz
       source_dir: /sources/xz-5.6.4
       exec_command: echo
@@ -1132,7 +1133,9 @@ jenkins_jobs:
           mv -v /usr/lib/liblzma.so.* /lib
           ln -svf ../../lib/$(readlink /usr/lib/liblzma.so) /usr/lib/liblzma.so
         '
-    - name: Lz4-1.10.0 (Basic System Software)
+
+    - name: 1.7 - Lz4 (Basic System Software)
+      version: 1.10.0
       archive_file: /sources/lz4-1.10.0.tar.gz
       source_dir: /sources/lz4-1.10.0
       exec_command: echo
@@ -1149,7 +1152,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Zstd-1.5.7 (Basic System Software)
+    - name: 1.8 - Zstd (Basic System Software)
+      version: 1.5.7
       archive_file: /sources/zstd-1.5.7.tar.gz
       source_dir: /sources/zstd-1.5.7
       exec_command: echo
@@ -1166,7 +1170,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: File-5.46 (Basic System Software)
+    - name: 1.9 - File (Basic System Software)
+      version: 5.46
       archive_file: /sources/file-5.46.tar.gz
       source_dir: /sources/file-5.46
       exec_command: echo
@@ -1184,7 +1189,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Readline-8.2.13 (Basic System Software)
+    - name: 1.10 - Readline (Basic System Software)
+      version: 8.2.13
       archive_file: /sources/readline-8.2.13.tar.gz
       source_dir: /sources/readline-8.2.13  
       exec_command: echo  
@@ -1205,7 +1211,8 @@ jenkins_jobs:
           ln -sfv ../../lib/$(readlink /usr/lib/libhistory.so) /usr/lib/libhistory.so
         '
 
-    - name: M4-1.4.19 (Basic System Software)
+    - name: 1.11 - M4 (Basic System Software)
+      version: 1.4.19
       archive_file: /sources/m4-1.4.19.tar.xz
       source_dir: /sources/m4-1.4.19
       description: |
@@ -1223,7 +1230,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Bc-7.0.3 (Basic System Software)
+    - name: 1.12 - Bc (Basic System Software)
+      version: 7.0.3
       archive_file: /sources/bc-7.0.3.tar.xz
       source_dir: /sources/bc-7.0.3
       exec_command: echo
@@ -1242,7 +1250,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Flex-2.6.4 (Basic System Software)
+    - name: 1.13 - Flex (Basic System Software)
+      version: 2.6.4
       archive_file: /sources/flex-2.6.4.tar.gz
       source_dir: /sources/flex-2.6.4
       exec_command: echo
@@ -1261,7 +1270,8 @@ jenkins_jobs:
           ln -sv flex /usr/bin/lex
         '
 
-    - name: Tcl-8.6.16 (Basic System Software)
+    - name: 1.14 - Tcl (Basic System Software)
+      version: 8.6.16
       archive_file: /sources/tcl8.6.16-src.tar.gz
       source_dir: /sources/tcl8.6.16
       exec_command: echo
@@ -1282,7 +1292,8 @@ jenkins_jobs:
           ln -sfv tclsh8.6 /usr/bin/tclsh
         '
 
-    - name: Expect-5.45.4 (Basic System Software)
+    - name: 1.15 - Expect (Basic System Software)
+      version: 5.45.4
       archive_file: /sources/expect5.45.4.tar.gz
       source_dir: /sources/expect5.45.4
       description: |
@@ -1312,7 +1323,8 @@ jenkins_jobs:
           ln -svf expect5.45.4/libexpect5.45.4.so /usr/lib
         '
 
-    - name: DejaGNU-1.6.3 (Basic System Software)
+    - name: 1.16 - DejaGNU (Basic System Software)
+      version: 1.6.3
       archive_file: /sources/dejagnu-1.6.3.tar.gz
       source_dir: /sources/dejagnu-1.6.3
       description: |
@@ -1329,7 +1341,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Pkgconf-2.3.0 (Basic System Software)
+    - name: 1.17 - Pkgconf (Basic System Software)
+      version: 2.3.0
       archive_file: /sources/pkgconf-2.3.0.tar.xz
       source_dir: /sources/pkgconf-2.3.0
       exec_command: echo
@@ -1347,7 +1360,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Binutils-2.44 (Basic System Software)
+    - name: 1.18 - Binutils (Basic System Software)
+      version: 2.44
       archive_file: /sources/binutils-2.44.tar.xz
       source_dir: /sources/binutils-2.44
       exec_command: echo
@@ -1368,7 +1382,8 @@ jenkins_jobs:
           rm -fv /usr/lib/lib{bfd,ctf,ctf-nobfd,opcodes,sframe}.a
         '
 
-    - name: GMP-6.3.0 (Basic System Software)
+    - name: 1.19 - GMP (Basic System Software)
+      version: 6.3.0
       archive_file: /sources/gmp-6.3.0.tar.xz
       source_dir: /sources/gmp-6.3.0
       description: |
@@ -1388,7 +1403,8 @@ jenkins_jobs:
           make install-html
         '
 
-    - name: MPFR-4.2.1 (Basic System Software)
+    - name: 1.20 - MPFR (Basic System Software)
+      version: 4.2.1
       archive_file: /sources/mpfr-4.2.1.tar.xz
       source_dir: /sources/mpfr-4.2.1
       description: |
@@ -1408,7 +1424,8 @@ jenkins_jobs:
           make install-html
         '
 
-    - name: MPC-1.3.1 (Basic System Software)
+    - name: 1.21 - MPC (Basic System Software)
+      version: 1.3.1
       archive_file: /sources/mpc-1.3.1.tar.gz
       source_dir: /sources/mpc-1.3.1
       exec_command: echo
@@ -1428,7 +1445,8 @@ jenkins_jobs:
           make install-html
         '
 
-    - name: Attr-2.5.2 (Basic System Software)
+    - name: 1.22 - Attr (Basic System Software)
+      version: 2.5.2
       archive_file: /sources/attr-2.5.2.tar.gz
       source_dir: /sources/attr-2.5.2
       description: |
@@ -1446,8 +1464,9 @@ jenkins_jobs:
           make install
         '
 
-    - name: Acl-2.3.2 (Basic System Software)
-      archive_file: /sources/acl-2.3.2.tar.gz
+    - name: 1.23 - Acl (Basic System Software)
+      version: 2.3.2
+      archive_file: /sources/acl-2.3.2.tar.xz
       source_dir: /sources/acl-2.3.2
       exec_command: echo
       description: |
@@ -1464,7 +1483,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Libcap-2.73 (Basic System Software)
+    - name: 1.24 - Libcap (Basic System Software)
+      version: 2.73
       archive_file: /sources/libcap-2.73.tar.xz
       source_dir: /sources/libcap-2.73
       exec_command: echo
@@ -1481,7 +1501,8 @@ jenkins_jobs:
           make lib=lib install
         '
 
-    - name: Libxcrypt-4.4.38 (Basic System Software)
+    - name: 1.25 - Libxcrypt-4.4.38 (Basic System Software)
+      version: 4.4.38
       archive_file: /sources/libxcrypt-4.4.38.tar.xz
       source_dir: /sources/libxcrypt-4.4.38
       exec_command: echo
@@ -1499,7 +1520,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Shadow-4.17.3 (Basic System Software)
+    - name: 1.26 - Shadow (Basic System Software)
+      version: 4.17.3
       archive_file: /sources/shadow-4.17.3.tar.xz
       source_dir: /sources/shadow-4.17.3
       exec_command: echo
@@ -1510,9 +1532,6 @@ jenkins_jobs:
       jenkins_job_url: http://localhost:8080/job/basic_system_software/Shadow-4.17.3
       build_tool: true
       build_command: |
-        rm -rf /mnt/lfs/sources/shadow-4.17.3 || echo "Removing shadow-4.17.3 directory failed, continuing anyway"
-        cd /mnt/lfs/sources
-        tar -xf ./shadow-4.17.3.tar.xz
         cp /mnt/lfs/sources/shadow-4.17.3.sh /mnt/lfs/sources/shadow-4.17.3/
 
         {{ chroot_start_command }} -c '
@@ -1520,7 +1539,8 @@ jenkins_jobs:
           ./shadow-4.17.3.sh
         '
 
-    - name: GCC-14.2.0 (Basic System Software)
+    - name: 1.27 - GCC (Basic System Software)
+      version: 14.2.0
       archive_file: /sources/gcc-14.2.0.tar.xz
       source_dir: /sources/gcc-14.2.0
       description: |
@@ -1531,9 +1551,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        sudo rm -rf /mnt/lfs/sources/gcc-14.2.0 || echo "Removing gcc-14.2.0 directory failed, continuing anyway"
-        cd /mnt/lfs/sources
-        tar -xf ./gcc-14.2.0.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/gcc-14.2.0
           tar -xf ../mpfr-4.2.1.tar.xz
@@ -1571,7 +1588,8 @@ jenkins_jobs:
 
         '
 
-    - name: Ncurses-6.5 (Basic System Software)
+    - name: 1.28 - Ncurses (Basic System Software)
+      version: 6.5
       archive_file: /sources/ncurses-6.5.tar.gz
       source_dir: /sources/ncurses-6.5
       description: |
@@ -1602,7 +1620,8 @@ jenkins_jobs:
           cp -v -R doc/* /usr/share/doc/ncurses-6.5
         '
 
-    - name: Sed-4.9 (Basic System Software)
+    - name: 1.29 - Sed (Basic System Software)
+      version: 4.9
       archive_file: /sources/sed-4.9.tar.xz
       source_dir: /sources/sed-4.9
       description: |
@@ -1613,9 +1632,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        rm -rf /mnt/lfs/sources/sed-4.9 || echo "Removing sed-4.9 directory failed, continuing anyway"
-        cd /mnt/lfs/sources
-        tar -xf ./sed-4.9.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/sed-4.9
           ./configure --prefix=/usr
@@ -1627,7 +1643,8 @@ jenkins_jobs:
           install -m644 doc/sed.html /usr/share/doc/sed-4.9
         '
 
-    - name: Psmisc-23.7 (Basic System Software)
+    - name: 1.30 - Psmisc (Basic System Software)
+      version: 23.7
       archive_file: /sources/psmisc-23.7.tar.xz
       source_dir: /sources/psmisc-23.7
       description: |
@@ -1645,7 +1662,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Gettext-0.24 (Basic System Software)
+    - name: 1.31 - Gettext (Basic System Software)
+      version: 0.24
       archive_file: /sources/gettext-0.24.tar.xz
       source_dir: /sources/gettext-0.24
       description: |
@@ -1663,7 +1681,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Bison-3.8.2 (Basic System Software)
+    - name: 1.32 - Bison (Basic System Software)
+      version: 3.8.2
       archive_file: /sources/bison-3.8.2.tar.xz
       source_dir: /sources/bison-3.8.2
       description: |
@@ -1681,7 +1700,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Grep-3.11 (Basic System Software)
+    - name: 1.33 - Grep (Basic System Software)
+      version: 3.11
       archive_file: /sources/grep-3.11.tar.xz
       source_dir: /sources/grep-3.11
       description: |
@@ -1692,9 +1712,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        rm -rf /mnt/lfs/sources/grep-3.11 || echo "Removing grep-3.11 directory failed, continuing anyway"
-        cd /mnt/lfs/sources
-        tar -xf ./grep-3.11.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/grep-3.11
           sed -i "s/echo/#echo/" src/egrep.sh
@@ -1703,7 +1720,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Bash-5.2.37 (Basic System Software)
+    - name: 1.34 - Bash-5.2.37 (Basic System Software)
+      version: 5.2.37
       archive_file: /sources/bash-5.2.37.tar.gz
       source_dir: /sources/bash-5.2.37
       exec_command: echo
@@ -1714,9 +1732,6 @@ jenkins_jobs:
       jenkins_job_url: http://localhost:8080/job/basic_system_software/Bash-5.2.37
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/sources/bash-5.2.37 || echo "Removing bash-5.2.37 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/bash-5.2.37.tar.gz
         {{ chroot_start_command }} -c '
           cd /sources/bash-5.2.37
           ./configure --prefix=/usr --docdir=/usr/share/doc/bash-5.2.37 --without-bash-malloc --with-installed-readline
@@ -1728,7 +1743,8 @@ jenkins_jobs:
           ln -sv bash /bin/sh
         '
 
-    - name: Libtool-2.5.4 (Basic System Software)
+    - name: 1.35 - Libtool (Basic System Software)
+      version: 2.5.4
       archive_file: /sources/libtool-2.5.4.tar.xz
       source_dir: /sources/libtool-2.5.4
       exec_command: echo
@@ -1746,7 +1762,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: GDBM-1.24 (Basic System Software)
+    - name: 1.36 - GDBM (Basic System Software)
+      version: 1.24
       archive_file: /sources/gdbm-1.24.tar.gz
       source_dir: /sources/gdbm-1.24
       exec_command: echo
@@ -1764,7 +1781,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Gperf-3.1 (Basic System Software)
+    - name: 1.37 - Gperf (Basic System Software)
+      version: 3.1
       archive_file: /sources/gperf-3.1.tar.gz
       source_dir: /sources/gperf-3.1
       exec_command: echo
@@ -1782,7 +1800,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Expat-2.7.1(Basic System Software)
+    - name: 1.38 - Expat (Basic System Software) (OPTIONAL)
+      version: 2.7.1
       archive_file: /sources/expat-2.7.1.tar.xz
       source_dir: /sources/expat-2.7.1
       exec_command: echo
@@ -1804,7 +1823,8 @@ jenkins_jobs:
           install -v -m644 doc/*.{html,css} /usr/share/doc/expat-2.7.1
         '
 
-    - name: Inetutils-2.6 (Basic System Software)
+    - name: 1.39 - Inetutils (Basic System Software)
+      version: 2.6
       archive_file: /sources/inetutils-2.6.tar.xz
       source_dir: /sources/inetutils-2.6
       exec_command: echo
@@ -1822,7 +1842,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Less-668 (Basic System Software)
+    - name: 1.40 - Less (Basic System Software)
+      version: 668
       archive_file: /sources/less-668.tar.gz
       source_dir: /sources/less-668
       exec_command: echo
@@ -1840,7 +1861,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Perl-5.40.1 (Basic System Software)
+    - name: 1.41 - Perl (Basic System Software)
+      version: 5.40.1
       archive_file: /sources/perl-5.40.1.tar.xz
       source_dir: /sources/perl-5.40.1
       exec_command: echo
@@ -1858,7 +1880,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: XML_Parser-2.47 (Basic System Software)
+    - name: 1.42 - XML::Parser (Basic System Software)
+      version: 2.47
       archive_file: /sources/XML-Parser-2.47.tar.gz
       source_dir: /sources/XML-Parser-2.47
       exec_command: echo
@@ -1877,7 +1900,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Intltool-0.51.0 (Basic System Software)
+    - name: 1.43 - Intltool (Basic System Software)
+      version: 0.51.0
       archive_file: /sources/intltool-0.51.0.tar.gz
       source_dir: /sources/intltool-0.51.0
       description: |
@@ -1895,7 +1919,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Autoconf-2.72 (Basic System Software)
+    - name: 1.44 - Autoconf (Basic System Software)
+      version: 2.72
       archive_file: /sources/autoconf-2.72.tar.xz
       source_dir: /sources/autoconf-2.72
       description: |
@@ -1913,7 +1938,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Automake-1.17 (Basic System Software)
+    - name: 1.45 - Automake (Basic System Software)
+      version: 1.17
       archive_file: /sources/automake-1.17.tar.xz
       source_dir: /sources/automake-1.17
       description: |
@@ -1931,7 +1957,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: OpenSSL-3.4.1 (Basic System Software)
+    - name: 1.46 - OpenSSL (Basic System Software)
+      version: 3.4.1
       archive_file: /sources/openssl-3.4.1.tar.gz
       source_dir: /sources/openssl-3.4.1
       description: |
@@ -1948,7 +1975,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Libelf from Elfutils-0.192 (Basic System Software)
+    - name: 1.47 - Libelf (Basic System Software)
+      version: 0.192
       archive_file: /sources/elfutils-0.192.tar.bz2
       source_dir: /sources/elfutils-0.192
       description: |
@@ -1959,10 +1987,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        rm -rf /mnt/lfs/sources/elfutils-0.192 || echo "Removing elfutils-0.192 directory failed, continuing anyway"
-        cd /mnt/lfs/sources
-        tar -xvf ./elfutils-0.192.tar.bz2
-                
         {{ chroot_start_command }} -c '
           cd /sources/elfutils-0.192
           ./configure --prefix=/usr                \
@@ -1976,7 +2000,8 @@ jenkins_jobs:
           rm /usr/lib/libelf.a
         '
 
-    - name: Libffi-3.4.7 (Basic System Software)
+    - name: 1.48 - Libffi (Basic System Software)
+      version: 3.4.7
       archive_file: /sources/libffi-3.4.7.tar.gz
       source_dir: /sources/libffi-3.4.7
       exec_command: echo
@@ -1994,7 +2019,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Python-3.13.2 (Basic System Software)
+    - name: 1.49 - Python (Basic System Software)
+      version: 3.13.2
       archive_file: /sources/Python-3.13.2.tar.xz
       source_dir: /sources/Python-3.13.2
       exec_command: echo
@@ -2006,9 +2032,6 @@ jenkins_jobs:
       jenkins_job_url: http://localhost:8080/job/basic_system_software/Python-3.13.2
       # Ensure zlib is built before Python, as Python depends on it
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/sources/lfs/Python-3.13.2 || echo "Removing Python-3.13.2 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/Python-3.13.2.tar.xz
         {{ chroot_start_command }} -c '
           if ! ldconfig -p | grep -q libz; then
             echo "Error: zlib is not present. Please build zlib before proceeding."
@@ -2029,7 +2052,8 @@ jenkins_jobs:
           fi
         '
 
-    - name: Flit-Core-3.11.0 (Basic System Software)
+    - name: 1.50 - Flit-Core (Basic System Software)
+      version: 3.11.0
       archive_file: /sources/flit_core-3.11.0.tar.gz
       source_dir: /sources/flit_core-3.11.0
       description: |
@@ -2045,7 +2069,8 @@ jenkins_jobs:
           python3 -m pip install .
         '
 
-    - name: Wheel-0.45.1 (Basic System Software)
+    - name: 1.51 - Wheel (Basic System Software)
+      version: 0.45.1
       archive_file: /sources/wheel-0.45.1.tar.gz
       description: |
         Wheel is a built-package format for Python that helps in distributing and installing Python packages. This job builds Wheel, which is essential for packaging Python projects in the LFS environment.
@@ -2061,8 +2086,9 @@ jenkins_jobs:
           pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
           pip3 install --no-index --find-links dist wheel
         '
-  
-    - name: Setuptools-75.8.1 (Basic System Software)
+
+    - name: 1.52 - Setuptools (Basic System Software)
+      version: 75.8.1
       archive_file: /sources/setuptools-75.8.1.tar.gz
       source_dir: /sources/setuptools-75.8.1
       description: |
@@ -2078,7 +2104,8 @@ jenkins_jobs:
           python3 -m pip install .
         '
 
-    - name: Ninja-1.12.1 (Basic System Software)
+    - name: 1.53 - Ninja (Basic System Software)
+      version: 1.12.1
       archive_file: /sources/ninja-1.12.1.tar.gz
       source_dir: /sources/ninja-1.12.1
       description: |
@@ -2095,7 +2122,8 @@ jenkins_jobs:
           install -vm755 ninja /usr/bin/
         '
 
-    - name: Meson-1.7.0 (Basic System Software)
+    - name: 1.54 - Meson (Basic System Software)
+      version: 1.7.0
       archive_file: /sources/meson-1.7.0.tar.gz
       source_dir: /sources/meson-1.7.0
       description: |
@@ -2114,7 +2142,8 @@ jenkins_jobs:
           install -vDm644 data/shell-completions/zsh/_meson /usr/share/zsh/site-functions/_meson
         '
 
-    - name: Kmod-34 (Basic System Software)
+    - name: 1.55 - Kmod (Basic System Software)
+      version: 34
       archive_file: /sources/kmod-34.tar.xz
       source_dir: /sources/kmod-34
       description: |
@@ -2125,9 +2154,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        sudo rm -rf /mnt/lfs/sources/kmod-34 || echo "Removing kmod-34 directory failed, continuing anyway"
-        cd /mnt/lfs/sources
-        tar -xf /mnt/lfs/sources/kmod-34.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/kmod-34
           export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
@@ -2143,7 +2169,8 @@ jenkins_jobs:
           ninja install
         '
 
-    - name: Coreutils-9.6 (Basic System Software)
+    - name: 1.56 - Coreutils (Basic System Software)
+      version: 9.6
       archive_file: /sources/coreutils-9.6.tar.xz
       source_dir: /sources/coreutils-9.6
       exec_command: echo
@@ -2154,10 +2181,6 @@ jenkins_jobs:
         This job is part of the basic system software setup, specifically for building Coreutils.
       jenkins_job_url: http://localhost:8080/job/basic_system_software/Coreutils-9.6
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/sources/lfs/coreutils-9.6 || echo "Removing coreutils-9.6 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/coreutils-9.6.tar.xz
-        cd /mnt/lfs/sources/coreutils-9.6
 
         curl -O https://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-9.6-i18n-1.patch
 
@@ -2178,7 +2201,8 @@ jenkins_jobs:
           sed -i 's/"1"/"8"/' /usr/share/man/man8/chroot.8
           '
 
-    - name: Check-0.15.2 (Basic System Software)
+    - name: 1.57 - Check (Basic System Software)
+      version: 0.15.2
       archive_file: /sources/check-0.15.2.tar.gz
       source_dir: /sources/check-0.15.2
       description: |
@@ -2196,7 +2220,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Diffutils-3.11 (Basic System Software)
+    - name: 1.58 - Diffutils (Basic System Software)
+      version: 3.11
       source_dir: /sources/diffutils-3.11
       exec_command: echo
       description: |
@@ -2207,10 +2232,6 @@ jenkins_jobs:
       build_tool: true
       archive_file: /sources/diffutils-3.11.tar.xz
       build_command: |
-        rm -rf /mnt/lfs/sources/diffutils-3.11 || echo "Removing diffutils-3.11 directory failed, continuing anyway"
-        cd /mnt/lfs/sources
-        tar -xf /mnt/lfs/sources/diffutils-3.11.tar.xz
-
         {{ chroot_start_command }} -c '
           cd /sources/diffutils-3.11
           ./configure --prefix=/usr
@@ -2219,7 +2240,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Gawk-5.3.1 (Basic System Software)
+    - name: 1.59 - Gawk (Basic System Software)
+      version: 5.3.1
       archive_file: /sources/gawk-5.3.1.tar.xz
       source_dir: /sources/gawk-5.3.1
       exec_command: echo
@@ -2237,7 +2259,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Findutils-4.10.0 (Basic System Software)
+    - name: 1.60 - Findutils (Basic System Software)
+      version: 4.10.0
       archive_file: /sources/findutils-4.10.0.tar.xz
       source_dir: /sources/findutils-4.10.0
       description: |
@@ -2248,9 +2271,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        rm -rf /mnt/lfs/sources/findutils-4.10.0 || echo "Removing findutils-4.10.0 directory failed, continuing anyway"
-        cd /mnt/lfs/sources
-        tar -xf /mnt/lfs/sources/findutils-4.10.0.tar.xz      
         {{ chroot_start_command }} -c '
           cd /sources/findutils-4.10.0
           ./configure --prefix=/usr --localstatedir=/var/lib/locate
@@ -2259,7 +2279,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Groff-1.23.0 (Basic System Software)
+    - name: 1.61 - Groff (Basic System Software)
+      version: 1.23.0
       archive_file: /sources/groff-1.23.0.tar.gz
       source_dir: /sources/groff-1.23.0
       description: |
@@ -2278,7 +2299,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: GRUB-2.12 (Basic System Software)
+    - name: 1.62 - GRUB (Basic System Software)
+      version: 2.12
       archive_file: /sources/grub-2.12.tar.xz
       source_dir: /sources/grub-2.12
       description: |
@@ -2289,9 +2311,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        rm -rf /mnt/lfs/sources/grub-2.12 || echo "Removing grub-2.12 directory failed, continuing anyway"
-        cd /mnt/lfs/sources
-        tar -xf /mnt/lfs/sources/grub-2.12.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/grub-2.12
           echo depends bli part_gpt > grub-core/extra_deps.lst
@@ -2305,7 +2324,8 @@ jenkins_jobs:
           mv -v /etc/bash_completion.d/grub /usr/share/bash-completion/completions
         '
 
-    - name: Gzip-1.13 (Basic System Software)
+    - name: 1.63 - Gzip (Basic System Software)
+      version: 1.13
       archive_file: /sources/gzip-1.13.tar.xz
       source_dir: /sources/gzip-1.13
       description: |
@@ -2323,7 +2343,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: IPRoute2-6.13.0 (Basic System Software)
+    - name: 1.64 - IPRoute2 (Basic System Software)
+      version: 6.13.0
       archive_file: /sources/iproute2-6.13.0.tar.xz
       source_dir: /sources/iproute2-6.13.0
       description: |
@@ -2341,7 +2362,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Kbd-2.7.1 (Basic System Software)
+    - name: 1.65 - Kbd (Basic System Software)
+      version: 2.7.1
       archive_file: /sources/kbd-2.7.1.tar.xz
       source_dir: /sources/kbd-2.7.1
       description: |
@@ -2359,7 +2381,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Libpipeline-1.5.8 (Basic System Software)
+    - name: 1.66 - Libpipeline (Basic System Software)
+      version: 1.5.8
       archive_file: /sources/libpipeline-1.5.8.tar.gz
       source_dir: /sources/libpipeline-1.5.8
       description: |
@@ -2377,7 +2400,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Make-4.4.1 (Basic System Software)
+    - name: 1.67 - Make (Basic System Software)
+      version: 4.4.1
       archive_file: /sources/make-4.4.1.tar.gz
       source_dir: /sources/make-4.4.1
       description: |
@@ -2395,7 +2419,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Patch-2.7.6 (Basic System Software)
+    - name: 1.68 - Patch (Basic System Software)
+      version: 2.7.6
       archive_file: /sources/patch-2.7.6.tar.xz
       source_dir: /sources/patch-2.7.6
       description: |
@@ -2417,7 +2442,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Tar-1.35 (Basic System Software)
+    - name: 1.69 - Tar (Basic System Software)
+      version: 1.35
       archive_file: /sources/tar-1.35.tar.xz
       description: |
         Tar is a utility for creating and extracting archive files. This job builds Tar, which is essential for file archiving in the LFS environment.
@@ -2435,7 +2461,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Texinfo-7.2 (Basic System Software)
+    - name: 1.70 - Texinfo (Basic System Software)
+      version: 7.2
       archive_file: /sources/texinfo-7.2.tar.xz
       source_dir: /sources/texinfo-7.2
       description: |
@@ -2453,7 +2480,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Vim-9.1.1166 (Basic System Software)
+    - name: 1.71 - Vim (Basic System Software)
+      version: 9.1.1166
       archive_file: /sources/vim-9.1.1166.tar.gz
       source_dir: /sources/vim-9.1.1166
       description: |
@@ -2471,7 +2499,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: MarkupSafe-3.0.2 (Basic System Software)
+    - name: 1.72 - MarkupSafe (Basic System Software)
+      version: 3.0.2
       archive_file: /sources/markupsafe-3.0.2.tar.gz
       source_dir: /sources/markupsafe-3.0.2
       description: |
@@ -2488,7 +2517,8 @@ jenkins_jobs:
           pip3 install --no-index --find-links dist Markupsafe
         '
 
-    - name: Jinja2-3.1.5 (Basic System Software)
+    - name: 1.73 - Jinja2 (Basic System Software)
+      version: 3.1.5
       archive_file: /sources/jinja2-3.1.5.tar.gz
       source_dir: /sources/jinja2-3.1.5
       description: |
@@ -2505,7 +2535,8 @@ jenkins_jobs:
           pip3 install --no-index --find-links dist Jinja2
         '
 
-    - name: Udev from Systemd-257.3 (Basic System Software)
+    - name: 1.74 - Udev from Systemd (Basic System Software)
+      version: 257.3
       archive_file: /sources/systemd-257.3.tar.gz
       source_dir: /sources/systemd-257.3
       description: |
@@ -2531,7 +2562,8 @@ jenkins_jobs:
           ./udev_systemd-257.3.sh 
         '
 
-    - name: Man-DB-2.13.0 (Basic System Software)
+    - name: 1.75 - Man-DB (Basic System Software)
+      version: 2.13.0
       archive_file: /sources/man-db-2.13.0.tar.xz
       source_dir: /sources/man-db-2.13.0
       exec_command: echo
@@ -2549,7 +2581,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Procps-ng-4.0.5 (Basic System Software)
+    - name: 1.76 - Procps-ng (Basic System Software)
+      version: 4.0.5
       archive_file: /sources/procps-ng-4.0.5.tar.xz
       source_dir: /sources/procps-ng-4.0.5
       description: |
@@ -2568,7 +2601,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: Util-linux-2.40.4 (Basic System Software)
+    - name: 1.77 - Util-linux (Basic System Software)
+      version: 2.40.4
       archive_file: /sources/util-linux-2.40.4.tar.xz
       source_dir: /sources/util-linux-2.40.4
       exec_command: echo
@@ -2585,30 +2619,9 @@ jenkins_jobs:
           make
           make install
         '
-  
-    - name: Pkg-config 0.29.2 (Basic System Software)
-      archive_file: /sources/pkg-config-0.29.2.tar.gz
-      source_dir: /sources/pkg-config-0.29.2
-      exec_command: echo
-      build_tool: true
-      description: |
-        Pkg-config is a helper tool used when compiling applications and libraries. It helps in managing compile and link flags for libraries. This job builds Pkg-config, which is essential for package management in the LFS environment.
-      category:
-        This job is part of the basic system software setup, specifically for building Pkg-config.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Pkg-config-0.29.2
-      build_command: |
-        {{ chroot_start_command }} -c '
-          cd /sources/pkg-config-0.29.2
-          ./configure --prefix=/usr              \
-                      --with-internal-glib       \
-                      --disable-host-tool        \
-                      --docdir=/usr/share/doc/pkg-config-0.29.2
-          make
-          make check
-          make install
-        '
 
-    - name: E2fsprogs-1.47.2 (Basic System Software)
+    - name: 1.78 - E2fsprogs (Basic System Software)
+      version: 1.47.2
       archive_file: /sources/e2fsprogs-1.47.2.tar.gz
       source_dir: /sources/e2fsprogs-1.47.2
       exec_command: echo
@@ -2619,9 +2632,6 @@ jenkins_jobs:
         This job is part of the basic system software setup, specifically for building E2fsprogs.
       jenkins_job_url: http://localhost:8080/job/basic_system_software/E2fsprogs-1.47.2
       build_command: |
-        sudo rm -rf /mnt/lfs/sources/e2fsprogs-1.47.2
-        cd /mnt/lfs/sources
-        sudo tar -xvf e2fsprogs-1.47.2.tar.gz
         {{ chroot_start_command }} -c '
           find / -name "pkgconf" || echo "pkgconf not found"
           cd /sources/e2fsprogs-1.47.2
@@ -2643,7 +2653,8 @@ jenkins_jobs:
           sed "s/metadata_csum_seed,//" -i /etc/mke2fs.conf
         '
 
-    - name: Sysklogd-2.7.0 (Basic System Software)
+    - name: 1.79 - Sysklogd (Basic System Software)
+      version: 2.7.0
       archive_file: /sources/sysklogd-2.7.0.tar.gz
       source_dir: /sources/sysklogd-2.7.0
       exec_command: echo
@@ -2661,7 +2672,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: SysVinit-3.14 (Basic System Software)
+    - name: 1.80 - SysVinit (Basic System Software)
+      version: 3.14
       archive_file: /sources/sysvinit-3.14.tar.xz
       source_dir: /sources/sysvinit-3.14
       exec_command: echo
@@ -2672,9 +2684,6 @@ jenkins_jobs:
         This job is part of the basic system software setup, specifically for building SysVinit.
       jenkins_job_url: http://localhost:8080/job/basic_system_software/SysVinit-3.14
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/sources/sysvinit-3.14 || echo "Removing sysvinit-3.14 failed... continuing anyway"
-        tar -xf /mnt/lfs/sources/sysvinit-3.14.tar.xz
         cd /mnt/lfs/sources/sysvinit-3.14
         curl -O https://www.linuxfromscratch.org/patches/lfs/12.3/sysvinit-3.14-consolidated-1.patch
         {{ chroot_start_command }} -c '
@@ -2684,7 +2693,34 @@ jenkins_jobs:
           make install
         '
 
-    - name: Stripping (Basic System Software)
+    - name: 1.81 - openssh (Basic System Software)
+      version: 10.0p1
+      archive_file: /sources/openssh-10.0p1.tar.gz
+      source_dir: /sources/openssh-10.0p1
+      description: |
+        OpenSSH is a free version of the SSH connectivity tools that technical users rely on. This job builds OpenSSH, which is essential for secure remote access in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building OpenSSH.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/openssh-10.0p1
+      build_tool: true
+      exec_command: echo
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/openssh-10.0p1
+          ./configure --prefix=/usr \
+                      --sysconfdir=/etc/ssh \
+                      --with-md5-passwords \
+                      --with-privsep-path=/var/lib/sshd
+
+          make
+          make install
+          /bin/cp /sources/conf_tmp/sshd_config /etc/ssh/sshd_config
+          groupadd -g 33 sshd || echo "Group sshd already exists, continuing anyway"
+          useradd -c "sshd Privsep" -d /var/lib/sshd -g sshd -s /bin/false -u 33 sshd || echo "User sshd already exists, continuing anyway"
+        '
+
+    - name: 1.82 - *** Stripping (Basic System Software) ***
+      version: 1.0
       archive_file: /sources/empty.tar.gz
       source_dir: /sources
       build_tool: false
@@ -2701,7 +2737,27 @@ jenkins_jobs:
           ./strip.sh
         '
 
-    - name: libgcrypt-1.11.1 (Basic System Software)
+    - name: 1.83 - *** Cleaning Up (Basic System Software) ***
+      version: 1.0
+      archive_file: /sources/empty.tar.gz
+      source_dir: /sources
+      build_tool: false
+      build_command: echo
+      description: |
+        This job cleans up temporary files and unnecessary files from the LFS environment after the basic system software has been built.
+      category:
+        This job is part of the basic system software setup, specifically for cleaning up after the build process.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Cleaning-Up
+      exec_command: |
+        cd /mnt/lfs/sources
+        {{ chroot_start_command }} -c '
+          rm -rf /tmp/{*,.*}
+          find /usr/lib /usr/libexec -name \*.la -delete
+          find /usr -depth -name $(uname -m)-lfs-linux-gnu\* | xargs rm -rf
+        '
+
+    - name: 9.1 - (OPTIONAL) libgcrypt (Basic System Software) (OPTIONAL)
+      version: 1.11.1
       archive_file: /sources/libgcrypt-1.11.1.tar.bz2
       source_dir: /sources/libgcrypt-1.11.1
       description: |
@@ -2712,9 +2768,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/libgcrypt-1.11.1 || echo "Removing libgcrypt-1.11.1 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/libgcrypt-1.11.1.tar.bz2
         {{ chroot_start_command }} -c '
           cd /sources/libgcrypt-1.11.1
           ./configure --prefix=/usr
@@ -2736,7 +2789,8 @@ jenkins_jobs:
                               /usr/share/doc/libgcrypt-1.11.1
         '
 
-    - name: libksba-1.6.7 (Basic System Software)
+    - name: 9.2 - (OPTIONAL) (OPTIONAL)libksba (Basic System Software) (OPTIONAL)
+      version: 1.6.7
       archive_file: /sources/libksba-1.6.7.tar.bz2
       source_dir: /sources/libksba-1.6.7
       description: |
@@ -2747,9 +2801,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/libksba-1.6.7 || echo "Removing libksba-1.6.7 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/libksba-1.6.7.tar.bz2
         {{ chroot_start_command }} -c '
           cd /sources/libksba-1.6.7
           ./configure --prefix=/usr
@@ -2757,7 +2808,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: npth-1.8 (Basic System Software)
+    - name: 9.3 - (OPTIONAL) npth (Basic System Software) (OPTIONAL)
+      version: 1.8
       archive_file: /sources/npth-1.8.tar.bz2
       source_dir: /sources/npth-1.8
       description: |
@@ -2768,16 +2820,14 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/npth-1.8 || echo "Removing npth-1.8 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/npth-1.8.tar.bz2
         {{ chroot_start_command }} -c '
           cd /sources/npth-1.8
           ./configure --prefix=/usr
           make
           make install
-        ' 
-    - name: libgpg-error-1.55 (Basic System Software)
+        '
+    - name: 9.4 - (OPTIONAL) libgpg-error (Basic System Software) (OPTIONAL)
+      version: 1.55
       archive_file: /sources/libgpg-error-1.55.tar.bz2
       source_dir: /sources/libgpg-error-1.55
       description: |
@@ -2788,9 +2838,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        sudo rm -rf /mnt/lfs/sources/libgpg-error-1.55 || echo "Removing libgpg-error-1.55 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/libgpg-error-1.55.tar.bz2
         {{ chroot_start_command }} -c '
           cd /sources/libgpg-error-1.55
           ./configure --prefix=/usr
@@ -2798,7 +2845,9 @@ jenkins_jobs:
           make install
           install -v -m644 -D README /usr/share/doc/libgpg-error-1.55/README
         '
-    - name: gpgme-2.0.0 (Basic System Software)
+
+    - name: 9.5 - (OPTIONAL) gpgme (Basic System Software) (OPTIONAL)
+      version: 2.0.0
       archive_file: /sources/gpgme-2.0.0.tar.bz2
       source_dir: /sources/gpgme-2.0.0
       description: |
@@ -2809,9 +2858,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/gpgme-2.0.0 || echo "Removing gpgme-2.0.0 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/gpgme-2.0.0.tar.bz2
         {{ chroot_start_command }} -c '
           cd /sources/gpgme-2.0.0
           ls build || mkdir build
@@ -2821,7 +2867,8 @@ jenkins_jobs:
           make install  
         '
 
-    - name: libassuan-3.0.2 (Basic System Software)
+    - name: 9.6 - (OPTIONAL) libassuan (Basic System Software) (OPTIONAL)
+      version: 3.0.2
       archive_file: /sources/libassuan-3.0.2.tar.bz2
       source_dir: /sources/libassuan-3.0.2
       description: |
@@ -2832,8 +2879,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        tar -xf /mnt/lfs/sources/libassuan-3.0.2.tar.bz2
         {{ chroot_start_command }} -c '
           cd /sources/libassuan-3.0.2
           ./configure --prefix=/usr
@@ -2848,7 +2893,9 @@ jenkins_jobs:
           install -v -m644 doc/assuan_nochunks.html /usr/share/doc/libassuan-3.0.2
           install -v -m644 doc/assuan.{txt,texi} /usr/share/doc/libassuan-3.0.2
         '
-    - name: gnupg-2.4.8 (Basic System Software)
+  
+    - name: 9.7 - (OPTIONAL) gnupg (Basic System Software) (OPTIONAL)
+      version: 2.4.8
       archive_file: /sources/gnupg-2.4.8.tar.bz2
       source_dir: /sources/gnupg-2.4.8
       description: |
@@ -2859,9 +2906,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/gnupg-2.4.8 || echo "Removing gnupg-2.4.8 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/gnupg-2.4.8.tar.bz2
         {{ chroot_start_command }} -c '
           cd /sources/gnupg-2.4.8
           mkdir build
@@ -2890,24 +2934,44 @@ jenkins_jobs:
                           /usr/share/doc/gnupg-2.4.8
         '
 
-    - name: Cleaning Up (Basic System Software)
-      archive_file: /sources/empty.tar.gz
-      source_dir: /sources
-      build_tool: false
-      build_command: echo
+    - name: 9.8 - (OPTIONAL) glib (Basic System Software) (OPTIONAL)
+      version: 2.84.3
+      archive_file: /sources/glib-2.84.3.tar.xz
+      source_dir: /sources/glib-2.84.3
+      exec_command: echo
       description: |
-        This job cleans up temporary files and unnecessary files from the LFS environment after the basic system software has been built.
+        Glib is a low-level core library that forms the basis for libraries such as GTK+ and GStreamer. This job builds Glib, which is essential for many applications in the LFS environment.
       category:
-        This job is part of the basic system software setup, specifically for cleaning up after the build process.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Cleaning-Up
-      exec_command: |
+        This job is part of the basic system software setup, specifically for building Glib.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Glib-2.84.3
+      build_tool: true
+      build_command: |
         cd /mnt/lfs/sources
+        curl -O https://www.linuxfromscratch.org/patches/blfs/svn/glib-skip_warnings-1.patch
+        rm -rf /mnt/lfs/sources/glib-2.84.3 || echo "Removing glib-2.84.3 directory failed, continuing anyway"
+        tar -xf ./glib-2.84.3.tar.xz
+        cd glib-2.84.3
+        patch -Np1 -i ../glib-skip_warnings-1.patch
+
         {{ chroot_start_command }} -c '
-          rm -rf /tmp/{*,.*}
-          find /usr/lib /usr/libexec -name \*.la -delete
-          find /usr -depth -name $(uname -m)-lfs-linux-gnu\* | xargs rm -rf
+          export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/sources/glib-2.84.3/build/gio:/sources/glib-2.84.3/build/glib/:/sources/glib-2.84.3/build/gobject"
+          cd /sources/glib-2.84.3
+          mkdir build
+          cd    build
+          export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+          meson setup ..                  \
+                  --prefix=/usr             \
+                  --buildtype=release       \
+                  -D introspection=disabled \
+                  -D glib_debug=disabled    \
+                  -D man-pages=disabled      \
+                  -D sysprof=disabled
+            ninja
+            ninja install
         '
-    - name: go1.24 (Basic System Software)
+
+    - name: 9.9 - (OPTIONAL) GO (Basic System Software) (OPTIONAL)
+      version: 1.22.9
       archive_file: /sources/empty.tar.gz
       source_dir: /sources/empty.tar.gz
       description: |
@@ -2938,7 +3002,9 @@ jenkins_jobs:
         {{ chroot_start_command }} -c '
           ln -s /usr/local/go/bin/go /usr/local/bin/go 
         '
-    - name: conmon-v2.1.13 (Basic System Software)
+
+    - name: 9.10 - (OPTIONAL) conmon-v2.1.13 (Basic System Software) (OPTIONAL)
+      version: 2.1.13
       archive_file: /sources/conmon-v2.1.13.tar.gz
       source_dir: /sources/conmon-v2.1.13
       description: |
@@ -2949,9 +3015,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/conmon-v2.1.13 || echo "Removing conmon-v2.1.13 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/conmon-v2.1.13.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/conmon
           make
@@ -2959,8 +3022,9 @@ jenkins_jobs:
           make crio
           /bin/cp /sources/cri-o-1.33.1/bin/pinns /usr/local/bin
         '
-  
-    - name: libpsl-0.21.5 (Basic System Software)
+
+    - name: 9.11 - (OPTIONAL) libpsl-0.21.5 (Basic System Software) (OPTIONAL)
+      version: 0.21.5
       archive_file: /sources/libpsl-0.21.5.tar.gz
       source_dir: /sources/libpsl-0.21.5
       description: |
@@ -2971,9 +3035,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/libpsl-0.21.5 || echo "Removing libpsl-0.21.5 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/libpsl-0.21.5.tar.gz
         {{ chroot_start_command }} -c '
           cd /sources/libpsl-0.21.5
           mkdir build
@@ -2983,7 +3044,8 @@ jenkins_jobs:
           ninja install
         '
 
-    - name: libidn2-2.3.8 (Basic System Software)
+    - name: 9.12 - (OPTIONAL) libidn2-2.3.8 (Basic System Software) (OPTIONAL)
+      version: 2.3.8
       archive_file: /sources/libidn2-2.3.8.tar.gz
       source_dir: /sources/libidn2-2.3.8
       description: |
@@ -2994,9 +3056,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/libidn2-2.3.8 || echo "Removing libidn2-2.3.8 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/libidn2-2.3.8.tar.gz
         {{ chroot_start_command }} -c '
           cd /sources/libidn2-2.3.8
           ./configure --prefix=/usr --disable-static
@@ -3004,7 +3063,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: libunistring-1.3 (Basic System Software)
+    - name: 9.13 - (OPTIONAL) libunistring-1.3 (Basic System Software) (OPTIONAL)
+      version: 1.3
       archive_file: /sources/libunistring-1.3.tar.xz
       source_dir: /sources/libunistring-1.3.tar.xz
       description: |
@@ -3015,9 +3075,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/libunistring-1.3 || echo "Removing libunistring-1.3 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/libunistring-1.3.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/libunistring-1.3
           ./configure --prefix=/usr --disable-static
@@ -3025,7 +3082,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: curl-8.15.0 (Basic System Software)
+    - name: 9.14 - (OPTIONAL) curl-8.15.0 (Basic System Software) (OPTIONAL)
+      version: 8.15.0
       archive_file: /sources/curl-8.15.0.tar.xz
       source_dir: /sources/curl-8.15.0
       description: |
@@ -3036,9 +3094,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/curl-8.15.0 || echo "Removing curl-8.15.0 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/curl-8.15.0.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/curl-8.15.0
           ./configure --prefix=/usr    \
@@ -3048,7 +3103,8 @@ jenkins_jobs:
           make
           make install
         '
-    - name: asciidoc-9.1.0 (Basic System Software)
+    - name: 9.15 - (OPTIONAL) asciidoc-9.1.0 (Basic System Software) (OPTIONAL)
+      version: 9.1.0
       archive_file: /sources/asciidoc-9.1.0.tar.gz
       source_dir: /sources/asciidoc-9.1.0
       description: |
@@ -3059,9 +3115,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        sudo rm -rf /mnt/lfs/sources/asciidoc-9.1.0 || echo "Removing asciidoc-9.1.0 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/asciidoc-9.1.0.tar.gz
         {{ chroot_start_command }} -c '
           cd /sources/asciidoc-9.1.0
           sed -i 's:doc/testasciidoc.1::' Makefile.in
@@ -3074,7 +3127,8 @@ jenkins_jobs:
           make docs
         '
 
-    - name: libxslt-1.1.43 (Basic System Software)
+    - name: 9.16 - (OPTIONAL) libxslt-1.1.43 (Basic System Software) (OPTIONAL)
+      version: 1.1.43
       archive_file: /sources/libxslt-1.1.43.tar.xz
       source_dir: /sources/libxslt-1.1.43
       description: |
@@ -3085,9 +3139,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        sudo rm -rf /mnt/lfs/sources/libxslt-1.1.43 || echo "Removing libxslt-1.1.43 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/libxslt-1.1.43.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/libxslt-1.1.43
           ./configure --prefix=/usr    \
@@ -3097,7 +3148,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: libxml2-2.14.5 (Basic System Software)
+    - name: 9.17 - (OPTIONAL) libxml2-2.14.5 (Basic System Software) (OPTIONAL)
+      version: 2.14.5
       archive_file: /sources/libxml2-2.14.5.tar.xz
       source_dir: /sources/libxml2-2.14.5
       description: |
@@ -3108,9 +3160,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        sudo rm -rf /mnt/lfs/sources/libxml2-2.14.5 || echo "Removing libxml2-2.14.5 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/libxml2-2.14.5.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/libxml2-2.14.5
           ./configure --prefix=/usr     \
@@ -3124,7 +3173,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: icu4c-77_1-src (Basic System Software)
+    - name: 9.18 - (OPTIONAL) icu4c (Basic System Software) (OPTIONAL)
+      version: 77.1_1
       archive_file: /sources/icu4c-77_1-src.tgz
       source_dir: /sources/icu4c-77_1-src
       description: |
@@ -3135,9 +3185,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        sudo rm -rf /mnt/lfs/sources/icu4c-77_1-src || echo "Removing icu4c-77_1-src directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/icu4c-77_1-src.tgz
         {{ chroot_start_command }} -c '
           cd /sources/icu/source
           ./configure --prefix=/usr
@@ -3145,7 +3192,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: git-2.49.0
+    - name: 9.19 - (OPTIONAL) git-2.49.0 (Basic System Software) (OPTIONAL)
+      version: 2.49.0
       archive_file: /sources/git-2.49.0.tar.xz
       source_dir: /sources/git-2.49.0
       description: |
@@ -3156,9 +3204,6 @@ jenkins_jobs:
       build_tool: true
       exec_command: echo
       build_command: |
-        rm -rf /mnt/lfs/sources/git-2.49.0 || echo "Removing git-2.49.0 directory failed, continuing anyway"
-        cd /mnt/lfs/sources
-        tar -xf /mnt/lfs/sources/git-2.49.0.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/git
           make configure
@@ -3166,8 +3211,9 @@ jenkins_jobs:
           make all
           make install
         '
-  
-    - name: libseccomp-2.6.0
+
+    - name: 9.20 - (OPTIONAL) libseccomp (OPTIONAL)
+      version: 2.6.0
       archive_file: /sources/libseccomp
       source_dir: /sources/libseccomp
       description: |
@@ -3188,35 +3234,8 @@ jenkins_jobs:
           make install
         '
 
-    - name: openssh-10.0p1
-      archive_file: /sources/openssh-10.0p1.tar.gz
-      source_dir: /sources/openssh-10.0p1
-      description: |
-        OpenSSH is a free version of the SSH connectivity tools that technical users rely on. This job builds OpenSSH, which is essential for secure remote access in the LFS environment.
-      category:
-        This job is part of the basic system software setup, specifically for building OpenSSH.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/openssh-10.0p1
-      build_tool: true
-      exec_command: echo
-      build_command: |
-        rm -rf /mnt/lfs/sources/openssh-10.0p1 || echo "Removing openssh-10.0p1 directory failed, continuing anyway"
-        cd /mnt/lfs/sources
-        tar -xf /mnt/lfs/sources/openssh-10.0p1.tar.gz
-
-        {{ chroot_start_command }} -c '
-          cd /sources/openssh-10.0p1
-          ./configure --prefix=/usr \
-                      --sysconfdir=/etc/ssh \
-                      --with-md5-passwords \
-                      --with-privsep-path=/var/lib/sshd
-
-          make
-          make install
-          /bin/cp /sources/conf_tmp/sshd_config /etc/ssh/sshd_config
-          groupadd -g 33 sshd || echo "Group sshd already exists, continuing anyway"
-          useradd -c "sshd Privsep" -d /var/lib/sshd -g sshd -s /bin/false -u 33 sshd || echo "User sshd already exists, continuing anyway"
-        '
-    - name: libtasn1-4.20.0
+    - name: 9.21 - (OPTIONAL) libtasn1 (OPTIONAL)
+      version: 4.20.0
       archive_file: /sources/libtasn1-4.20.0.tar.gz
       source_dir: /sources/libtasn1-4.20.0
       description: |
@@ -3227,9 +3246,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        sudo rm -rf /mnt/lfs/sources/libtasn1-4.20.0 || echo "Removing libtasn1-4.20.0 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/libtasn1-4.20.0.tar.gz
         {{ chroot_start_command }} -c '
           cd /sources/libtasn1-4.20.0
           ./configure --prefix=/usr --disable-static
@@ -3237,7 +3253,9 @@ jenkins_jobs:
           make install
           make -C doc/reference install-data-local
         '
-    - name: p11-kit-0.25.5
+
+    - name: 9.22 - (OPTIONAL) p11-kit-0.25.5 (OPTIONAL)
+      version: 0.25.5
       archive_file: /sources/p11-kit-0.25.5.tar.xz
       source_dir: /sources/p11-kit-0.25.5
       description: |
@@ -3248,9 +3266,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        sudo rm -rf /mnt/lfs/sources/p11-kit-0.25.5 || echo "Removing p11-kit-0.25.5 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/p11-kit-0.25.5.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/p11-kit-0.25.5
           sed "20,$ d" -i trust/trust-extract-compat
@@ -3277,7 +3292,8 @@ jenkins_jobs:
         ln -sfv ./pkcs11/p11-kit-trust.so /usr/lib/libnssckbi.so
 
         '
-    - name: make-ca-1.16.1 (Certificate Authorities)
+    - name: 9.23 - (OPTIONAL) make-ca (Certificate Authorities) (OPTIONAL)
+      version: 1.16.1
       archive_file: /sources/make-ca-1.16.1.tar.gz
       source_dir: /sources/make-ca-1.16.1
       description: |
@@ -3288,16 +3304,15 @@ jenkins_jobs:
       build_command: echo
       build_tool: false
       exec_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/make-ca-1.16.1 || echo "Removing make-ca-1.16.1 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/make-ca-1.16.1.tar.gz
         {{ chroot_start_command }} -c '
           cd /sources/make-ca-1.16.1
           make install
           install -vdm755 /etc/ssl/local
           /usr/sbin/make-ca -g
         '
-    - name: iptables-1.8.11 (Basic System Software)
+
+    - name: 9.24 - (OPTIONAL) iptables (Basic System Software) (OPTIONAL)
+      version: 1.8.11
       archive_file: /sources/iptables-1.8.11.tar.xz
       source_dir: /sources/iptables-1.8.11
       description: |
@@ -3308,9 +3323,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        sudo rm -rf /mnt/lfs/sources/iptables-1.8.11 || echo "Removing iptables-1.8.11 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/iptables-1.8.11.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/iptables-1.8.11
           ./configure --prefix=/usr      \
@@ -3319,9 +3331,32 @@ jenkins_jobs:
           make
           make install
         '
-  
-  system_configuration:
-    - name: cpio-2.15
+
+    - name: 9.25 - (OPTIONAL) pkg-config (Basic System Software) (OPTIONAL)
+      version: 0.29.2
+      archive_file: /sources/pkg-config-0.29.2.tar.gz
+      source_dir: /sources/pkg-config-0.29.2
+      exec_command: echo
+      build_tool: true
+      description: |
+        Pkg-config is a helper tool used when compiling applications and libraries. It helps in managing compile and link flags for libraries. This job builds Pkg-config, which is essential for package management in the LFS environment.
+      category:
+        This job is part of the basic system software setup, specifically for building Pkg-config.
+      jenkins_job_url: http://localhost:8080/job/basic_system_software/Pkg-config-0.29.2
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/pkg-config-0.29.2
+          ./configure --prefix=/usr              \
+                      --with-internal-glib       \
+                      --disable-host-tool        \
+                      --docdir=/usr/share/doc/pkg-config-0.29.2
+          make
+          make check
+          make install
+        '
+
+    - name: 9.26 - (OPTIONAL) cpio (Basic System Software) (OPTIONAL)
+      version: 2.15
       archive_file: /sources/cpio-2.15.tar.bz2
       source_dir: /sources/cpio-2.15
       description: |
@@ -3332,9 +3367,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        sudo rm -rf /mnt/lfs/sources/cpio-2.15 || echo "Removing cpio-2.15 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/cpio-2.15.tar.bz2
         {{ chroot_start_command }} -c '
           cd /sources/cpio-2.15
           ./configure --prefix=/usr \
@@ -3343,7 +3375,10 @@ jenkins_jobs:
           make
           make install
         '
-    - name: LFS-Bootscripts-20240825
+
+  system_configuration:
+    - name: 1.1 - LFS-Bootscripts-20240825
+      version: 20240825
       archive_file: /sources/lfs-bootscripts-20240825.tar.xz
       source_dir: /sources/lfs-bootscripts-20240825
       description: |
@@ -3354,15 +3389,13 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        ls /mnt/lfs/usr/local/go || sudo mkdir -p /mnt/lfs/usr/local/go
-        rm -rf /mnt/sources/lfs-bootscripts-20240825 || echo "Removing lfs-bootscripts-20240825 directory failed, continuing anyway"  
-        tar -xf /mnt/lfs/sources/lfs-bootscripts-20240825.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/lfs-bootscripts-20240825
           make install
         '
-    - name: BLFS-bootscripts-20250225 (iptables)
+
+    - name: 1.2 - (OPTIONAL) BLFS-bootscripts-20250225 ONLY WITH IPTABLES (OPTIONAL)
+      version: 20250225
       archive_file: /sources/blfs-bootscripts-20250225.tar.xz
       source_dir: /sources/blfs-bootscripts-20250225
       description: |
@@ -3373,15 +3406,13 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        rm -rf /mnt/lfs/sources/blfs-bootscripts-20250225 || echo "Removing blfs-bootscripts-20250225 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/blfs-bootscripts-20250225.tar.xz
         {{ chroot_start_command }} -c '
           cd /sources/blfs-bootscripts-20250225
           make install-iptables
         '
-  
-    - name: Linux-6.13.4 (Basic System Software)
+
+    - name: 1.3 - Linux
+      version: 6.13.4
       archive_file: /sources/linux-6.13.4.tar.xz
       source_dir: /sources/linux-6.13.4
       description: |
@@ -3392,9 +3423,6 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
-        cd /mnt/lfs/sources
-        sudo rm -rf /mnt/lfs/sources/linux-6.13.4 || echo "Removing linux-6.13.4 directory failed, continuing anyway"
-        tar -xf /mnt/lfs/sources/linux-6.13.4.tar.xz
         {{ chroot_start_command }} -c '
           
           cd /sources/linux-6.13.4
@@ -3425,7 +3453,8 @@ jenkins_jobs:
           cp -r Documentation -T /usr/share/doc/linux-6.13.4
         '
 
-    - name: Prepare System Image
+    - name: 1.4 - Prepare System Image
+      version: 1.0
       archive_file: /mnt/lfs/sources/empty.tar.xz
       source_dir: /mnt/lfs/sources
       description: |
@@ -3440,7 +3469,8 @@ jenkins_jobs:
         ./prepare_image.sh
   
   containers:
-    - name: runc-1.3.0
+    - name: 1.1 runc (Containers)
+      version: 1.3.0
       archive_file: /sources/runc-1.3.0.tar.xz
       source_dir: /sources/runc-1.3.0
       description: |
@@ -3461,7 +3491,8 @@ jenkins_jobs:
         rm -f /mnt/lfs/usr/local/sbin/runc || echo "Removing existing runc failed, continuing anyway"
         sudo cp -p /usr/local/sbin/runc /mnt/lfs/usr/local/sbin/runc
   
-    - name: cri-o-1.33.1
+    - name: 1.2 - cri-o (Containers)
+      version: 1.33.1
       archive_file: /sources/cri-o-1.33.1.tar.xz
       source_dir: /sources/cri-o-1.33.1
       description: |
@@ -3488,7 +3519,8 @@ jenkins_jobs:
           make install PREFIX=/usr/local
         '
 
-    - name: etcd-3.6.1
+    - name: 1.3 - etcd (Containers)
+      version: 3.6.1
       archive_file: /sources/etcd
       source_dir: /sources/etcd
       description: |
@@ -3507,7 +3539,8 @@ jenkins_jobs:
           /bin/cp etcd etcdctl /usr/local/bin/
         '
 
-    - name: kubernetes-1.33
+    - name: 1.4 - kubernetes (Containers)
+      version: 1.33
       archive_file: /sources/kubernetes
       source_dir: /sources/kubernetes
       description: |
@@ -3525,7 +3558,8 @@ jenkins_jobs:
         cd _output/release-stage/server/linux-amd64/kubernetes/server/bin
         sudo /bin/cp kubeadm kube-apiserver kube-controller-manager kube-scheduler kube-proxy kubectl kubelet /mnt/lfs/usr/local/bin/
           
-    - name: kubernetes-setup
+    - name: 1.5 - kubernetes-setup (Containers)
+      version: 1.33
       archive_file: /sources/kubernetes
       source_dir: /sources/kubernetes
       description: |

@@ -76,7 +76,7 @@
 
         if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
           if [ -d {{ item.source_dir | basename }} ]; then
-            rm -rf {{ item.source_dir | basename }}
+            sudo rm -rf {{ item.source_dir | basename }}
           fi
       
           tar -xvf {{ item.archive_file | basename }}
@@ -130,7 +130,7 @@
         <command>{{ aarch64_common_build_start_command }}
         if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
           if [ -d {{ item.source_dir | basename }} ]; then
-            rm -rf {{ item.source_dir | basename }}
+            sudo rm -rf {{ item.source_dir | basename }}
           fi
       
           tar -xvf {{ item.archive_file | basename }}
@@ -172,7 +172,7 @@
         <keepDependencies>false</keepDependencies>
         <properties/>
         <scm class="hudson.scm.NullSCM"/>
-        <canRoam>true</canRoam>
+        <canRoam>false</canRoam>
         <assignedNode>aarch64</assignedNode>
         <disabled>false</disabled>
         <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
@@ -181,27 +181,25 @@
         <concurrentBuild>false</concurrentBuild>
         <builders>
           <hudson.tasks.Shell>
-            <command>{{ aarch64_common_build_start_command }}
-          
-          if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
-            if [ -d {{ item.source_dir | basename }} ]; then
-              rm -rf {{ item.source_dir | basename }}
-            fi
+        <command>{{ aarch64_common_build_start_command }}
+        if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+          if [ -d {{ item.source_dir | basename }} ]; then
+            sudo rm -rf {{ item.source_dir | basename }}
+          fi
+      
+          tar -xvf {{ item.archive_file | basename }}
+          cd {{ item.source_dir | basename }}
         
-            tar -xvf {{ item.archive_file | basename }}
-            cd {{ item.source_dir | basename }}
-          
-          fi
-          
-          pwd
-          
-          BUILD_TOOL={{ item.build_tool }}
-          if [ $BUILD_TOOL = "True" ]; then
-            {{ item.build_command }}
-          else
-            {{ item.exec_command }}
-          fi
-            </command>
+        fi
+    
+        pwd
+        BUILD_TOOL={{ item.build_tool }}
+        if [ $BUILD_TOOL = "True" ]; then
+          {{ item.build_command }}
+        else
+          {{ item.exec_command }}
+        fi
+        </command>
           </hudson.tasks.Shell>
         </builders>
         <publishers/>
@@ -232,7 +230,7 @@
         <keepDependencies>false</keepDependencies>
         <properties/>
         <scm class="hudson.scm.NullSCM"/>
-        <canRoam>true</canRoam>
+        <canRoam>false</canRoam>
         <assignedNode>aarch64</assignedNode>
         <disabled>false</disabled>
         <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
@@ -241,27 +239,25 @@
         <concurrentBuild>false</concurrentBuild>
         <builders>
           <hudson.tasks.Shell>
-            <command>{{ aarch64_common_build_start_command }}
-
-            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
-              if [ -d {{ item.source_dir | basename }} ]; then
-                rm -rf {{ item.source_dir | basename }}
-              fi
-          
-              tar -xvf {{ item.archive_file | basename }}
-              cd "{{ item.source_dir | basename }}"
-
-            fi
-
-            pwd
-            
-            BUILD_TOOL={{ item.build_tool }}
-            if [ $BUILD_TOOL = "True" ]; then
-              {{ item.build_command }}
-            else
-              {{ item.exec_command }}
-            fi
-            </command>
+        <command>{{ aarch64_common_build_start_command }}
+        if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+          if [ -d {{ item.source_dir | basename }} ]; then
+            sudo rm -rf {{ item.source_dir | basename }}
+          fi
+      
+          tar -xvf {{ item.archive_file | basename }}
+          cd {{ item.source_dir | basename }}
+        
+        fi
+    
+        pwd
+        BUILD_TOOL={{ item.build_tool }}
+        if [ $BUILD_TOOL = "True" ]; then
+          {{ item.build_command }}
+        else
+          {{ item.exec_command }}
+        fi
+        </command>
           </hudson.tasks.Shell>
         </builders>
         <publishers/>
@@ -305,7 +301,7 @@
 
             if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
               if [ -d {{ item.source_dir | basename }} ]; then
-                rm -rf {{ item.source_dir | basename }}
+                sudo rm -rf {{ item.source_dir | basename }}
               fi
           
               tar -xvf {{ item.archive_file | basename }}

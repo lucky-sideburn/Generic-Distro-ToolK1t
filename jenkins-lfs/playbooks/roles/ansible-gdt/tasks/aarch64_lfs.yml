@@ -119,6 +119,15 @@
     - /mnt/lfs/usr/bin
     - /mnt/lfs/usr/lib
     - /mnt/lfs/usr/sbin
+    - /mnt/lfs/tools
+
+- name: Create symbolic links for bin, lib, and sbin using shell
+  ansible.builtin.shell: |
+    for i in bin lib sbin; do
+      ln -sv usr/$i /mnt/lfs/$i
+    done
+  args:
+    executable: /bin/bash
 
 - name: Create symbolic links for bin, lib, and sbin
   ansible.builtin.file:
