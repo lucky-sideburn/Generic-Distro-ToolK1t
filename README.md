@@ -10,7 +10,8 @@ GDt (Generic Distro Toolkit) is a work-in-progress project aimed at simplifying 
 
 ### Step 0 - Install required tools
 
-### LFS Build Server
+#### LFS Build Server
+
 * Jenkins
 * Redmine
 * Enable KVM
@@ -18,7 +19,7 @@ GDt (Generic Distro Toolkit) is a work-in-progress project aimed at simplifying 
 * Cockpit
 * Redmine (if you want track your progress)
 
-### LFS Build Node aarch64
+#### LFS Build Node aarch64
 
 ```bash
 [foobar@homer]:~/WORK/Generic-Distro-ToolK1t $ vagrant provision
@@ -39,7 +40,7 @@ ok: [ubuntu-arm-lfs] => {
 
 ### Step 1 - Provision an aarch64 build node
 
-´´´
+```bash
 [eugenio@MacBook-Pro-di-Eugenio-2.fritz.box]:~/WORK/Generic-Distro-ToolK1t $ vagrant provision
 ==> ubuntu-arm-lfs: Running provisioner: ansible...
     ubuntu-arm-lfs: Running ansible-playbook...
@@ -53,7 +54,7 @@ TASK [Display the node name] ***************************************************
 ok: [ubuntu-arm-lfs] => {
     "msg": "Node name: ubuntu-arm-lfs"
 }
-````
+```
 
 ### Step 2 - Create Jenkins Folder
 
@@ -117,7 +118,6 @@ ok: [localhost] => (item=amd64_containers)
 
 PLAY RECAP *************************************************************************************************************************************************************************************************************************************************************
 localhost                  : ok=5    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-
 ```
 
 ### Project Structure
