@@ -269,8 +269,11 @@ jenkins_jobs:
           --disable-libstdcxx-pch         \
           --with-gxx-include-dir=/tools/$LFS_TGT/include/c++/14.2.0
         make
+
+        echo "Installing on $LFS"
         make DESTDIR=$LFS install
-        rm -v $LFS/usr/lib/lib{stdc++{,exp,fs},supc++}.la
+      
+        rm -v $LFS/usr/lib/lib{stdc++{,exp,fs},supc++}.la || echo "Removing libstdc++ libraries failed, continuing anyway"
 
   cross_compiling_temporary_tools:
     - name: M4-1.4.19 (Cross Compiling Temporary Tools)
