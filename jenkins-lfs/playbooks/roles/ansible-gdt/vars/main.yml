@@ -76,11 +76,9 @@ aarch64_common_build_start_command: |-
   cd $LFS/sources
   env
 
-common_build_command: |-
+dedicated_build_dir: |-
   ls build || mkdir -v build
   cd build
-  pwd
-  ls
 
 jenkins_jobs:
   amd64_folders:
@@ -138,8 +136,7 @@ jenkins_jobs:
         This job is part of the cross toolchain setup, specifically for building the first pass of Binutils.
       jenkins_job_url: http://localhost:8080/job/cross_toolchain/job/Binutils%20-%20Pass%201%20(Cross%20Toolchain)/
       build_command: |
-        {{ common_build_command }}
-        tar -xvf binutils-2.44.tar.xz
+        {{ dedicated_build_dir }}
         ../configure --prefix=$LFS/tools \
                     --with-sysroot=$LFS \
                     --target=$LFS_TGT   \
@@ -160,11 +157,12 @@ jenkins_jobs:
         This job is part of the cross toolchain setup, specifically for building the first pass of GCC.
       jenkins_job_url: http://localhost:8080/job/cross_toolchain/job/GCC-14.2.0%20-%20Pass%201%20(Cross%20Toolchain)/
       build_command: |
-        tar -xvf gcc-14.2.0.tar.xz
-        cd /mnt/lfs/sources/gcc-14.2.0
-        ls ./mpfr && rm -rf ./mpfr
-        ls ./gmp && rm -rf ./gmp
-        ls ./mpc && rm -rf ./mpc
+
+        # Cannot user AND bash operator due to and error in Jenkins API
+        if [ -d ./mpfr ]; then rm -rf ./mpfr; fi
+        if [ -d ./gmp ]; then rm -rf ./gmp; fi
+        if [ -d ./mpc ]; then rm -rf ./mpc; fi
+
         tar -xf ../mpfr-4.2.1.tar.xz
         mv -v mpfr-4.2.1 mpfr
         tar -xf ../gmp-6.3.0.tar.xz
@@ -179,7 +177,7 @@ jenkins_jobs:
         ;;
         esac
         
-        {{ common_build_command }}
+        {{ dedicated_build_dir }}
         
         ../configure                  \
             --target=$LFS_TGT         \
@@ -236,7 +234,7 @@ jenkins_jobs:
         curl -O https://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.41-fhs-1.patch
         patch -Np1 -i glibc-2.41-fhs-1.patch || echo "Patch glibc-2.41-fhs-1.patch failed, continuing anyway"
 
-        {{ common_build_command }}
+        {{ dedicated_build_dir }}
 
         ../configure                             \
               --prefix=/usr                      \
@@ -261,10 +259,7 @@ jenkins_jobs:
         This job is part of the cross toolchain setup, specifically for building and installing libstdc++ from GCC-14.2.0.
       jenkins_job_url: http://localhost:8080/job/cross_toolchain/job/Libstdc++%20from%20GCC-14.2.0%20(Cross%20Toolchain)/
       build_command: |
-        rm -rf /mnt/lfs/sources/gcc-14.2.0
-        tar -xf ./gcc-14.2.0.tar.xz
-        cd gcc-14.2.0
-        {{ common_build_command}}
+        {{ dedicated_build_dir }}
         ../libstdc++-v3/configure         \
           --host=$LFS_TGT                 \
           --build=$(../config.guess)      \
