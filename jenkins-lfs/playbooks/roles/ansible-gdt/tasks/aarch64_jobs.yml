@@ -1,9 +1,10 @@
 - name: "Include conf.yml tasks"
   include_tasks: conf.yml
 
-- name: Print that is building ARM jobs
+- name: Print that is building ARM aarch64 jobs
   ansible.builtin.debug:
     msg: "Building ARM jobs"
+  tags: aarch64
 
 - name: "Create Jenkins Folder"
   ansible.builtin.uri:
@@ -69,13 +70,11 @@
           <hudson.tasks.Shell>
         <command>
           {{ arm_common_build_start_command }}
-          [ -d "{{ item.source_dir | basename }}" ] \&\& rm -rf "{{ item.source_dir | basename }}"
-
-          if [ -d "{{ item.source_dir }}" ]; then
-            cd "{{ item.source_dir }}"
-          else
-            echo "Directory {{ item.source_dir }} does not exist"
+          if [ -d "{{ item.source_dir | basename }}" ]; then
+            rm -rf "{{ item.source_dir | basename }}"
           fi
+          tar -xf "{{ item.archive_file | basename }}"
+          cd "{{ item.source_dir | basename }}"
           pwd
           {{ item.build_command }}
         </command>
