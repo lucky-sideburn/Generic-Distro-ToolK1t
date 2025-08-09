@@ -1,6 +1,6 @@
 - name: Print node name
   hosts: ubuntu-arm-lfs
-  gather_facts: false
+  gather_facts: true
   tasks:
     - name: Display the node name
       debug:
@@ -9,4 +9,4 @@
     - name: Start arm_node.yml task of ansible-gdt role
       include_role:
         name: ansible-gdt
-        tasks_from: arm_node.yml
+        tasks_from: arm_lfs_node.yml

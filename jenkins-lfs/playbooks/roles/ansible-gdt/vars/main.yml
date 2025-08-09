@@ -2,6 +2,33 @@
 # vars file for ansible-gdt
 build_tool: true
 
+lfs_packages:
+  - binutils
+  - bash
+  - bison
+  - diffutils
+  - findutils
+  - gawk
+  - gcc
+  - g++
+  - grep
+  - gzip
+  - m4
+  - make
+  - patch
+  - perl
+  - python3
+  - sed
+  - tar
+  - coreutils
+  - xz-utils
+  - texinfo
+
+lfs_extra_archives:
+  - mpfr-4.2.1.tar.xz
+  - gmp-6.3.0.tar.xz
+  - mpc-1.3.1.tar.gz
+
 chroot_start_command: |
   sudo chroot "$LFS" /usr/bin/env -i   \
       HOME=/root                  \
@@ -113,6 +140,7 @@ jenkins_jobs:
       jenkins_job_url: http://localhost:8080/job/cross_toolchain/job/Binutils%20-%20Pass%201%20(Cross%20Toolchain)/
       build_command: |
         {{ common_build_command }}
+        tar -xvf binutils-2.44.tar.xz
         ../configure --prefix=$LFS/tools \
                     --with-sysroot=$LFS \
                     --target=$LFS_TGT   \
@@ -133,6 +161,7 @@ jenkins_jobs:
         This job is part of the cross toolchain setup, specifically for building the first pass of GCC.
       jenkins_job_url: http://localhost:8080/job/cross_toolchain/job/GCC-14.2.0%20-%20Pass%201%20(Cross%20Toolchain)/
       build_command: |
+        tar -xvf gcc-14.2.0.tar.xz
         cd /mnt/lfs/sources/gcc-14.2.0
         ls ./mpfr && rm -rf ./mpfr
         ls ./gmp && rm -rf ./gmp
