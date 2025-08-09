@@ -209,6 +209,14 @@
     group: lfs
     mode: '0644'
 
+- name: Copy chroot_lfs.sh to /home/jenkins
+  ansible.builtin.copy:
+    src: chroot_lfs.sh
+    dest: /home/jenkins/chroot_lfs.sh
+    owner: jenkins
+    group: jenkins
+    mode: '0755'
+
 - name: Install additional packages
   ansible.builtin.apt:
     name: "{{ item }}"

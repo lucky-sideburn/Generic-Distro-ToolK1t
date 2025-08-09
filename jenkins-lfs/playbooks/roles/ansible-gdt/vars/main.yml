@@ -225,10 +225,12 @@ jenkins_jobs:
       jenkins_job_url: http://localhost:8080/job/cross_toolchain/job/Glibc-2.41%20(Cross%20Toolchain)/
       build_command: |
         case $(uname -m) in
-            i?86)   ln -sfv ld-linux.so.2 $LFS/lib/ld-lsb.so.3
+            i?86)   
+                ln -sfv ld-linux.so.2 $LFS/lib/ld-lsb.so.3
             ;;
-            x86_64) ln -sfv ../lib/ld-linux-x86-64.so.2 $LFS/lib64
-                    ln -sfv ../lib/ld-linux-x86-64.so.2 $LFS/lib64/ld-lsb-x86-64.so.3
+            x86_64) 
+                ln -sfv ../lib/ld-linux-x86-64.so.2 $LFS/lib64
+                ln -sfv ../lib/ld-linux-x86-64.so.2 $LFS/lib64/ld-lsb-x86-64.so.3
             ;;
         esac
         curl -O https://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.41-fhs-1.patch
@@ -326,7 +328,7 @@ jenkins_jobs:
           sed -e 's/^#if.*XOPEN.*$/#if 1/' \
               -i $LFS/usr/include/curses.h
 
-
+    # TODO = During ARM build  CFLAGS="-Wno-implicit-function-declaration", why?
     - name: Bash-5.2.37 (Cross Compiling Temporary Tools)
       archive_file: /mnt/lfs/sources/bash-5.2.37.tar.gz
       source_dir: /mnt/lfs/sources/bash-5.2.37
