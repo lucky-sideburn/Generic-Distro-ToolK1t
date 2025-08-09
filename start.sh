@@ -1,5 +1,5 @@
 #!/bin/bash
-CMD_BASE=
+ansible_cmd="ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml "
 
 function show_menu() {
   echo "Select an option:"
@@ -25,73 +25,73 @@ function show_menu() {
   case $choice in
     1)
       echo "Building AMD64 all Jenkins Jobs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml --tags amd64
+      $ansible_cmd --tags amd64_jobs
       ;;
 
     2)
       echo "Building AMD64 cross_toolchain Jenkins Jobs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml --tags cross_toolchain
+      $ansible_cmd --tags amd64_cross_toolchain
       ;;
 
     3)
       echo "Building AMD64 cross_compiling_temporary_tools Jenkins Jobs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml --tags cross_compiling_temporary_tools
+      $ansible_cmd --tags amd64_cross_compiling_temporary_tools
       ;;
 
     4)
       echo "Building AMD64 chroot_and_building_additional_temporary_tools Jenkins Jobs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml --tags chroot_and_building_additional_temporary_tools
+      $ansible_cmd --tags amd64_chroot_and_building_additional_temporary_tools
       ;;
 
     5)
       echo "Building AMD64 basic_system_software Jenkins Jobs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml --tags basic_system_software
+      $ansible_cmd --tags amd64_basic_system_software
       ;;
 
     6)
       echo "Building AMD64 system_configuration Jenkins Jobs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml --tags system_configuration
+      $ansible_cmd --tags amd64_system_configuration
       ;;
 
     7)
       echo "Building AMD64 containers Jenkins Jobs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml --tags containers
+      $ansible_cmd --tags amd64_containers
       ;;
 
     8)
       echo "Building AARCH64 all Jenkins Jobs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml --tags aarch64
+      $ansible_cmd --tags aarch64_jobs
       ;;
 
     9)
       echo "Building AARCH64 cross_toolchain Jenkins Jobs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml --tags cross_toolchain,aarch64
+      $ansible_cmd --tags aarch64_cross_toolchain
 
       ;;
 
     10)
       echo "Building AARCH64 cross_compiling_temporary_tools Jenkins Jobs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml --tags cross_compiling_temporary_tools,aarch64
+      $ansible_cmd --tags aarch64_cross_compiling_temporary_tools
       ;;
 
     11)
       echo "Building AARCH64 chroot_and_building_additional_temporary_tools Jenkins Jobs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml --tags chroot_and_building_additional_temporary_tools,aarch64
+      $ansible_cmd --tags aarch64_chroot_and_building_additional_temporary_tools
       ;;
 
     12)
       echo "Building AARCH64 basic_system_software Jenkins Jobs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml --tags basic_system_software,aarch64
+      $ansible_cmd --tags aarch64_basic_system_software
       ;;
 
     13)
       echo "Building AARCH64 system_configuration Jenkins Jobs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml --tags system_configuration,aarch64
+      $ansible_cmd --tags aarch64_system_configuration
       ;;
 
     14)
       echo "Building AARCH64 containers Jenkins Jobs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml --tags containers,aarch64
+      $ansible_cmd --tags aarch64_containers
       ;;
 
     15)
@@ -111,7 +111,12 @@ echo " Welcome to the Generic Distro Toolkit! "
 echo "========================================="
 echo
 
-if [ ! -f jenkins-lfs/inventories/hosts_prod.ini ];then
+if ! command -v ansible-playbook &> /dev/null; then
+  echo "Error: 'ansible-playbook' command not found. Please install Ansible before running this script."
+  exit 1
+fi
+
+if [ ! -f jenkins-lfs/inventories/hosts_prod.ini ]; then
   echo "Error: Inventory file 'hosts_prod.ini' not found in 'jenkins-lfs/inventories/'."
   echo "Please create it from jenkins-lfs/inventories/hosts.ini. It contains secrets like Jenkins credentials."
   exit 1

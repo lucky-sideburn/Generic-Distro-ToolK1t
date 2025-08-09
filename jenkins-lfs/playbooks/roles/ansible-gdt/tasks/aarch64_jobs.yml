@@ -1,10 +1,11 @@
 - name: "Include conf.yml tasks"
   include_tasks: conf.yml
+  tags: system_configuration
 
 - name: Print that is building ARM aarch64 jobs
   ansible.builtin.debug:
     msg: "Building ARM jobs"
-  tags: aarch64
+  tags: aarch64_jobs
 
 - name: "Create Jenkins Folder"
   ansible.builtin.uri:
@@ -40,6 +41,9 @@
     timeout: 60
   loop: "{{ jenkins_jobs.arm_folders }}"
   ignore_errors: yes
+  tags:
+    - aarch64_jobs
+    - aarch64_folders
   
 # CROSS TOOLCHAIN
 - name: "Create Jenkins Jobs - Cross Toolchain Jobs (ARM)"
@@ -87,6 +91,9 @@
     timeout: 60
   loop: "{{ jenkins_jobs.cross_toolchain }}"
   ignore_errors: yes
+  tags:
+    - aarch64_jobs
+    - aarch64_cross_toolchain
 
 - name: "Create Jenkins Jobs - Cross Compiling Temporary Tools (ARM)"
   ansible.builtin.uri:
@@ -133,6 +140,9 @@
     timeout: 60
   loop: "{{ jenkins_jobs.cross_compiling_temporary_tools }}"
   ignore_errors: yes
+  tags:
+    - aarch64_jobs
+    - aarch64_cross_compiling_temporary_tools
 
 - name: "Create Jenkins Jobs - Chroot And Building Additional Temporary Tools (ARM)"
   ansible.builtin.uri:
@@ -177,6 +187,9 @@
     timeout: 60
   loop: "{{ jenkins_jobs.chroot_and_building_additional_temporary_tools }}"
   ignore_errors: yes
+  tags:
+    - aarch64_jobs
+    - aarch64_chroot_and_building_additional_temporary_tools
 
 - name: "Create Jenkins Jobs - Basic System Software (ARM)"
   ansible.builtin.uri:
@@ -221,6 +234,9 @@
     timeout: 60
   loop: "{{ jenkins_jobs.basic_system_software }}"
   ignore_errors: yes
+  tags: 
+    - aarch64_jobs
+    - aarch64_basic_system_software
 
 - name: "Create Jenkins Jobs - Basic System Configuration (ARM)"
   ansible.builtin.uri:
@@ -265,3 +281,6 @@
     timeout: 60
   loop: "{{ jenkins_jobs.system_configuration }}"
   ignore_errors: yes
+  tags: 
+    - aarch64_jobs
+    - aarch64_system_configuration
