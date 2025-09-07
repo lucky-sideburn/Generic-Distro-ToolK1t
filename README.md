@@ -27,10 +27,6 @@ Generic-Distro-ToolK1t/
 │       └── aarch64_lfs.yml    # Configure the aarch64 build node (also acts as Jenkins slave)
 │       └── reset_jobs.yml     # Remove all Jenkins jobs
 │       └── starts.yml         # Launch ansible-gdt role (start.sh injects tags to start specific tasks)
-├── service-manager/           # Go-based service manager (work in progress)
-│   ├── main.go                # Terminal UI for managing services
-│   ├── go.mod                 # Go module dependencies
-│   └── README.md              # Service manager documentation
 ├── images/                    # Screenshots and documentation assets
 ├── os_images/                 # Vagrant-synced folder containing *.img files (aarch64)
 └── Vagrantfile                # Defines the aarch64 build node (amd64 builds run directly on Jenkins master for now)
