@@ -135,7 +135,7 @@ function show_menu() {
 
     8)
       echo "Building AARCH64 all Jenkins Jobs..."
-      ansible_cmd_cmd --tags aarch64_jobs
+      ansible_cmd --tags aarch64_jobs
       ;;
 
     9)
