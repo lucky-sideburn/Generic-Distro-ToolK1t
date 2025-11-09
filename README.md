@@ -1,6 +1,7 @@
 # Generic Distro Toolkit for GNU/Linux
 ## Another approach to ALFS (Automated Linux From Scratch)
-
+[https://devopstribe.it/2025/08/18/my-journey-in-building-a-gnu-linux-aarch64-arm-system/
+](https://devopstribe.it/2025/08/18/my-journey-in-building-a-gnu-linux-aarch64-arm-system/)
 ![LFS Build Process](images/lfs1.gif)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
