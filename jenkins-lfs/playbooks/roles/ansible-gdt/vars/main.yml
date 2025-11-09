@@ -3648,9 +3648,9 @@ jenkins_jobs:
         '
 
     - name: 0004 - kubernetes (Containers)
-      version: 1.33
-      archive_file: /sources/kubernetes
-      source_dir: /sources/kubernetes
+      version: 1.33.5
+      archive_file: /sources/kubernetes-1.33.5.tar.gz
+      source_dir: /sources/kubernetes-1.33.5
       description: |
         Kubernetes is an open-source container orchestration platform that automates the deployment, scaling, and management of containerized applications. This job builds Kubernetes, which is essential for managing containers in the LFS environment.
       category:
@@ -3659,8 +3659,7 @@ jenkins_jobs:
       build_tool: true
       exec_command: echo
       build_command: |  
-        cd /mnt/lfs/sources/kubernetes
-        git checkout origin/release-1.33
+        cd /mnt/lfs/sources/kubernetes-1.33.5
         sudo GOFLAGS="-buildvcs=false" make quick-release
         sudo GOFLAGS="-buildvcs=false" make WHAT=cmd/kubeadm
         cd _output/release-stage/server/linux-amd64/kubernetes/server/bin
