@@ -325,7 +325,7 @@ menuentry "GNU/Linux, Linux 6.13.4-lfs-12.3" {
   set gfxpayload=keep
 
   linux /vmlinuz-6.13.4-lfs-12.3 root=/dev/vda2 ro nomodeset debug earlyprintk=efi,keep ${GRUB_CONSOLE}
-  # initrd /initrd.img-6.13.4
+  initrd /initrd.img-6.13.4
 }
 
 EOF

@@ -3466,6 +3466,28 @@ jenkins_jobs:
           make install
         '
 
+    - name: 0109 - Dialogs (Basic System Software) OPTIONAL
+      version: 2.15
+      archive_file: /sources/dialog.tar.gz
+      source_dir: /sources/dialog-1.3-20251223
+      description: |
+        Dialog is a tool for creating text-based user interfaces. This job builds Dialog, which is essential for managing file archives in the LFS environment.
+      category:
+        This job is part of the system configuration setup, specifically for building Dialog.
+      jenkins_job_url: http://localhost:8080/job/system_configuration/Dialogs-1.3-20251223
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/dialog-1.3-20251223
+          ./configure --prefix=/usr \
+                      --with-ncursesw \
+                      --enable-nls \
+                      --with-libtool
+          make
+          make install
+        '
+
   system_configuration:
     - name: 0001 - LFS-Bootscripts (System Configuration)
       version: 20240825
