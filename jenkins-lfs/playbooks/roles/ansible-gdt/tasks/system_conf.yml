@@ -159,3 +159,9 @@
     src: init.in
     dest: /mnt/lfs/sources/conf_tmp/init.in
     mode: '0755'
+
+- name: Copy system-installer.sh
+  ansible.builtin.copy:
+    src: system-installer.sh
+    dest: /mnt/lfs/sources/system-installer.sh
+    mode: '0755'

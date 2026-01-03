@@ -127,7 +127,7 @@ sudo rsync -a --stats --exclude='boot' --exclude='tools' --exclude='sources' /mn
 
 
 if [[ "$BUILD_MODE" == "host_libvirt_amd64" ]]; then
-  GRUB_CONSOLE="console=tty1"
+  GRUB_CONSOLE="console=ttyS0,115200 console=tty1"
   GRUB_TARGET=i386-pc
   GRUB_DISK_FSTAB="/dev/vda1      /boot              ext4     defaults            1     1"
   NET_DEV="ens3"

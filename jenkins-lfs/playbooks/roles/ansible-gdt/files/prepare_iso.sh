@@ -4,7 +4,7 @@ sudo mkdir -p $ISO_WORKSPACE
 
 # 2. Copy EVERYTHING from your LFS root (except /proc, /sys, /dev)
 # Use -a to preserve permissions/symlinks which are critical for LFS
-sudo rsync -a --progress --exclude='sources' /mnt/lfs/ $ISO_WORKSPACE/
+sudo rsync -a --progress --exclude='/sources' --exclude='/build' /mnt/lfs/ $ISO_WORKSPACE/
 
 # 3. Ensure the kernel is in the right place inside the workspace
 sudo cp /mnt/lfs/boot/vmlinuz-6.13.4-lfs-12.3 $ISO_WORKSPACE/boot/vmlinuz
@@ -14,8 +14,8 @@ sudo mkdir -p $ISO_WORKSPACE/boot/grub
 sudo tee $ISO_WORKSPACE/boot/grub/grub.cfg << EOF
 set default=0
 set timeout=10
-menuentry "LFS Live ISO (Full System)" {
-    linux /boot/vmlinuz root=/dev/sr0 ro rootfstype=iso9660 init=/sbin/init
+menuentry "DevOpsTribe GNU/Linux" {
+    linux /boot/vmlinuz root=/dev/sr0 ro rootfstype=iso9660 init=/sbin/init console=ttyS0,115200 console=tty1
     initrd /boot/initrd.img-6.13.4
 }
 EOF
@@ -43,7 +43,7 @@ l5:5:wait:/etc/rc.d/init.d/rc 5
 l6:6:wait:/etc/rc.d/init.d/rc 6
 
 # Consoles
-1:2345:respawn:/sbin/agetty --noclear tty1 9600
+1:2345:respawn:/sbin/agetty --autologin root --noclear -n tty1 9600
 2:2345:respawn:/sbin/agetty tty2 9600
 3:2345:respawn:/sbin/agetty tty3 9600
 
@@ -117,6 +117,45 @@ esac
 
 # End hostname
 EOF
+
+sudo cp /mnt/lfs/sources/system-installer.sh $ISO_WORKSPACE/usr/local/bin/system-installer.sh
+sudo chmod +x $ISO_WORKSPACE/usr/local/bin/system-installer.sh
+
+> $ISO_WORKSPACE/root/.bashrc 
+> $ISO_WORKSPACE/root/.bash_profile
+
+sudo tee -a $ISO_WORKSPACE/root/.bashrc << 'EOF'
+#!/bin/bash
+# 1. Stop kernel messages
+dmesg -n 1
+
+# Restore terminal settings
+stty sane
+
+# 2. Clear the screen completely
+clear
+
+# 3. Run your dialog
+dialog --msgbox "System Ready" 10 30
+
+# 4. Optional: Restore kernel logging on exit
+dmesg -n 7
+
+# Auto-start installer on first login
+if [ -f /usr/local/bin/system-installer.sh ]; then
+    #exec /usr/local/bin/system-installer.sh
+    /usr/local/bin/system-installer.sh
+fi
+EOF
+
+sudo tee -a $ISO_WORKSPACE/root/.bash_profile << 'EOF'
+# Carica il bashrc se esiste
+if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+fi
+EOF
+
+cat $ISO_WORKSPACE/root/.bash_profile
 
 sudo chmod +x $ISO_WORKSPACE/etc/rc.d/init.d/hostname
 
