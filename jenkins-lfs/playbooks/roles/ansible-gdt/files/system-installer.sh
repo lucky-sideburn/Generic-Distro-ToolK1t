@@ -16,7 +16,7 @@ fi
 
 # Welcome screen
 $DIALOG --title "LFS System Installer" \
-    --msgbox "Welcome to the DevOpsTribe GNU/Linux Installer!\n\nThis will install DevOpsTribe GNU/Linux to your hard drive.\n\nPress OK to continue." 10 50
+    --msgbox "Welcome to the DevOpsTribe GNU/Linux Installer!\n\nThis will install the operating system to your hard drive.\n\nPress OK to continue." 10 50
 
 # Detect available disks
 DISKS=$(lsblk -dpno NAME,SIZE,TYPE | grep disk | awk '{print $1 " \"" $2 "\""}')

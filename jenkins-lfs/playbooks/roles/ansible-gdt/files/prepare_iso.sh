@@ -9,14 +9,42 @@ sudo rsync -a --progress --exclude='/sources' --exclude='/build' /mnt/lfs/ $ISO_
 # 3. Ensure the kernel is in the right place inside the workspace
 sudo cp /mnt/lfs/boot/vmlinuz-6.13.4-lfs-12.3 $ISO_WORKSPACE/boot/vmlinuz
 
+sudo mkdir dir -p $ISO_WORKSPACE/live
+
+LFS_KERNEL_VERSION="6.13.4" # Change to your exact version
+LFS_ROOT="/mnt/lfs"         # Your LFS mount point
+
+sudo dracut --force \
+    --kver $LFS_KERNEL_VERSION \
+    --kmoddir $LFS_ROOT/lib/modules/$LFS_KERNEL_VERSION \
+    --add "dmsquash-live bash kernel-modules rootfs-block base multipath" \
+    --omit "systemd" \
+    --filesystems "iso9660 squashfs overlay" \
+    --drivers "sr_mod sd_mod usb_storage uas cdrom" \
+    /tmp/initrd
+
+sudo cp /tmp/initrd $ISO_WORKSPACE/live/initrd
+sudo cp /mnt/lfs/boot/vmlinuz-6.13.4-lfs-12.3 $ISO_WORKSPACE/live/vmlinuz
+
 # 4. Create the GRUB config INSIDE the workspace
 sudo mkdir -p $ISO_WORKSPACE/boot/grub
+
 sudo tee $ISO_WORKSPACE/boot/grub/grub.cfg << EOF
+insmod part_gpt
+insmod part_msdos
+insmod iso9660
+insmod all_video
+
 set default=0
-set timeout=10
-menuentry "DevOpsTribe GNU/Linux" {
-    linux /boot/vmlinuz root=/dev/sr0 ro rootfstype=iso9660 init=/sbin/init console=ttyS0,115200 console=tty1
-    initrd /boot/initrd.img-6.13.4
+set timeout=5
+
+# GRUB cerca la partizione per caricare Kernel e Initrd
+search --no-floppy --set=root --label DEVOPS_ISO
+
+menuentry "DevOpsTribe GNU/Linux Live" {
+    set gfxpayload=keep
+    linux /live/vmlinuz boot=live root=LABEL=DEVOPS_ISO rootwait quiet splash
+    initrd /live/initrd
 }
 EOF
 
@@ -43,7 +71,8 @@ l5:5:wait:/etc/rc.d/init.d/rc 5
 l6:6:wait:/etc/rc.d/init.d/rc 6
 
 # Consoles
-1:2345:respawn:/sbin/agetty --autologin root --noclear -n tty1 9600
+# 1:2345:respawn:/sbin/agetty --autologin root --noclear -n tty1 9600
+1:2345:respawn:/sbin/agetty tty1 9600
 2:2345:respawn:/sbin/agetty tty2 9600
 3:2345:respawn:/sbin/agetty tty3 9600
 
@@ -136,16 +165,15 @@ stty sane
 clear
 
 # 3. Run your dialog
-dialog --msgbox "System Ready" 10 30
+dialog --msgbox "Welcome to DevOpsTribe GNU/Linux" 10 30
 
 # 4. Optional: Restore kernel logging on exit
 dmesg -n 7
 
 # Auto-start installer on first login
-if [ -f /usr/local/bin/system-installer.sh ]; then
-    #exec /usr/local/bin/system-installer.sh
-    /usr/local/bin/system-installer.sh
-fi
+# if [ -f /usr/local/bin/system-installer.sh ]; then
+#     exec /usr/local/bin/system-installer.sh
+# fi
 EOF
 
 sudo tee -a $ISO_WORKSPACE/root/.bash_profile << 'EOF'
@@ -159,10 +187,22 @@ cat $ISO_WORKSPACE/root/.bash_profile
 
 sudo chmod +x $ISO_WORKSPACE/etc/rc.d/init.d/hostname
 
-# Link it to run early in boot
 sudo ln -sf ../init.d/hostname $ISO_WORKSPACE/etc/rc.d/rcS.d/S02hostname
 
-# 5. Generate the ISO
-# WARNING: This ISO will be the size of your entire LFS install
-sudo grub-mkrescue -o /var/lib/libvirt/images/lfs-system.iso $ISO_WORKSPACE -- -hfsplus off
+sudo mksquashfs /mnt/lfs/ $ISO_WORKSPACE/live/filesystem.squashfs \
+  -e boot \
+  -e sources \
+  -e dev/* \
+  -e proc/* \
+  -e sys/* \
+  -e run/* \
+  -e tmp/* \
+  -comp xz
+
+sudo grub-mkrescue --iso-level 3 \
+  -o /var/lib/libvirt/images/lfs-system.iso $ISO_WORKSPACE -- -volid "DEVOPS_ISO" \
+     -publisher "DevOpsTribe" \
+     -hfsplus off
+
 sudo chown libvirt-qemu:kvm /var/lib/libvirt/images/lfs-system.iso
+

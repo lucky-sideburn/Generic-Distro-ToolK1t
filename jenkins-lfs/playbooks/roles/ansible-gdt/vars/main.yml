@@ -96,6 +96,7 @@ jenkins_jobs:
     - 1.4 - aarch64_basic_system_software
     - 1.5 - aarch64_system_configuration
     - 1.6 - aarch64_containers
+    - 1.7 - aarch64_genai
 
   amd64_folders:
     - 2.1 - amd64_cross_toolchain
@@ -104,6 +105,7 @@ jenkins_jobs:
     - 2.4 - amd64_basic_system_software
     - 2.5 - amd64_system_configuration
     - 2.6 - amd64_containers
+    - 2.7 - amd64_genai
 
   setup:
     - Host System Requirements
@@ -117,7 +119,6 @@ jenkins_jobs:
         This job configures Jenkins to use the jenkins_jobs tool for managing jobs. It sets up the necessary configuration files and ensures that Jenkins can manage jobs effectively.
       category:
         This job is part of the Ansible setup, specifically for configuring Jenkins to use jenkins_jobs.
-      jenkins_job_url: http://localhost:8080/job/ansible/job/Configure%20Jenkins%20jenkins_jobs/
       build_command: echo
       build_tool: false
       exec_command: |
@@ -130,7 +131,6 @@ jenkins_jobs:
         This job configures Jenkins to use the jenkins_jobs tool for managing jobs. It sets up the necessary configuration files and ensures that Jenkins can manage jobs effectively.
       category:
         This job is part of the Ansible setup, specifically for configuring Jenkins to use jenkins_jobs.
-      jenkins_job_url: http://localhost:8080/job/ansible/job/Configure%20Jenkins%20jenkins_jobs/
       build_command: echo
       build_tool: false
       exec_command: |
@@ -145,7 +145,6 @@ jenkins_jobs:
         The Binutils package is a collection of tools for handling binary files, including the linker, assembler, and other utilities. It is crucial for building software in the LFS environment.
       category:
         This job is part of the cross toolchain setup, specifically for building the first pass of Binutils.
-      jenkins_job_url: http://localhost:8080/job/cross_toolchain/job/Binutils%20-%20Pass%201%20(Cross%20Toolchain)/
       build_command: |
         {{ dedicated_build_dir }}
         ../configure --prefix=$LFS/tools \
@@ -167,7 +166,6 @@ jenkins_jobs:
         The GCC (GNU Compiler Collection) is a compiler system that supports various programming languages. This job builds the first pass of GCC, which is essential for compiling other software in the LFS environment.
       category:
         This job is part of the cross toolchain setup, specifically for building the first pass of GCC.
-      jenkins_job_url: http://localhost:8080/job/cross_toolchain/job/GCC-14.2.0%20-%20Pass%201%20(Cross%20Toolchain)/
       build_command: |
 
         # Cannot user AND bash operator due to and error in Jenkins API
@@ -222,7 +220,6 @@ jenkins_jobs:
         The Linux kernel provides the core of the operating system, and this job installs the necessary API headers for building software in the LFS environment. 
       category:
         This job is part of the cross toolchain setup, specifically for installing the Linux kernel API headers.
-      jenkins_job_url: http://localhost:8080/job/cross_toolchain/job/Linux-6.13.4%20API%20Headers%20(Cross%20Toolchain)/
       build_command: |
         make mrproper
         make headers
@@ -237,7 +234,6 @@ jenkins_jobs:
         The GNU C Library (glibc) is the standard C library for the GNU operating system and provides essential system calls and basic functions for all programs. This job builds and installs glibc, which is crucial for the LFS environment.
       category:
         This job is part of the cross toolchain setup, specifically for building and installing glibc.
-      jenkins_job_url: http://localhost:8080/job/cross_toolchain/job/Glibc-2.41%20(Cross%20Toolchain)/
       build_command: |
         case $(uname -m) in
             i?86)   
@@ -275,7 +271,6 @@ jenkins_jobs:
         The GNU Standard C++ Library (libstdc++) is the standard C++ library for the GNU Compiler Collection (GCC). This job builds and installs libstdc++, which is essential for C++ development in the LFS environment.
       category:
         This job is part of the cross toolchain setup, specifically for building and installing libstdc++ from GCC-14.2.0.
-      jenkins_job_url: http://localhost:8080/job/cross_toolchain/job/Libstdc++%20from%20GCC-14.2.0%20(Cross%20Toolchain)/
       build_command: |
         {{ dedicated_build_dir }}
         ../libstdc++-v3/configure         \
@@ -302,7 +297,6 @@ jenkins_jobs:
         M4 is a macro processor that is used by many build systems to generate configuration files and other scripts. This job builds M4, which is necessary for processing macros in the LFS environment.  
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building M4.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/M4-1.4.19%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         ./configure --prefix=/usr   \
                     --host=$LFS_TGT \
@@ -318,7 +312,6 @@ jenkins_jobs:
         Ncurses is a library that provides functions to write text-based user interfaces in a terminal. This job builds Ncurses, which is essential for many terminal-based applications in the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building Ncurses.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/Ncurses-6.5%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         mkdir build || echo "Creating build directory failed, continuing anyway"
         pushd build
@@ -354,7 +347,6 @@ jenkins_jobs:
         Bash is the GNU Bourne Again SHell, a command processor that typically runs in a text window where the user types commands that cause actions. This job builds Bash, which is essential for the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building Bash.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/Bash-5.2.37%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         ./configure --prefix=/usr                      \
                     --build=$(sh support/config.guess) \
@@ -372,7 +364,6 @@ jenkins_jobs:
         Coreutils is a package that contains the basic file, shell, and text manipulation utilities of the GNU operating system. This job builds Coreutils, which provides essential commands for managing files and processes in the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building Coreutils.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/Coreutils-9.6%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
             ./configure --prefix=/usr             \
                 --host=$LFS_TGT                   \
@@ -395,7 +386,6 @@ jenkins_jobs:
         Diffutils is a package that contains the GNU diff, cmp, comm, and sdiff utilities, which are used to compare files and directories. This job builds Diffutils, which is essential for file comparison in the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building Diffutils.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/Diffutils-3.11%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         ./configure --prefix=/usr   \
                     --host=$LFS_TGT \
@@ -411,7 +401,6 @@ jenkins_jobs:
         File is a utility that determines the type of a file based on its content. This job builds File, which is essential for identifying file types in the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building File.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/File-5.46%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         mkdir build
         pushd build
@@ -434,7 +423,6 @@ jenkins_jobs:
         Findutils is a package that provides the find, xargs, and locate utilities, which are used to search for files and directories. This job builds Findutils, which is essential for file searching in the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building Findutils.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/Findutils-4.10.0%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         ./configure --prefix=/usr                   \
                     --localstatedir=/var/lib/locate \
@@ -451,7 +439,6 @@ jenkins_jobs:
         Gawk is a programming language designed for text processing and typically used as a data extraction and reporting tool. This job builds Gawk, which is essential for text processing in the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building Gawk.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/Gawk-5.3.1%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         sed -i 's/extras//' Makefile.in
         ./configure --prefix=/usr   \
@@ -468,7 +455,6 @@ jenkins_jobs:
         Grep is a command-line utility for searching plain-text data for lines that match a regular expression. This job builds Grep, which is essential for text searching in the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building Grep.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/Grep-3.11%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         ./configure --prefix=/usr   \
                     --host=$LFS_TGT \
@@ -484,7 +470,6 @@ jenkins_jobs:
         Gzip is a file compression utility that reduces the size of files using the DEFLATE algorithm. This job builds Gzip, which is essential for file compression in the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building Gzip.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/Gzip-1.13%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         ./configure --prefix=/usr --host=$LFS_TGT
         make
@@ -498,7 +483,6 @@ jenkins_jobs:
         Make is a build automation tool that automatically builds executable programs and libraries from source code by reading files called Makefiles. This job builds Make, which is essential for building software in the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building Make.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/Make-4.4.1%20(Cross%20Compiling%20Temporary%20Tools)/  
       build_command: |
         ./configure --prefix=/usr   \
                     --without-guile \
@@ -515,7 +499,6 @@ jenkins_jobs:
         Patch is a utility that applies changes to files based on a diff file. This job builds Patch, which is essential for applying patches in the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building Patch.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/Patch-2.7.6%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         ./configure --prefix=/usr   \
                     --host=$LFS_TGT \
@@ -531,7 +514,6 @@ jenkins_jobs:
         Sed is a stream editor that can perform basic text transformations on an input stream (a file or input from a pipeline). This job builds Sed, which is essential for text processing in the LFS environment.  
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building Sed.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/Sed-4.9%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         ./configure --prefix=/usr   \
                     --host=$LFS_TGT \
@@ -547,7 +529,6 @@ jenkins_jobs:
         Tar is a utility for collecting many files into one archive file, often used for backup and distribution. This job builds Tar, which is essential for file archiving in the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building Tar.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/Tar-1.35%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         ./configure --prefix=/usr                     \
                     --host=$LFS_TGT                   \
@@ -563,7 +544,6 @@ jenkins_jobs:
         Xz is a data compression tool that uses the LZMA algorithm. This job builds Xz, which is essential for file compression in the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building Xz.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/Xz-5.6.4%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         ./configure --prefix=/usr                     \
                     --host=$LFS_TGT                   \
@@ -583,7 +563,6 @@ jenkins_jobs:
         The Binutils package is a collection of tools for handling binary files, including the linker, assembler, and other utilities. This job builds the second pass of Binutils, which is essential for building software in the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building the second pass of Binutils.
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/Binutils-2.44%20-%20Pass%202%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         cd $LFS/sources
         rm -rf /mnt/lfs/sources/binutils-2.44 || echo "Removing binutils-2.44 directory failed, continuing anyway"
@@ -615,7 +594,6 @@ jenkins_jobs:
         The GCC (GNU Compiler Collection) is a compiler system that supports various programming languages. This job builds the second pass of GCC, which is essential for compiling other software in the LFS environment.
       category:
         This job is part of the cross compiling temporary tools setup, specifically for building the second pass of GCC.  
-      jenkins_job_url: http://localhost:8080/job/cross_compiling_temporary_tools/job/GCC-14.2.0%20-%20Pass%202%20(Cross%20Compiling%20Temporary%20Tools)/
       build_command: |
         cd $LFS/sources
         rm -rf /mnt/lfs/sources/gcc-14.2.0
@@ -671,7 +649,6 @@ jenkins_jobs:
         This job changes the ownership of the LFS directories to root:root and prepares the environment for chrooting into the LFS system. It mounts necessary filesystems and sets up the environment for building additional temporary tools.
       category:
         This job is part of the chroot and building additional temporary tools setup, specifically for changing ownership and preparing the environment.
-      jenkins_job_url: http://localhost:8080/job/chroot_and_building_additional_temporary_tools/job/Changing%20Ownership%20(Chroot%20and%20Building%20Additional%20Temporary%20Tools)/
       build_tool: false
       build_command: echo
       exec_command: |
@@ -795,7 +772,6 @@ jenkins_jobs:
         Gettext is a set of tools for internationalization and localization of software. This job builds Gettext, which is essential for providing translations in the LFS environment.
       category:
         This job is part of the chroot and building additional temporary tools setup, specifically for building Gettext.
-      jenkins_job_url: http://localhost:8080/job/chroot_and_building_additional_temporary_tools/job/Gettext-0.24%20(Chroot%20and%20Building%20Additional%20Temporary%20Tools)/
       exec_command: echo
       build_tool: true
       build_command: |
@@ -814,7 +790,6 @@ jenkins_jobs:
         Bison is a parser generator that is part of the GNU Project. This job builds Bison, which is essential for generating parsers in the LFS environment.
       category:
         This job is part of the chroot and building additional temporary tools setup, specifically for building Bison.
-      jenkins_job_url: http://localhost:8080/job/chroot_and_building_additional_temporary_tools/job/Bison-3.8.2%20(Chroot%20and%20Building%20Additional%20Temporary%20Tools)/
       exec_command: echo
       build_tool: true
       build_command: |
@@ -834,7 +809,6 @@ jenkins_jobs:
         Perl is a high-level, general-purpose, interpreted, dynamic programming language. This job builds Perl, which is essential for scripting and automation in the LFS environment.
       category:
         This job is part of the chroot and building additional temporary tools setup, specifically for building Perl.
-      jenkins_job_url: http://localhost:8080/job/chroot_and_building_additional_temporary_tools/job/Perl-5.40.1%20(Chroot%20and%20Building%20Additional%20Temporary%20Tools)/
       exec_command: echo
       build_tool: true
       build_command: |
@@ -863,7 +837,6 @@ jenkins_jobs:
         Python is a high-level, interpreted programming language known for its readability and versatility. This job builds Python, which is essential for scripting and automation in the LFS environment.
       category:
         This job is part of the chroot and building additional temporary tools setup, specifically for building Python.
-      jenkins_job_url: http://localhost:8080/job/chroot_and_building_additional_temporary_tools/job/Python-3.13.2%20(Chroot%20and%20Building%20Additional%20Temporary%20Tools)/
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -885,7 +858,6 @@ jenkins_jobs:
         Texinfo is a documentation system that uses a single source file to produce both online and printed documentation. This job builds Texinfo, which is essential for generating documentation in the LFS environment.
       category:
         This job is part of the chroot and building additional temporary tools setup, specifically for building Texinfo.
-      jenkins_job_url: http://localhost:8080/job/chroot_and_building_additional_temporary_tools/job/Texinfo-7.2%20(Chroot%20and%20Building%20Additional%20Temporary%20Tools)/
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/texinfo-7.2
@@ -902,7 +874,6 @@ jenkins_jobs:
         Util-linux is a standard package that contains a variety of essential utilities for Linux systems, including mount, fdisk, and more. This job builds Util-linux, which is essential for system management in the LFS environment.
       category:
         This job is part of the chroot and building additional temporary tools setup, specifically for building Util-linux.
-      jenkins_job_url: http://localhost:8080/job/chroot_and_building_additional_temporary_tools/job/Util-linux-2.40.4%20(Chroot%20and%20Building%20Additional%20Temporary%20Tools)/
       exec_command: echo
       build_tool: true
       build_command: |
@@ -937,7 +908,6 @@ jenkins_jobs:
         This job cleans up the temporary system by removing unnecessary files and directories, ensuring that the LFS environment is ready for the next steps. It also saves the temporary system state.
       category:
         This job is part of the chroot and building additional temporary tools setup, specifically for cleaning up and saving the temporary system.
-      jenkins_job_url: http://localhost:8080/job/chroot_and_building_additional_temporary_tools/job/Cleaning%20up%20and%20Saving%20the%20Temporary%20System%20(Chroot%20and%20Building%20Additional%20Temporary%20Tools)/
       exec_command: |
         {{ chroot_start_command }} -c '
         rm -rf /usr/share/{info,man,doc}/*
@@ -954,7 +924,6 @@ jenkins_jobs:
         This job is part of the basic system software setup, specifically for building a standard toolchain and essential system utilities.
       description: |
         Man-pages provides the manual pages for the Linux operating system, which are essential for understanding commands and system calls. This build man-pages, which is crucial for documentation in the LFS environment.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/man-pages-6.12%20(Basic%20System%20Software)/
       exec_command: echo
       build_tool: true
       build_command: |
@@ -972,7 +941,6 @@ jenkins_jobs:
         Iana-Etc provides the standard files for network protocols and services, which are essential for networking in the LFS environment. This job builds Iana-Etc, which is crucial for network configuration.
       category:
         This job is part of the basic system software setup, specifically for building Iana-Etc.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Iana-Etc-202
       exec_command: echo
       build_tool: true
       build_command: |
@@ -990,7 +958,6 @@ jenkins_jobs:
         Glibc (GNU C Library) is the standard C library for the GNU operating system. It provides the core libraries for the system, including functions for memory management, string manipulation, and input/output operations. This job builds Glibc, which is essential for the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Glibc.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Glibc-2.41
       build_tool: true
       build_command: |
         cd /mnt/lfs/sources
@@ -1096,7 +1063,6 @@ jenkins_jobs:
         Zlib is a compression library that provides functions for data compression and decompression. This job builds Zlib, which is essential for handling compressed data in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Zlib.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Zlib-1.3.1
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1117,7 +1083,6 @@ jenkins_jobs:
         Bzip2 is a high-quality data compression program that is used to compress files and directories. This job builds Bzip2, which is essential for handling compressed files in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Bzip2.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Bzip2-1.0.8
       build_command: |
         curl -O https://linuxfromscratch.org/patches/downloads/bzip2/bzip2-1.0.8-install_docs-1.patch
         {{ chroot_start_command }} -c '
@@ -1149,7 +1114,6 @@ jenkins_jobs:
         Xz is a data compression tool that uses the LZMA algorithm for high compression ratios. This job builds Xz, which is essential for handling compressed files in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Xz.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Xz-5.6.4
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/xz-5.6.4
@@ -1174,7 +1138,6 @@ jenkins_jobs:
         Lz4 is a fast compression algorithm that is designed for speed and efficiency. This job builds Lz4, which is essential for handling compressed data in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Lz4.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Lz4-1.10.0
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/lz4-1.10.0
@@ -1191,7 +1154,6 @@ jenkins_jobs:
         Zstd is a fast compression algorithm that provides high compression ratios. This job builds Zstd, which is essential for handling compressed data in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Zstd.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Zstd-1.5.7
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1209,7 +1171,6 @@ jenkins_jobs:
         File is a utility that determines the type of a file based on its content. This job builds File, which is essential for identifying file types in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building File.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/File-5.46
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1229,7 +1190,6 @@ jenkins_jobs:
         Readline is a library that provides line-editing and history capabilities for interactive command-line applications. This job builds Readline, which is essential for command-line interfaces in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Readline.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Readline-8.2.13
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/readline-8.2.13
@@ -1249,7 +1209,6 @@ jenkins_jobs:
         M4 is a macro processor that is used to generate text files based on templates. This job builds M4, which is essential for generating configuration files in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building M4.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/M4-1.4.19
       exec_command: echo
       build_tool: true
       build_command: |
@@ -1270,7 +1229,6 @@ jenkins_jobs:
         Bc is an arbitrary precision calculator language that is used for performing mathematical calculations. This job builds Bc, which is essential for mathematical operations in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Bc.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Bc-7.0.3
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/bc-7.0.3
@@ -1289,7 +1247,6 @@ jenkins_jobs:
         Flex is a fast lexical analyzer generator that is used to generate scanners for processing text. This job builds Flex, which is essential for parsing text in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Flex.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Flex-2.6.4
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1312,7 +1269,6 @@ jenkins_jobs:
         Tcl is a scripting language that is used for rapid prototyping, scripted applications, and GUIs. This job builds Tcl, which is essential for scripting in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Tcl.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Tcl-8.6.16
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1333,7 +1289,6 @@ jenkins_jobs:
         Expect is a program that automates interactions with applications that require user input. This job builds Expect, which is essential for automating tasks in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Expect.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Expect-5.45.4
       exec_command: echo
       build_tool: true
       build_command: |
@@ -1363,7 +1318,6 @@ jenkins_jobs:
         DejaGNU is a framework for testing software that provides a consistent interface for running tests. This job builds DejaGNU, which is essential for testing software in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building DejaGNU.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/DejaGNU-1.6.3
       exec_command: echo
       build_tool: true
       build_command: |
@@ -1382,7 +1336,6 @@ jenkins_jobs:
         Pkgconf is a tool that provides information about installed libraries and their dependencies. This job builds Pkgconf, which is essential for managing library dependencies in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Pkgconf.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Pkgconf-2.3.0
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1402,7 +1355,6 @@ jenkins_jobs:
         Pkg-config is a helper tool used when compiling applications and libraries. It helps in managing compile and link flags for libraries. This job builds Pkg-config, which is essential for package management in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Pkg-config.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Pkg-config-0.29.2
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/pkg-config-0.29.2
@@ -1425,7 +1377,6 @@ jenkins_jobs:
         Binutils is a collection of binary tools that are used for managing object files, libraries, and executables. This job builds Binutils, which is essential for compiling and linking programs in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Binutils.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Binutils-2.44
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/binutils-2.44
@@ -1445,7 +1396,6 @@ jenkins_jobs:
         GMP (GNU Multiple Precision Arithmetic Library) is a library for arbitrary precision arithmetic, operating on signed integers, rational numbers, and floating-point numbers. This job builds GMP, which is essential for mathematical operations in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building GMP.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/GMP-6.3.0
       build_tool: true
       exec_command: echo
       build_command: |
@@ -1466,7 +1416,6 @@ jenkins_jobs:
         MPFR (Multiple Precision Floating-Point Reliable Library) is a library for multiple precision floating-point computations with correct rounding. This job builds MPFR, which is essential for high-precision arithmetic in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building MPFR.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/MPFR-4.2.1
       exec_command: echo
       build_tool: true
       build_command: |
@@ -1489,7 +1438,6 @@ jenkins_jobs:
         MPC (Multiple Precision Complex Library) is a library for multiple precision complex arithmetic. This job builds MPC, which is essential for complex arithmetic in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building MPC.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/MPC-1.3.1
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/mpc-1.3.1
@@ -1508,7 +1456,6 @@ jenkins_jobs:
         Attr is a library that provides support for extended attributes on filesystems. This job builds Attr, which is essential for managing file attributes in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Attr.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Attr-2.5.2
       exec_command: echo
       build_tool: true
       build_command: |
@@ -1528,7 +1475,6 @@ jenkins_jobs:
         Acl (Access Control Lists) is a mechanism for defining more fine-grained permissions on files and directories. This job builds Acl, which is essential for managing file permissions in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Acl.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Acl-2.3.2
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1548,7 +1494,6 @@ jenkins_jobs:
         Libcap is a library that provides an interface for getting and setting POSIX capabilities. This job builds Libcap, which is essential for managing capabilities in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Libcap.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libcap-2.73
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/libcap-2.73
@@ -1565,7 +1510,6 @@ jenkins_jobs:
         Libxcrypt is a library that provides functions for password hashing and encryption. This job builds Libxcrypt, which is essential for secure password handling in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Libxcrypt.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libxcrypt-4.4.38
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1584,7 +1528,6 @@ jenkins_jobs:
         Shadow is a suite of utilities for managing user accounts and passwords in Unix-like operating systems. This job builds Shadow, which is essential for user management in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Shadow.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Shadow-4.17.3
       build_tool: true
       build_command: |
         cp /mnt/lfs/sources/shadow-4.17.3.sh /mnt/lfs/sources/shadow-4.17.3/
@@ -1602,7 +1545,6 @@ jenkins_jobs:
         GCC (GNU Compiler Collection) is a compiler system that supports various programming languages. This job builds GCC, which is essential for compiling software in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building GCC.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/GCC-14.2.0
       exec_command: echo
       build_tool: true
       build_command: |
@@ -1651,7 +1593,6 @@ jenkins_jobs:
         Ncurses is a library that provides functions for writing text-based user interfaces in a terminal. This job builds Ncurses, which is essential for terminal-based applications in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Ncurses.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Ncurses-6.5
       exec_command: echo
       build_tool: true
       build_command: |
@@ -1697,7 +1638,6 @@ jenkins_jobs:
         Sed is a stream editor that is used for parsing and transforming text. This job builds Sed, which is essential for text processing in the LFS environment
       category:
         This job is part of the basic system software setup, specifically for building Sed.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Sed-4.9
       exec_command: echo
       build_tool: true
       build_command: |
@@ -1720,7 +1660,6 @@ jenkins_jobs:
         Psmisc is a collection of utilities for managing processes in Unix-like operating systems. This job builds Psmisc, which is essential for process management in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Psmisc.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Psmisc-23.7
       exec_command: echo
       build_tool: true
       build_command: |
@@ -1739,7 +1678,6 @@ jenkins_jobs:
         Gettext is a tool for internationalization and localization of software. This job builds Gettext, which is essential for supporting multiple languages in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Gettext.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Gettext-0.24
       exec_command: echo
       build_tool: true
       build_command: |
@@ -1767,7 +1705,6 @@ jenkins_jobs:
         Bison is a parser generator that is used to generate parsers for programming languages. This job builds Bison, which is essential for parsing in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Bison.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Bison-3.8.2
       exec_command: echo
       build_tool: true
       build_command: |
@@ -1786,7 +1723,6 @@ jenkins_jobs:
         Grep is a command-line utility for searching plain-text data for lines that match a regular expression. This job builds Grep, which is essential for text searching in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Grep.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Grep-3.11
       exec_command: echo
       build_tool: true
       build_command: |
@@ -1807,7 +1743,6 @@ jenkins_jobs:
         Bash is a Unix shell and command language that is widely used as the default shell in many Linux distributions. This job builds Bash, which is essential for command-line operations in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Bash.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Bash-5.2.37
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1830,7 +1765,6 @@ jenkins_jobs:
         Libtool is a generic library support script that abstracts the complexity of using shared libraries across different platforms. This job builds Libtool, which is essential for managing shared libraries in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Libtool.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libtool-2.5.4
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1849,7 +1783,6 @@ jenkins_jobs:
         GDBM (GNU Database Manager) is a library for managing databases using key-value pairs. This job builds GDBM, which is essential for database management in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building GDBM.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/GDBM-1.24
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1868,7 +1801,6 @@ jenkins_jobs:
         Gperf is a perfect hash function generator that is used to generate hash tables for fast lookups. This job builds Gperf, which is essential for efficient data retrieval in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Gperf.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Gperf-3.1
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1887,7 +1819,6 @@ jenkins_jobs:
         Expat is an XML parser library that is used for parsing XML documents. This job builds Expat, which is essential for XML processing in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Expat.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Expat-2.7.1
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1910,7 +1841,6 @@ jenkins_jobs:
         Inetutils is a collection of common network programs such as FTP, Telnet, and others. This job builds Inetutils, which is essential for network communication in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Inetutils.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Inetutils-2.6
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1929,7 +1859,6 @@ jenkins_jobs:
         Less is a terminal pager program used to view the content of files one screen at a time. This job builds Less, which is essential for file viewing in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Less.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Less-668
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1948,7 +1877,6 @@ jenkins_jobs:
         Perl is a high-level, general-purpose programming language known for its text processing capabilities. This job builds Perl, which is essential for scripting and automation in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Perl.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Perl-5.40.1
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1967,7 +1895,6 @@ jenkins_jobs:
         XML::Parser is a Perl module for parsing XML documents. This job builds XML::Parser, which is essential for XML processing in Perl scripts in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building XML::Parser.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/XML_Parser-2.47
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -1986,7 +1913,6 @@ jenkins_jobs:
         Intltool is a set of tools for internationalizing software. This job builds Intltool, which is essential for managing translations and localization in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Intltool.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Intltool-0.51.0
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2005,7 +1931,6 @@ jenkins_jobs:
         Autoconf is a tool for producing shell scripts that automatically configure software source code packages to adapt to various types of Unix-like systems. This job builds Autoconf, which is essential for building and installing software in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Autoconf.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Autoconf-2.72
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2024,7 +1949,6 @@ jenkins_jobs:
         Automake is a tool for automatically generating Makefile.in files compliant with the GNU Coding Standards. This job builds Automake, which is essential for building and installing software in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Automake.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Automake-1.17  
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2061,7 +1985,6 @@ jenkins_jobs:
         Libelf is a library for handling ELF (Executable and Linkable Format) files. This job builds Libelf from the Elfutils package, which is essential for working with ELF files in the LFS environment. 
       category:
         This job is part of the basic system software setup, specifically for building Libelf from Elfutils.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libelf-from-Elfutils-0.192
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2087,7 +2010,6 @@ jenkins_jobs:
         Libffi is a foreign function interface library that provides a portable, high-level programming interface to various calling conventions. This job builds Libffi, which is essential for calling functions in shared libraries from other languages in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Libffi.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libffi-3.4.7
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -2107,7 +2029,6 @@ jenkins_jobs:
         Python is a high-level, interpreted programming language known for its readability and versatility. This job builds Python, which is essential for scripting and automation in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Python.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Python-3.13.2
       # Ensure zlib is built before Python, as Python depends on it
       build_command: |
         {{ chroot_start_command }} -c '
@@ -2146,7 +2067,6 @@ jenkins_jobs:
         Flit-Core is a simple build system for Python packages. This job builds Flit-Core, which is essential for packaging Python projects in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Flit-Core.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Flit-Core-3.11.0
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2162,7 +2082,6 @@ jenkins_jobs:
         Wheel is a built-package format for Python that helps in distributing and installing Python packages. This job builds Wheel, which is essential for packaging Python projects in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Wheel.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Wheel-0.45.1
       source_dir: /sources/wheel-0.45.1
       exec_command: echo
       build_tool: true
@@ -2181,7 +2100,6 @@ jenkins_jobs:
         Setuptools is a package development and distribution tool for Python. This job builds Setuptools, which is essential for managing Python packages in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Setuptools.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Setuptools-75.8.1
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2198,7 +2116,6 @@ jenkins_jobs:
         Ninja is a small build system with a focus on speed. This job builds Ninja, which is essential for building software in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Ninja.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Ninja-1.12.1
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2216,7 +2133,6 @@ jenkins_jobs:
         Meson is a build system that is designed to be fast and user-friendly. This job builds Meson, which is essential for building software in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Meson.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Meson-1.7.0
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2241,7 +2157,6 @@ jenkins_jobs:
         Kmod is a utility for managing Linux kernel modules. This job builds Kmod, which is essential for loading and unloading kernel modules in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Kmod.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Kmod-34
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2270,7 +2185,6 @@ jenkins_jobs:
         Coreutils is a package that contains the basic file, shell, and text manipulation utilities of the GNU operating system. This job builds Coreutils, which is essential for basic system operations in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Coreutils.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Coreutils-9.6
       build_command: |
 
         curl -O https://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-9.6-i18n-1.patch
@@ -2300,7 +2214,6 @@ jenkins_jobs:
         Check is a unit testing framework for C. This job builds Check, which is essential for testing C programs in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Check.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Check-0.15.2
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2319,7 +2232,6 @@ jenkins_jobs:
         Diffutils is a package that contains the diff, cmp, comm, and sdiff utilities for comparing files. This job builds Diffutils, which is essential for file comparison in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Diffutils.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Diffutils-3.11
       build_tool: true
       archive_file: /sources/diffutils-3.11.tar.xz
       build_command: |
@@ -2341,7 +2253,6 @@ jenkins_jobs:
         Gawk is the GNU implementation of the AWK programming language, which is used for pattern scanning and processing. This job builds Gawk, which is essential for text processing in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Gawk.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Gawk-5.3.1
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/gawk-5.3.1
@@ -2358,7 +2269,6 @@ jenkins_jobs:
         Findutils is a package that contains the find, locate, updatedb, and xargs utilities for searching files in a directory hierarchy. This job builds Findutils, which is essential for file searching in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Findutils.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Findutils-4.10.0
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2378,7 +2288,6 @@ jenkins_jobs:
         Groff is a typesetting system that reads plain text mixed with formatting commands and produces formatted output. This job builds Groff, which is essential for document formatting in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Groff.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Groff-1.23.0
       # Ensure groff is built after findutils, as it depends on it
       exec_command: echo
       build_tool: true
@@ -2398,7 +2307,6 @@ jenkins_jobs:
         GRUB (GRand Unified Bootloader) is a bootloader package that supports multiple operating systems. This job builds GRUB, which is essential for booting the LFS system.
       category:
         This job is part of the basic system software setup, specifically for building GRUB.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/GRUB-2.12
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2423,7 +2331,6 @@ jenkins_jobs:
         Gzip is a file compression utility that reduces the size of files. This job builds Gzip, which is essential for file compression in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Gzip.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Gzip-1.13
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2442,7 +2349,6 @@ jenkins_jobs:
         IPRoute2 is a collection of utilities for controlling TCP/IP networking and traffic control in Linux. This job builds IPRoute2, which is essential for network management in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building IPRoute2.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/IPRoute2-6.13.0
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2461,7 +2367,6 @@ jenkins_jobs:
         Kbd is a package that contains the keyboard utilities for Linux, including loadkeys and setfont. This job builds Kbd, which is essential for keyboard configuration in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Kbd.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Kbd-2.7.1
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2480,7 +2385,6 @@ jenkins_jobs:
         Libpipeline is a library for manipulating pipelines of subprocesses in C. This job builds Libpipeline, which is essential for process management in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Libpipeline.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libpipeline-1.5.8
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2499,7 +2403,6 @@ jenkins_jobs:
         Make is a build automation tool that automatically builds executable programs and libraries from source code by reading files called Makefiles. This job builds Make, which is essential for building software in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Make.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Make-4.4.1
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2518,7 +2421,6 @@ jenkins_jobs:
         Patch is a utility that applies changes to files based on a diff file. This job builds Patch, which is essential for applying patches in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Patch.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Patch-2.7.6
       # Ensure patch is built after make, as it depends on it
       exec_command: echo
       build_tool: true
@@ -2540,7 +2442,6 @@ jenkins_jobs:
         Tar is a utility for creating and extracting archive files. This job builds Tar, which is essential for file archiving in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Tar.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Tar-1.35
       source_dir: /sources/tar-1.35
       exec_command: echo
       build_tool: true
@@ -2560,7 +2461,6 @@ jenkins_jobs:
         Texinfo is a documentation system that uses a single source file to produce both online and printed documentation. This job builds Texinfo, which is essential for managing documentation in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Texinfo.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Texinfo-7.2
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2579,7 +2479,6 @@ jenkins_jobs:
         Vim is a highly configurable text editor built to enable efficient text editing. This job builds Vim, which is essential for text editing in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Vim.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Vim-9.1.1166
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2598,7 +2497,6 @@ jenkins_jobs:
         MarkupSafe is a library for safely handling strings that may contain HTML or XML markup. This job builds MarkupSafe, which is essential for web development in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building MarkupSafe.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/MarkupSafe-3.0.2
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2616,7 +2514,6 @@ jenkins_jobs:
         Jinja2 is a templating engine for Python that allows for dynamic HTML generation. This job builds Jinja2, which is essential for web development in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Jinja2.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Jinja2-3.1.5
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2634,7 +2531,6 @@ jenkins_jobs:
         Udev is a device manager for the Linux kernel that manages device nodes in the /dev directory. This job builds Udev from Systemd, which is essential for managing devices in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Udev from Systemd.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Udev-from-Systemd-257.3
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2677,7 +2573,6 @@ jenkins_jobs:
         Man-DB-2.13.0 is a version of the manual page database software used to manage and query Unix manual pages. It provides tools for indexing, searching, and displaying man pages, which are essential for accessing documentation about Unix commands, system calls, and libraries.
       category:
         This job is part of the basic system software setup, specifically for building
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/job/Man-DB-2.13.0%20(Basic%20System%20Software)/
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -2695,7 +2590,6 @@ jenkins_jobs:
         Procps-ng is a package that contains utilities for monitoring and managing processes in Linux. This job builds Procps-ng, which is essential for process management in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Procps-ng.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Procps-ng-4.0.5
       # Ensure procps-ng is built after
       exec_command: echo
       build_tool: true
@@ -2716,7 +2610,6 @@ jenkins_jobs:
         Util-linux is a standard package that contains a variety of essential utilities for Linux systems, including fdisk, mount, and more. This job builds Util-linux, which is essential for system management in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Util-linux.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Util-linux-2.40.4
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
@@ -2743,7 +2636,6 @@ jenkins_jobs:
         E2fsprogs is a package that contains utilities for managing ext2, ext3, and ext4 filesystems. This job builds E2fsprogs, which is essential for filesystem management in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building E2fsprogs.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/E2fsprogs-1.47.2
       build_command: |
         {{ chroot_start_command }} -c '
           find / -name "pkgconf" || echo "pkgconf not found"
@@ -2776,7 +2668,6 @@ jenkins_jobs:
         Sysklogd is a package that contains the syslog daemon and klog daemon for logging system messages. This job builds Sysklogd, which is essential for system logging in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Sysklogd.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Sysklogd-2.7.0
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/sysklogd-2.7.0
@@ -2795,7 +2686,6 @@ jenkins_jobs:
         SysVinit is a package that provides the traditional System V-style init system for managing system startup and shutdown. This job builds SysVinit, which is essential for system initialization in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building SysVinit.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/SysVinit-3.14
       build_command: |
         cd /mnt/lfs/sources/sysvinit-3.14
         curl -O https://www.linuxfromscratch.org/patches/lfs/12.3/sysvinit-3.14-consolidated-1.patch
@@ -2814,7 +2704,6 @@ jenkins_jobs:
         OpenSSH is a free version of the SSH connectivity tools that technical users rely on. This job builds OpenSSH, which is essential for secure remote access in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building OpenSSH.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/openssh-10.0p1
       build_tool: true
       exec_command: echo
       build_command: |
@@ -2841,7 +2730,6 @@ jenkins_jobs:
         This job strips unnecessary symbols from the binaries and libraries in the LFS environment to reduce their size.
       category:
         This job is part of the basic system software setup, specifically for stripping binaries and libraries.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Stripping
       build_command: echo
       exec_command: |
         cd /mnt/lfs/sources
@@ -2860,7 +2748,6 @@ jenkins_jobs:
         This job cleans up temporary files and unnecessary files from the LFS environment after the basic system software has been built.
       category:
         This job is part of the basic system software setup, specifically for cleaning up after the build process.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Cleaning-Up
       exec_command: |
         cd /mnt/lfs/sources
         {{ chroot_start_command }} -c '
@@ -2877,7 +2764,6 @@ jenkins_jobs:
         Libgcrypt is a general-purpose cryptographic library based on the code from GnuPG. This job builds Libgcrypt, which is essential for cryptographic operations in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Libgcrypt.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libgcrypt-1.11.1
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2910,7 +2796,6 @@ jenkins_jobs:
         Libksba is a library that provides access to the X.509 certificate and CRL formats. This job builds Libksba, which is essential for handling certificates in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Libksba.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libksba-1.6.7
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2929,7 +2814,6 @@ jenkins_jobs:
         Npth is a library that provides a portable, non-blocking thread API for GnuPG. This job builds Npth, which is essential for threading support in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Npth.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Npth-1.8
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2947,7 +2831,6 @@ jenkins_jobs:
         Libgpg-error is a library that defines common error values for all GnuPG components. This job builds Libgpg-error, which is essential for error handling in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Libgpg-error.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libgpg-error-1.55
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2967,7 +2850,6 @@ jenkins_jobs:
         GPGME is a library that provides a high-level crypto API for GnuPG. This job builds GPGME, which is essential for cryptographic operations in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building GPGME.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/GPGME-2.0.0
       exec_command: echo
       build_tool: true
       build_command: |
@@ -2988,7 +2870,6 @@ jenkins_jobs:
         Libassuan is a library that provides a simple IPC mechanism for communication between applications. This job builds Libassuan, which is essential for inter-process communication in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Libassuan.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libassuan-3.0.2
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3015,7 +2896,6 @@ jenkins_jobs:
         GnuPG is a complete and free implementation of the OpenPGP standard, which allows for secure communication and data storage. This job builds GnuPG, which is essential for cryptographic operations in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building GnuPG.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/GnuPG-2.4.8
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3056,7 +2936,6 @@ jenkins_jobs:
         Glib is a low-level core library that forms the basis for libraries such as GTK+ and GStreamer. This job builds Glib, which is essential for many applications in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Glib.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Glib-2.84.3
       build_tool: true
       build_command: |
         cd /mnt/lfs/sources
@@ -3091,7 +2970,6 @@ jenkins_jobs:
         Go is an open-source programming language that makes it easy to build simple, reliable, and efficient software. This job installs Go, which is essential for building Go applications in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for installing Go.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Go-1.22.9
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3124,7 +3002,6 @@ jenkins_jobs:
         Conmon is a lightweight container monitor that is used to manage the lifecycle of containers. This job builds Conmon, which is essential for container management in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Conmon.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Conmon-v2.1.13
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3144,7 +3021,6 @@ jenkins_jobs:
         Libpsl is a library that provides support for the Public Suffix List, which is used to determine the effective top-level domain (eTLD) of a domain name. This job builds Libpsl, which is essential for domain name handling in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Libpsl.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libpsl-0.21.5
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3165,7 +3041,6 @@ jenkins_jobs:
         Libidn2 is a library that provides support for Internationalized Domain Names (IDN) and is used to handle domain names in various languages. This job builds Libidn2, which is essential for domain name handling in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Libidn2.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libidn2-2.3.8
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3184,7 +3059,6 @@ jenkins_jobs:
         Libunistring is a library that provides functions for manipulating Unicode strings and is used in various applications for handling text in different languages. This job builds Libunistring, which is essential for text handling in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Libunistring.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libunistring-1.30
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3203,7 +3077,6 @@ jenkins_jobs:
         Curl is a command-line tool for transferring data with URLs. It supports various protocols and is widely used for downloading files and interacting with web services. This job builds Curl, which is essential for network operations in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Curl.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Curl-8.15.0
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3224,7 +3097,6 @@ jenkins_jobs:
         Asciidoc is a text document format for writing documentation, articles, books, and more. This job builds Asciidoc, which is essential for generating documentation in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Asciidoc.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Asciidoc-9.1.0
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3248,7 +3120,6 @@ jenkins_jobs:
         Libxslt is a library for transforming XML documents using XSLT stylesheets. This job builds Libxslt, which is essential for XML processing in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Libxslt.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libxslt-1.1.43
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3269,7 +3140,6 @@ jenkins_jobs:
         Libxml2 is a library for parsing XML and HTML documents. It provides a wide range of features for working with XML data. This job builds Libxml2, which is essential for XML processing in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Libxml2.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Libxml2-2.14.5
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3294,7 +3164,6 @@ jenkins_jobs:
         ICU (International Components for Unicode) is a set of C/C++ and Java libraries providing Unicode and Globalization support for software applications. This job builds ICU, which is essential for internationalization in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building ICU.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/ICU-77_1
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3313,7 +3182,6 @@ jenkins_jobs:
         Git is a distributed version control system that allows multiple developers to work on a project simultaneously. This job builds Git, which is essential for version control in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Git.
-      jenkins_job_url: http://localhost:8080/job/containers/git-2.49.0
       build_tool: true
       exec_command: echo
       build_command: |
@@ -3333,7 +3201,6 @@ jenkins_jobs:
         libseccomp is a library that provides an easy-to-use interface for filtering a process's system calls using the Linux kernel's seccomp feature. This job builds libseccomp, which is essential for security in the LFS environment.
       category:
         This job is part of the container setup, specifically for building libseccomp.
-      jenkins_job_url: http://localhost:8080/job/containers/libseccomp-2.6.0
       build_tool: true
       exec_command: echo
       build_command: |  
@@ -3355,7 +3222,6 @@ jenkins_jobs:
         libtasn1 is a library that provides support for the ASN.1 data serialization format. This job builds libtasn1, which is essential for handling certificates in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building libtasn1.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/libtasn1-4.20.0
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3375,7 +3241,6 @@ jenkins_jobs:
         P11-kit is a library that provides a way to access PKCS#11 modules and manage certificates. This job builds P11-kit, which is essential for certificate management in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building P11-kit.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/p11-kit-0.25.5
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3413,7 +3278,6 @@ jenkins_jobs:
         This job installs the CA certificates, which are essential for establishing secure connections in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for installing CA certificates.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/make-ca-1.16.1
       build_command: echo
       build_tool: false
       exec_command: |
@@ -3432,7 +3296,6 @@ jenkins_jobs:
         Iptables is a user-space utility program that allows a system administrator to configure the IP packet filter rules of the Linux kernel firewall. This job builds Iptables, which is essential for network security in the LFS environment.
       category:
         This job is part of the basic system software setup, specifically for building Iptables.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Iptables-1.8.11
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3453,7 +3316,6 @@ jenkins_jobs:
         Cpio is a tool for creating and extracting archives. This job builds Cpio, which is essential for managing file archives in the LFS environment.
       category:
         This job is part of the system configuration setup, specifically for building Cpio.
-      jenkins_job_url: http://localhost:8080/job/system_configuration/Cpio-2.15
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3474,7 +3336,6 @@ jenkins_jobs:
         Dialog is a tool for creating text-based user interfaces. This job builds Dialog, which is essential for managing file archives in the LFS environment.
       category:
         This job is part of the system configuration setup, specifically for building Dialog.
-      jenkins_job_url: http://localhost:8080/job/system_configuration/Dialogs-1.3-20251223
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3488,6 +3349,7 @@ jenkins_jobs:
           make install
         '
 
+  
   system_configuration:
     - name: 0001 - LFS-Bootscripts (System Configuration)
       version: 20240825
@@ -3497,7 +3359,6 @@ jenkins_jobs:
         LFS-Bootscripts is a collection of scripts used to boot the LFS system. This job installs the LFS-Bootscripts, which is essential for booting the LFS system.
       category:
         This job is part of the basic system software setup, specifically for installing LFS-Bootscripts.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/LFS-Bootscripts-20240825
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3514,7 +3375,6 @@ jenkins_jobs:
         BLFS-Bootscripts is a collection of scripts used to boot the BLFS system. This job installs the BLFS-Bootscripts, which is essential for booting the BLFS system.
       category:
         This job is part of the basic system software setup, specifically for installing BLFS-Bootscripts.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/BLFS-Bootscripts-20250225
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3531,7 +3391,6 @@ jenkins_jobs:
         Linux is the kernel of the LFS system. This job builds the Linux kernel, which is essential for the LFS system to function.
       category:
         This job is part of the basic system software setup, specifically for building the Linux kernel.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Linux-6.13.4
       exec_command: echo
       build_tool: true
       build_command: |
@@ -3595,12 +3454,28 @@ jenkins_jobs:
         This job prepares the system image for the LFS environment by running a script that sets up the necessary configurations and files.
       category:
         This job is part of the operating system setup, specifically for preparing the system image.
-      jenkins_job_url: http://localhost:8080/job/basic_system_software/Prepare-System-Image
       build_tool: false
       build_command: echo
       exec_command: |
         cd /mnt/lfs/sources
         ./prepare_image.sh --buildmode $BUILD_MODE
+  
+  genai:
+    - name: 0001 - vLLM (GenAI)
+      version: 0.6.3
+      archive_file: /sources/vllm-0.13.0.tar.gz
+      source_dir: /sources/vllm-0.13.0
+      description: |
+        vLLM is a high-performance inference engine for large language models (LLMs). This job builds vLLM, which is essential for running LLMs in the LFS environment.
+      category:
+        This job is part of the GenAI setup, specifically for building vLLM.
+      build_tool: true
+      exec_command: echo
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/vllm-0.13.0
+          python3 -m pip install -e .
+        '
   
   containers:
     - name: 0001 - runc (Containers)
@@ -3611,7 +3486,6 @@ jenkins_jobs:
         runc is a CLI tool for spawning and running containers according to the OCI specification. This job builds runc, which is essential for container management in the LFS environment.
       category:
         This job is part of the container setup, specifically for building runc.
-      jenkins_job_url: http://localhost:8080/job/containers/runc-1.3.0
       build_tool: true
       exec_command: echo
       build_command: |
@@ -3629,7 +3503,6 @@ jenkins_jobs:
         cri-o is an implementation of the Kubernetes Container Runtime Interface (CRI) that allows Kubernetes to use any OCI-compliant runtime as the container runtime for running pods. This job builds cri-o, which is essential for container orchestration in the LFS environment.
       category:
         This job is part of the container setup, specifically for building cri-o.
-      jenkins_job_url: http://localhost:8080/job/containers/cri-o-1.33.1
       build_tool: true
       exec_command: echo
       build_command: |
@@ -3657,7 +3530,6 @@ jenkins_jobs:
         etcd is a distributed key-value store that provides a reliable way to store data across a cluster of machines. This job builds etcd, which is essential for distributed systems and container orchestration in the LFS environment.
       category:
         This job is part of the container setup, specifically for building etcd.
-      jenkins_job_url: http://localhost:8080/job/containers/etcd-3.6.1
       build_tool: true
       exec_command: echo
       build_command: |
@@ -3677,7 +3549,6 @@ jenkins_jobs:
         Kubernetes is an open-source container orchestration platform that automates the deployment, scaling, and management of containerized applications. This job builds Kubernetes, which is essential for managing containers in the LFS environment.
       category:
         This job is part of the container setup, specifically for building Kubernetes.
-      jenkins_job_url: http://localhost:8080/job/containers/kubernetes-1.33
       build_tool: true
       exec_command: echo
       build_command: |  
@@ -3695,7 +3566,6 @@ jenkins_jobs:
         Kubernetes is an open-source container orchestration platform that automates the deployment, scaling, and management of containerized applications. This job builds Kubernetes, which is essential for managing containers in the LFS environment.
       category:
         This job is part of the container setup, specifically for building Kubernetes.
-      jenkins_job_url: http://localhost:8080/job/containers/kubernetes-1.33
       build_tool: true
       exec_command: echo
       build_command: |  

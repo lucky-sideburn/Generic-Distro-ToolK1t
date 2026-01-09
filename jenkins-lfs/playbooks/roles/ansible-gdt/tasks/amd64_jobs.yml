@@ -377,3 +377,61 @@
   tags:
     - amd64_containers
     - amd64_jobs
+
+- name: "Create Jenkins Jobs - GenAI (amd64)"
+  ansible.builtin.uri:
+    url: "{{ jenkins_url }}/job/2.7%20-%20amd64_genai/createItem?name={{ item.name | urlencode }}"
+    method: POST
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_token }}"
+    force_basic_auth: yes
+    status_code: 200
+    headers:
+      Content-Type: "application/xml"
+    body: |
+      <project>
+        <actions/>
+        <description>Jenkins job to execute a shell command</description>
+        <keepDependencies>false</keepDependencies>
+        <properties/>
+        <scm class="hudson.scm.NullSCM"/>
+        <canRoam>true</canRoam>
+        <assignedNode>amd64</assignedNode>
+        <disabled>false</disabled>
+        <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+        <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+        <triggers/>
+        <concurrentBuild>false</concurrentBuild>
+        <builders>
+          <hudson.tasks.Shell>
+            <command>{{ amd64_common_build_start_command }}
+            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+              if [ -d {{ item.source_dir | basename }} ]; then
+                sudo rm -rf {{ item.source_dir | basename }}
+              fi
+          
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+            fi
+            
+            pwd
+
+            BUILD_TOOL={{ item.build_tool }}
+            if [ $BUILD_TOOL = "True" ]; then
+              {{ item.build_command }}
+            else
+              {{ item.exec_command }}
+            fi
+            </command>
+          </hudson.tasks.Shell>
+        </builders>
+        <publishers/>
+        <buildWrappers/>
+      </project>
+    body_format: raw
+    timeout: 60
+  loop: "{{ jenkins_jobs.genai }}"
+  ignore_errors: yes
+  tags:
+    - amd64_genai
+    - amd64_jobs

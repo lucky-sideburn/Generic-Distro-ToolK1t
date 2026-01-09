@@ -241,7 +241,7 @@
           <hudson.tasks.Shell>
         <command>{{ aarch64_common_build_start_command }}
 
-        export ARCH=amd64
+        export ARCH=aarch64
         
         if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
           if [ -d {{ item.source_dir | basename }} ]; then
@@ -332,3 +332,64 @@
   tags: 
     - aarch64_jobs
     - aarch64_system_configuration
+
+- name: "Create Jenkins Jobs - GenAI (aarch64)"
+  ansible.builtin.uri:
+    url: "{{ jenkins_url }}/job/1.6%20-%20aarch64_genai/createItem?name={{ item.name | urlencode }}"
+    method: POST
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_token }}"
+    force_basic_auth: yes
+    status_code: 200
+    headers:
+      Content-Type: "application/xml"
+    body: |
+      <project>
+        <actions/>
+        <description>Jenkins job to execute a shell command</description>
+        <keepDependencies>false</keepDependencies>
+        <properties/>
+        <scm class="hudson.scm.NullSCM"/>
+        <canRoam>false</canRoam>
+        <assignedNode>aarch64</assignedNode>
+        <disabled>false</disabled>
+        <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+        <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+        <triggers/>
+        <concurrentBuild>false</concurrentBuild>
+        <builders>
+          <hudson.tasks.Shell>
+        <command>{{ aarch64_common_build_start_command }}
+
+        export ARCH=aarch64
+        
+        if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+          if [ -d {{ item.source_dir | basename }} ]; then
+            sudo rm -rf {{ item.source_dir | basename }}
+          fi
+      
+          tar -xvf {{ item.archive_file | basename }}
+          cd {{ item.source_dir | basename }}
+        
+        fi
+    
+        pwd
+        BUILD_TOOL={{ item.build_tool }}
+        if [ $BUILD_TOOL = "True" ]; then
+          {{ item.build_command }}
+        else
+          {{ item.exec_command }}
+        fi
+        </command>
+          </hudson.tasks.Shell>
+        </builders>
+        <publishers/>
+        <buildWrappers/>
+      </project>
+    body_format: raw
+    timeout: 60
+  loop: "{{ jenkins_jobs.genai }}"
+  ignore_errors: yes
+  tags: 
+    - aarch64_jobs
+    - aarch64_genai

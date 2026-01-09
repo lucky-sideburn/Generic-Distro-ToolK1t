@@ -77,18 +77,19 @@ function show_menu() {
   echo "5)  Build AMD64 basic_system_software Jenkins Jobs"
   echo "6)  Build AMD64 system_configuration Jenkins Jobs"
   echo "7)  Build AMD64 containers Jenkins Jobs"
-  echo "8)  Build AARCH64 all Jenkins Jobs"
-  echo "9)  Build AARCH64 cross_toolchain Jenkins Jobs"
-  echo "10) Build AARCH64 cross_compiling_temporary_tools Jenkins Jobs"
-  echo "11) Build AARCH64 chroot_and_building_additional_temporary_tools Jenkins Jobs"
-  echo "12) Build AARCH64 basic_system_software Jenkins Jobs"
-  echo "13) Build AARCH64 system_configuration Jenkins Jobs"
-  echo "14) Build AARCH64 containers Jenkins Jobs"
-  echo "15) Start AARCH64 VM on QEMU"
-  echo "16) Provision an AARCH64 build node using Vagrant"
-  echo "17) Provision an AMD64 build node directly with Ansible"
-  echo "18) Exit"
-
+  echo "8)  Build AMD64 GenAI Jenkins Jobs"
+  echo "9)  Build AARCH64 all Jenkins Jobs"
+  echo "10) Build AARCH64 cross_toolchain Jenkins Jobs"
+  echo "11) Build AARCH64 cross_compiling_temporary_tools Jenkins Jobs"
+  echo "12) Build AARCH64 chroot_and_building_additional_temporary_tools Jenkins Jobs"
+  echo "13) Build AARCH64 basic_system_software Jenkins Jobs"
+  echo "14) Build AARCH64 system_configuration Jenkins Jobs"
+  echo "15) Build AARCH64 containers Jenkins Jobs"
+  echo "16) Build AARCH64 GenAI Jenkins Jobs"
+  echo "17) Start AARCH64 VM on QEMU"
+  echo "18) Provision an AARCH64 build node using Vagrant"
+  echo "19) Provision an AMD64 build node directly with Ansible"
+  echo "20) Exit"
   echo
   read -p "Enter your choice: " choice
 
@@ -132,54 +133,58 @@ function show_menu() {
       echo "Building AMD64 containers Jenkins Jobs..."
       ansible_cmd --tags amd64_containers
       ;;
+    
+    8) echo "Building AMD64 GenAI Jenkins Jobs..."
+      ansible_cmd --tags amd64_genai
+      ;;
 
-    8)
+    9)
       echo "Building AARCH64 all Jenkins Jobs..."
       ansible_cmd --tags aarch64_jobs
       ;;
 
-    9)
+    10)
       echo "Building AARCH64 cross_toolchain Jenkins Jobs..."
       ansible_cmd --tags aarch64_cross_toolchain
 
       ;;
 
-    10)
+    11)
       echo "Building AARCH64 cross_compiling_temporary_tools Jenkins Jobs..."
       ansible_cmd --tags aarch64_cross_compiling_temporary_tools
       ;;
 
-    11)
+    12)
       echo "Building AARCH64 chroot_and_building_additional_temporary_tools Jenkins Jobs..."
       ansible_cmd --tags aarch64_chroot_and_building_additional_temporary_tools
       ;;
 
-    12)
+    13)
       echo "Building AARCH64 basic_system_software Jenkins Jobs..."
       ansible_cmd --tags aarch64_basic_system_software
       ;;
 
-    13)
+    14)
       echo "Building AARCH64 system_configuration Jenkins Jobs..."
       ansible_cmd --tags aarch64_system_configuration
       ;;
 
-    14)
-      echo "Building AARCH64 containers Jenkins Jobs..."
-      ansible_cmd --tags aarch64_containers
-      ;;
-
-    14)
-      echo "Building AARCH64 containers Jenkins Jobs..."
-      ansible_cmd --tags aarch64_containers
-      ;;
-
     15)
+      echo "Building AARCH64 containers Jenkins Jobs..."
+      ansible_cmd --tags aarch64_containers
+      ;;
+
+    16)
+      echo "Building AARCH64 GenAI Jenkins Jobs..."
+      ansible_cmd --tags aarch64_genai
+      ;;
+
+    17)
       echo "Preparing AARCH64 VM on QEMU (Vagrant AARCH64 Build Node)..."
       create_qemu_vm_from_img
       ;;
 
-    16)
+    18)
       echo "Provisioning an AARCH64 build node using Vagrant..."
       [ -f Vagrantfile ] || (echo "Error. Vagrantfile not found" ; exit 1)
       if ! vagrant status | grep -q "running"; then
@@ -191,12 +196,12 @@ function show_menu() {
       vagrant provision
       ;;
 
-    17)
+    19)
       echo "Provisioning an AMD64 build node directly with Ansible..."
       ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/amd64_lfs.yml
       ;;
 
-    18)
+    20)
       echo "Exiting..."
       exit 0
       ;;
