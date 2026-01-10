@@ -3308,7 +3308,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0109 - cpio (Basic System Software) OPTIONAL
+    - name: 0108 - cpio (Basic System Software) OPTIONAL
       version: 2.15
       archive_file: /sources/cpio-2.15.tar.bz2
       source_dir: /sources/cpio-2.15
@@ -3349,7 +3349,70 @@ jenkins_jobs:
           make install
         '
 
-  
+    - name: 0110 - libuv (Basic System Software) OPTIONAL
+      version: 1.51.0
+      archive_file: /sources/libuv-v1.51.0.tar.gz
+      source_dir: /sources/libuv-v1.51.0
+      description: |
+        Libuv is a multi-platform support library with a focus on asynchronous I/O. This job builds Libuv, which is essential for building software that requires asynchronous I/O operations in the LFS environment.
+      category:
+        This job is part of the system configuration setup, specifically for building Libuv.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/libuv-v1.51.0
+          sh autogen.sh
+          ./configure --prefix=/usr --disable-static
+          make
+          make install
+        '
+
+    - name: 0111 - libarchive (Basic System Software) OPTIONAL
+      version: 3.8.5
+      archive_file: /sources/libarchive-3.8.5.tar.xz
+      source_dir: /sources/libarchive-3.8.5
+      description: |
+        Libarchive is a library for reading and writing streaming archives, such as tar and cpio. This job builds Libarchive, which is essential for managing file archives in the LFS environment.
+      category:
+        This job is part of the system configuration setup, specifically for building Libarchive.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/libarchive-3.8.5
+          ./configure --prefix=/usr --disable-static
+          make
+          make install
+        '
+    
+    - name: 0112 - Cmake  (Basic System Software) OPTIONAL
+      version: 4.2.1
+      archive_file: /sources/cmake-4.2.1.tar.gz
+      source_dir: /sources/cmake-4.2.1
+      description: |
+        CMake is a cross-platform, open-source build system that is used to manage the build process of software projects. This job builds CMake, which is essential for building software in the LFS environment.
+      category:
+        This job is part of the system configuration setup, specifically for building CMake.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        # TO DO verify if it works for ARM, change lib64 if necessary
+        {{ chroot_start_command }} -c '
+          cd /sources/cmake-4.2.1
+          sed -i "/\"lib64\"/s/64//" Modules/GNUInstallDirs.cmake
+
+          ./bootstrap --prefix=/usr        \
+                      --system-libs        \
+                      --no-system-libarchive \
+                      --mandir=/share/man  \
+                      --no-system-jsoncpp  \
+                      --no-system-cppdap   \
+                      --no-system-librhash \
+                      --docdir=/share/doc/cmake-4.2.1
+          make
+        '
+
   system_configuration:
     - name: 0001 - LFS-Bootscripts (System Configuration)
       version: 20240825
@@ -3461,20 +3524,21 @@ jenkins_jobs:
         ./prepare_image.sh --buildmode $BUILD_MODE
   
   genai:
-    - name: 0001 - vLLM (GenAI)
-      version: 0.6.3
-      archive_file: /sources/vllm-0.13.0.tar.gz
-      source_dir: /sources/vllm-0.13.0
+    - name: 0001 - llama.cpp (GenAI)
+      version: b7690
+      archive_file: /sources/llama.cpp-b7690.tar.gz
+      source_dir: /sources/llama.cpp-b7690
       description: |
-        vLLM is a high-performance inference engine for large language models (LLMs). This job builds vLLM, which is essential for running LLMs in the LFS environment.
+        llama.cpp is a C/C++ implementation of Facebook's LLaMA model, designed to run efficiently on various hardware platforms. This job builds llama.cpp, which is essential for running LLaMA models in the LFS environment.
       category:
-        This job is part of the GenAI setup, specifically for building vLLM.
+        This job is part of the GenAI setup, specifically for building llama.cpp.
       build_tool: true
       exec_command: echo
       build_command: |
         {{ chroot_start_command }} -c '
-          cd /sources/vllm-0.13.0
-          python3 -m pip install -e .
+          cd /sources/llama.cpp-b7690
+          cmake -B build
+          cmake --build build --config Release
         '
   
   containers:
