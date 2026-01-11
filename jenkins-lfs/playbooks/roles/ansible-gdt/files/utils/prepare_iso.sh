@@ -51,9 +51,15 @@ set timeout=5
 # GRUB cerca la partizione per caricare Kernel e Initrd
 search --no-floppy --set=root --label DEVOPS_ISO
 
+# menuentry "DevOpsTribe GNU/Linux Live" {
+#     set gfxpayload=keep
+#     linux /live/vmlinuz boot=live root=LABEL=DEVOPS_ISO rootwait quiet splash
+#     initrd /live/initrd
+# }
+
 menuentry "DevOpsTribe GNU/Linux Live" {
     set gfxpayload=keep
-    linux /live/vmlinuz boot=live root=LABEL=DEVOPS_ISO rootwait quiet splash
+    linux /live/vmlinuz boot=live root=live:LABEL=DEVOPS_ISO rd.live.squashimg=filesystem.squashfs rd.live.image rd.live.overlay.size=2048 rd.live.overlay.overlayfs=1 quiet splash
     initrd /live/initrd
 }
 EOF
@@ -114,6 +120,7 @@ sudo rm $ISO_WORKSPACE/etc/rc.d/rcS.d/S40mountfs
 sudo rm $ISO_WORKSPACE/etc/rc.d/rc3.d/S92kubelet  
 sudo rm $ISO_WORKSPACE/etc/rc.d/rc3.d/S91crio
 sudo rm $ISO_WORKSPACE/etc/rc.d/rc3.d/S30sshd
+sudo rm $ISO_WORKSPACE/etc/rc.d/rcS.d/S30checkfs
 
 # Set the hostname
 echo "devopstribe-linux" | sudo tee $ISO_WORKSPACE/etc/hostname
@@ -172,6 +179,8 @@ sudo tee -a $ISO_WORKSPACE/root/.bashrc << 'EOF'
 # Custom LFS Live ISO Bashrc
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 export PS1="\[\e[1;32m\]\u@\h:\[\e[1;34m\]\w\[\e[0m\]\$ "
+
+alias ask='interpreter --api_base http://localhost:8080/v1 --local'
 EOF
 
 sudo tee -a $ISO_WORKSPACE/root/.bash_profile << 'EOF'
@@ -195,7 +204,122 @@ sudo mksquashfs /mnt/lfs/ $ISO_WORKSPACE/live/filesystem.squashfs \
   -e sys/* \
   -e run/* \
   -e tmp/* \
+  -e root/.cache \
+  -e root/go \
+  -e var/cache \
+  -e var/log \
+  -e var/tmp \
   -comp xz
+
+[ ls $ISO_WORKSPACE/initrd.img-no-kmods] && sudo rm $ISO_WORKSPACE/initrd.img-no-kmods
+[ ls $ISO_WORKSPACE/dist ] && sudo rm -rf $ISO_WORKSPACE/dist
+[ ls $ISO_WORKSPACE/tools ] && sudo rm -rf $ISO_WORKSPACE/tools
+
+# Create the directory structure for AI models
+sudo mkdir -p $ISO_WORKSPACE/opt/ai/models
+
+
+MODEL_URL="https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf"
+MODEL_DEST="$ISO_WORKSPACE/opt/ai/models/qwen2.5-1.5b.gguf"
+mkdir -p "$(dirname "$MODEL_DEST")"
+curl -L "$MODEL_URL" -o "$MODEL_DEST"
+
+sudo tee $ISO_WORKSPACE/usr/local/bin/start-llama-server << 'EOF'
+#!/bin/bash
+/usr/local/bin/llama-server \
+    -m /opt/ai/models/qwen2.5-1.5b.gguf \
+    --port 8080 \
+    --host 0.0.0.0 \
+    --ctx-size 2048 \
+    --n-predict 512 \
+    --threads $(nproc) \
+    --alias "lfs-agent-brain" \
+    2>&1 > /dev/null &
+EOF
+
+sudo chmod +x $ISO_WORKSPACE/usr/local/bin/start-llama-server
+
+sudo tee $ISO_WORKSPACE/etc/rc.d/init.d/llama-server << 'EOF'
+#!/bin/sh
+########################################################################
+# Begin llama-server
+#
+# Description : Start llama-server at boot
+#
+########################################################################
+
+. /lib/lsb/init-functions
+
+case "${1}" in
+   start)
+    log_info_msg "Starting llama-server..."
+    /usr/local/bin/start-llama-server &
+    evaluate_retval
+    ;;
+   stop)
+    log_info_msg "Stopping llama-server..."
+    pkill -f llama-server
+    evaluate_retval
+    ;;
+   *)
+    echo "Usage: ${0} {start|stop}"
+    exit 1
+    ;;
+esac
+
+# End llama-server
+EOF
+
+sudo chmod +x $ISO_WORKSPACE/etc/rc.d/init.d/llama-server
+sudo ln -sf ../init.d/llama-server $ISO_WORKSPACE/etc/rc.d/rc3.d/S99llama-server
+
+# Create the Wargames script
+sudo tee $ISO_WORKSPACE/usr/local/bin/wargame << 'EOF'
+#!/bin/bash
+
+# Effetto digitazione Wargames
+function typewriter {
+  text="$1"
+  for (( i=0; i<${#text}; i++ )); do
+    echo -n "${text:$i:1}"
+    sleep 0.03
+  done
+  echo ""
+}
+
+if [ -z "$1" ]; then
+  typewriter "SALVE PROFESSOR FALKEN."
+  typewriter "VUOLE GIOCARE A UNA PARTITA?"
+fi
+
+while true; do
+  # Prompt the user for input
+  echo -n "Inserisci la tua domanda: "
+  read USER_INPUT
+
+  # Exit the loop if the user types "exit"
+  if [[ "$USER_INPUT" == "exit" ]]; then
+    typewriter "ARRIVEDERCI, PROFESSOR FALKEN."
+    break
+  fi
+
+  # Correzione per llama.cpp
+  RESPONSE=$(curl -s http://localhost:8080/completion \
+    -H "Content-Type: application/json" \
+    -d "{\"prompt\": \"<|system|>Sei HAL... <|user|>$USER_INPUT <|assistant|>\", \"n_predict\": 200}" | jq -r '.content')
+    
+  typewriter "$RESPONSE"
+
+done
+EOF
+
+chmod +x $ISO_WORKSPACE/usr/local/bin/hal
+sudo chmod +x $ISO_WORKSPACE/usr/local/bin/wargame
+
+sudo mkdir -p $ISO_WORKSPACE/tmp
+sudo chmod 1777 $ISO_WORKSPACE/tmp
+sudo mkdir -p $ISO_WORKSPACE/var/log
+sudo mkdir -p $ISO_WORKSPACE/run
 
 sudo grub-mkrescue --iso-level 3 \
   -o /var/lib/libvirt/images/lfs-system.iso $ISO_WORKSPACE -- -volid "DEVOPS_ISO" \

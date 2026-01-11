@@ -3413,6 +3413,25 @@ jenkins_jobs:
           make
         '
 
+    - name: 0113 - jq (Basic System Software) OPTIONAL
+      version: 1.8.1
+      archive_file: /sources/jq-1.8.1.tar.gz
+      source_dir: /sources/jq-1.8.1
+      description: |
+        jq is a lightweight and flexible command-line JSON processor. This job builds jq, which is useful for processing JSON data in the LFS environment.
+      category:
+        This job is part of the system configuration setup, specifically for building jq.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/jq-1.8.1
+          autoreconf -i
+          ./configure
+          make
+          make install
+        '
+
   system_configuration:
     - name: 0001 - LFS-Bootscripts (System Configuration)
       version: 20240825
