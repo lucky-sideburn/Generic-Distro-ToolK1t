@@ -3537,10 +3537,21 @@ jenkins_jobs:
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/llama.cpp-b7690
+          # TODO: Fix this...
+          export PATH="$PATH:/sources/cmake-4.2.1/bin"
           cmake -B build
           cmake --build build --config Release
+          cd build/bin
+          /bin/cp -v *.so* /usr/local/lib/
+          ldconfig
+          /bin/cp -v llama-server llama-cli llama-quantize /usr/local/bin/
+          ldd /usr/local/bin/llama-server | grep -i "not found"
+          if [ $? -eq 0 ]; then
+            echo "Error: Some shared libraries are missing for llama-server"
+            exit 1
+          fi
         '
-  
+
   containers:
     - name: 0001 - runc (Containers)
       version: 1.3.0

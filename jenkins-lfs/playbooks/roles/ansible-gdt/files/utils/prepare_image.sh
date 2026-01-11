@@ -1,8 +1,10 @@
 #!/bin/bash
 # This script prepares a Linux From Scratch (LFS) image for use with KVM/QEMU
-# Parse arguments
+# Assumes LFS is mounted at /mnt/lfs
 
 echo "[INFO] Preparing system image and start VM..."
+LFS_KERNEL_VERSION="6.13.4" # Change to your exact version
+LFS_WORKDIR="/mnt/lfs"         # Your LFS mount point
 
 echo "[INFO] Parsing arguments..."
 while [[ "$#" -gt 0 ]]; do
@@ -26,13 +28,14 @@ if [[ "$BUILD_MODE" == "host_libvirt_amd64" ]]; then
   IMAGE_PATH="/var/lib/libvirt/images/lfs.img"
   IMAGE_CLONE_PATH="/var/lib/libvirt/images/lfs-clone.img"
   LIVE_VM_ISO_PATH="/var/lib/libvirt/images/alpine.iso"
-  GDT_HOSTNAME="devbox-amd64"
+  GDT_HOSTNAME="devopstribe-linux-amd64"
+  [ ! -f  $LIVE_VM_ISO_PATH ] && (echo "[ERROR] Please put alpine.iso in $LIVE_VM_ISO_PATH" && exit 1)
 elif [[ "$BUILD_MODE" == "vagrant_qemu_aarch64" ]]; then
   echo "[INFO] BUILD_MODE is set to vagrant_qemu_aarch64. Proceeding with Vagrant-specific setup..."
   IMAGE_PATH="/mnt/os_images/lfs.img"
   IMAGE_CLONE_PATH="/mnt/os_images/lfs-clone.img"
   LIVE_VM_ISO_PATH="/mnt/os_images/alpine.iso"
-  GDT_HOSTNAME="devbox-aarch64"
+  GDT_HOSTNAME="devopstribe-linux-aarch64"
   [ ! -f  $LIVE_VM_ISO_PATH ] && (echo "[ERROR] Please put alpine.iso in $LIVE_VM_ISO_PATH" && exit 1)
 fi
 
@@ -122,9 +125,25 @@ sudo mkdir -p /mnt/lfs-boot /mnt/lfs-root
 sudo mount ${LOOP_DEVICE}p1 /mnt/lfs-boot
 sudo mount ${LOOP_DEVICE}p2 /mnt/lfs-root
 
-echo "[INFO] Copying content from /mnt/lfs/root to /mnt/lfs-root excluding tools and boot..."
-sudo rsync -a --stats --exclude='boot' --exclude='tools' --exclude='sources' /mnt/lfs/* /mnt/lfs-root/
+sudo dracut --force \
+    --kver $LFS_KERNEL_VERSION \
+    --kmoddir $LFS_WORKDIR/lib/modules/$LFS_KERNEL_VERSION \
+    --add "dmsquash-live bash kernel-modules rootfs-block base multipath" \
+    --omit "systemd" \
+    --filesystems "iso9660 squashfs overlay" \
+    --drivers "sr_mod sd_mod usb_storage uas cdrom" \
+    /tmp/initrd
 
+echo "[INFO] Copying content from /mnt/lfs/root to /mnt/lfs-root excluding unnecessary directories..."
+sudo rsync -a --stats \
+  --exclude='/root/.cache' \
+  --exclude='/root/go' \
+  --exclude='/tools' \
+  --exclude='/sources' \
+  --exclude='/tmp' \
+  --exclude='/var/cache' \
+  --exclude='/var/log' \
+  /mnt/lfs/* /mnt/lfs-root/
 
 if [[ "$BUILD_MODE" == "host_libvirt_amd64" ]]; then
   GRUB_CONSOLE="console=ttyS0,115200 console=tty1"
@@ -143,7 +162,6 @@ else
   echo "[ERROR] Unsupported BUILD_MODE: $BUILD_MODE"
   exit 1
 fi
-
 
 echo "[INFO] Creating inittab, clock, fstab, ifconfig.$NET_DEV, resolv.conf, and hostname files..."
 
@@ -235,6 +253,7 @@ sudo tee "$CONF_TMP/hostname" > /dev/null << EOF
 # Hostname configuration
 # This file is written and managed by Ansible of Generic Distro Toolkit
 ${GDT_HOSTNAME}
+
 EOF
 
 sudo cat $CONF_TMP/hostname
@@ -305,13 +324,18 @@ sudo ls -l $LFS_ROOT/etc/init.d/
 sudo mkdir $LFS_ROOT/boot
 echo "[INFO] Content copied successfully."
 
+
+
 echo "[INFO] Installing GRUB on /mnt/lfs-boot..."
 sudo grub-install --boot-directory=/mnt/lfs-boot/boot --root-directory=/mnt/lfs-boot --target=$GRUB_TARGET $LOOP_DEVICE
 echo "[INFO] GRUB installation completed successfully with specified root directory."
+sudo /bin/cp /tmp/initrd $LFS_WORKDIR/boot/initrd
+
+
 echo "[INFO] Partitions mounted successfully."
 
 echo "[INFO] Copying content from /mnt/lfs/boot to /mnt/lfs-boot..."
-sudo cp -a /mnt/lfs/boot/* /mnt/lfs-boot/
+sudo cp -a $LFS_WORKDIR/boot/* /mnt/lfs-boot/
 echo "[INFO] Content copied successfully."
 
 echo "[INFO] Creating GRUB configuration file..."
@@ -320,12 +344,12 @@ sudo tee "$CONF_TMP/grub.cfg" > /dev/null << EOF
 set default=0
 set timeout=10
 
-menuentry "GNU/Linux, Linux 6.13.4-lfs-12.3" {
+menuentry "DevOpsTribe GNU/Linux, Linux 6.13.4-lfs-12.3" {
   set gfxmode=1280x1024
   set gfxpayload=keep
 
   linux /vmlinuz-6.13.4-lfs-12.3 root=/dev/vda2 ro nomodeset debug earlyprintk=efi,keep ${GRUB_CONSOLE}
-  initrd /initrd.img-6.13.4
+  initrd /initrd
 }
 
 EOF
@@ -430,6 +454,14 @@ if [[ "$BUILD_MODE" == "host_libvirt_amd64" ]]; then
     --noautoconsole \
     --video virtio
 
+    if [ $? -ne 0 ]; then
+      echo "[ERROR] Failed to create virtual machine $VM_NAME."
+      exit 1
+    else
+      echo "[INFO] Virtual machine $VM_NAME created successfully."
+    fi
+
+
   echo "[INFO] Starting a virtual machine that boots from Alpine ISO..."
   sudo -i -u ubuntu virt-install \
     --name $LIVE_VM_NAME \
@@ -443,8 +475,13 @@ if [[ "$BUILD_MODE" == "host_libvirt_amd64" ]]; then
     --import \
     --noautoconsole
 
-  echo "[INFO] Virtual machine alpine-vm started successfully."
-  echo "[INFO] Virtual machine $VM_NAME created successfully."
+    if [ $? -ne 0 ]; then
+      echo "[ERROR] Failed to start virtual machine $LIVE_VM_NAME."
+      exit 1
+    else
+      echo "[INFO] Virtual machine $LIVE_VM_NAME started successfully."
+    fi
+
 elif [[ "$BUILD_MODE" == "vagrant_box" ]]; then
   echo "[INFO] To Do..."
 fi

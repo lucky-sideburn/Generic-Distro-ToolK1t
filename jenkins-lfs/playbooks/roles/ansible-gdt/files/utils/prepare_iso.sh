@@ -1,15 +1,25 @@
+#!/bin/bash
+# Script to prepare a bootable LFS Live ISO
+# Assumes LFS is mounted at /mnt/lfs
+
 # 1. Create workspace
 ISO_WORKSPACE="/tmp/lfs_iso_ws"
 sudo mkdir -p $ISO_WORKSPACE
 
 # 2. Copy EVERYTHING from your LFS root (except /proc, /sys, /dev)
 # Use -a to preserve permissions/symlinks which are critical for LFS
-sudo rsync -a --progress --exclude='/sources' --exclude='/build' /mnt/lfs/ $ISO_WORKSPACE/
+sudo rsync -a --progress \
+  --exclude='/root/.cache' \
+  --exclude='/sources' \
+  --exclude='/root/go' \
+  --exclude='/tmp' \
+  --exclude='/build' \
+  --exclude='/proc/*' \
+  --exclude='/sys/*' \
+  --exclude='/dev/*' \
+  /mnt/lfs/ $ISO_WORKSPACE/
 
-# 3. Ensure the kernel is in the right place inside the workspace
-sudo cp /mnt/lfs/boot/vmlinuz-6.13.4-lfs-12.3 $ISO_WORKSPACE/boot/vmlinuz
-
-sudo mkdir dir -p $ISO_WORKSPACE/live
+sudo mkdir -p $ISO_WORKSPACE/live
 
 LFS_KERNEL_VERSION="6.13.4" # Change to your exact version
 LFS_ROOT="/mnt/lfs"         # Your LFS mount point
@@ -97,12 +107,17 @@ cgroup2        /sys/fs/cgroup cgroup2  nosuid,noexec,nodev 0     0
 # End /etc/fstab
 EOF
 
+# Clean up unnecessary services from the live ISO (temporaty patch)
+# TODO: Fix this
 sudo rm $ISO_WORKSPACE/etc/rc.d/rcS.d/S45cleanfs
 sudo rm $ISO_WORKSPACE/etc/rc.d/rcS.d/S40mountfs
 sudo rm $ISO_WORKSPACE/etc/rc.d/rc3.d/S92kubelet  
 sudo rm $ISO_WORKSPACE/etc/rc.d/rc3.d/S91crio
 sudo rm $ISO_WORKSPACE/etc/rc.d/rc3.d/S30sshd
+
+# Set the hostname
 echo "devopstribe-linux" | sudo tee $ISO_WORKSPACE/etc/hostname
+
 # Also update /etc/hosts
 sudo tee $ISO_WORKSPACE/etc/hosts << 'EOF'
 # Begin /etc/hosts
@@ -147,39 +162,22 @@ esac
 # End hostname
 EOF
 
-sudo cp /mnt/lfs/sources/system-installer.sh $ISO_WORKSPACE/usr/local/bin/system-installer.sh
+sudo cp /mnt/lfs/sources/utils/system-installer.sh $ISO_WORKSPACE/usr/local/bin/system-installer.sh
 sudo chmod +x $ISO_WORKSPACE/usr/local/bin/system-installer.sh
 
 > $ISO_WORKSPACE/root/.bashrc 
 > $ISO_WORKSPACE/root/.bash_profile
 
 sudo tee -a $ISO_WORKSPACE/root/.bashrc << 'EOF'
-#!/bin/bash
-# 1. Stop kernel messages
-dmesg -n 1
-
-# Restore terminal settings
-stty sane
-
-# 2. Clear the screen completely
-clear
-
-# 3. Run your dialog
-dialog --msgbox "Welcome to DevOpsTribe GNU/Linux" 10 30
-
-# 4. Optional: Restore kernel logging on exit
-dmesg -n 7
-
-# Auto-start installer on first login
-# if [ -f /usr/local/bin/system-installer.sh ]; then
-#     exec /usr/local/bin/system-installer.sh
-# fi
+# Custom LFS Live ISO Bashrc
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+export PS1="\[\e[1;32m\]\u@\h:\[\e[1;34m\]\w\[\e[0m\]\$ "
 EOF
 
 sudo tee -a $ISO_WORKSPACE/root/.bash_profile << 'EOF'
 # Carica il bashrc se esiste
 if [ -f ~/.bashrc ]; then
-    . ~/.bashrc
+  . ~/.bashrc
 fi
 EOF
 
