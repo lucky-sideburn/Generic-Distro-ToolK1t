@@ -333,6 +333,9 @@
   loop: "{{ jenkins_jobs.containers }}"
   when: jenkins_download_lfs_archives | bool
 
+- name: Copy Kernel Configs
+  include_tasks: kernel_configs.yml
+
 - name: Include system configuration tasks
   include_tasks: system_conf.yml
   vars:

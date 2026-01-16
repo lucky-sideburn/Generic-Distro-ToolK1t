@@ -27,10 +27,10 @@ LFS_ROOT="/mnt/lfs"         # Your LFS mount point
 sudo dracut --force \
     --kver $LFS_KERNEL_VERSION \
     --kmoddir $LFS_ROOT/lib/modules/$LFS_KERNEL_VERSION \
-    --add "dmsquash-live bash kernel-modules rootfs-block base multipath" \
-    --omit "systemd" \
+    --add "dmsquash-live bash kernel-modules rootfs-block base" \
+    --omit "systemd multipath btrfs" \
     --filesystems "iso9660 squashfs overlay" \
-    --drivers "sr_mod sd_mod usb_storage uas cdrom" \
+    --drivers "virtio_pci virtio_blk virtio_scsi sr_mod cdrom sd_mod" \
     /tmp/initrd
 
 sudo cp /tmp/initrd $ISO_WORKSPACE/live/initrd
@@ -59,7 +59,9 @@ search --no-floppy --set=root --label DEVOPS_ISO
 
 menuentry "DevOpsTribe GNU/Linux Live" {
     set gfxpayload=keep
-    linux /live/vmlinuz boot=live root=live:LABEL=DEVOPS_ISO rd.live.squashimg=filesystem.squashfs rd.live.image rd.live.overlay.size=2048 rd.live.overlay.overlayfs=1 quiet splash
+    #linux /live/vmlinuz boot=live root=live:LABEL=DEVOPS_ISO rd.live.squashimg=filesystem.squashfs rd.live.image rd.live.overlay.size=2048 rd.live.overlay.overlayfs=1 console=tty1 console=ttyS0 
+    linux /live/vmlinuz root=live:LABEL=DEVOPS_ISO rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs rd.live.overlay.overlayfs=1 console=tty1 console=ttyS0 rd.debug rd.shell
+    #quiet splash
     initrd /live/initrd
 }
 EOF
@@ -211,23 +213,23 @@ sudo mksquashfs /mnt/lfs/ $ISO_WORKSPACE/live/filesystem.squashfs \
   -e var/tmp \
   -comp xz
 
-[ ls $ISO_WORKSPACE/initrd.img-no-kmods] && sudo rm $ISO_WORKSPACE/initrd.img-no-kmods
-[ ls $ISO_WORKSPACE/dist ] && sudo rm -rf $ISO_WORKSPACE/dist
-[ ls $ISO_WORKSPACE/tools ] && sudo rm -rf $ISO_WORKSPACE/tools
+[ -f $ISO_WORKSPACE/initrd.img-no-kmods ] && sudo rm $ISO_WORKSPACE/initrd.img-no-kmods
+[ -d $ISO_WORKSPACE/dist ] && sudo rm -rf $ISO_WORKSPACE/dist
+[ -d $ISO_WORKSPACE/tools ] && sudo rm -rf $ISO_WORKSPACE/tools
 
 # Create the directory structure for AI models
 sudo mkdir -p $ISO_WORKSPACE/opt/ai/models
 
-
-MODEL_URL="https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf"
-MODEL_DEST="$ISO_WORKSPACE/opt/ai/models/qwen2.5-1.5b.gguf"
+MODEL_URL="https://cas-bridge.xethub.hf.co/xet-bridge-us/67c2370e99830dd31a201057/1b999eaa1d0930a7e7da9cb20e7def07be593f675637179b140a5f1e377edb2a?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cas%2F20260116%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260116T094928Z&X-Amz-Expires=3600&X-Amz-Signature=4a132878048c2e5f329ecc6bba80b7d81e0a4a0d0a42f9b6c4204b1734f4e4de&X-Amz-SignedHeaders=host&X-Xet-Cas-Uid=public&response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27Phi-4-mini-instruct-Q6_K.gguf%3B+filename%3D%22Phi-4-mini-instruct-Q6_K.gguf%22%3B&x-id=GetObject&Expires=1768560568&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc2ODU2MDU2OH19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2FzLWJyaWRnZS54ZXRodWIuaGYuY28veGV0LWJyaWRnZS11cy82N2MyMzcwZTk5ODMwZGQzMWEyMDEwNTcvMWI5OTllYWExZDA5MzBhN2U3ZGE5Y2IyMGU3ZGVmMDdiZTU5M2Y2NzU2MzcxNzliMTQwYTVmMWUzNzdlZGIyYSoifV19&Signature=e5ucIrJYXiQemO1JMPeQ81YlDHk9OGoD2nJdsEH9eSWNfAiNBoPd07xEv-sNm7Oy2tyb5f5j-buIjCzZ1SUIXh6rjSu4Y%7EO3ZjdhogzzFJJIcQ-6NIYaI3UNp7DAb7m8kBD7r9GsCVSC1F590U2UJkFQfhYkH0lRBeQCpBwNFTsYYCbJyPMoH0MO0dRthJhhczh-FqgXdO4SnxXMkaBKtVKxcqt9IpybO8IDtEcRv8bpZebgaY4YJlLSlX0U6KD7s90VpaR3v-wBqu3dPUdp1pdQOplks0aFDoo7giuYfdVSv7yKuXFRuYM-kOWmaiDN2Rga96NKzkVf90a0DJNavw__&Key-Pair-Id=K2L8F4GPSG1IFC"
+MODEL_DEST="$ISO_WORKSPACE/opt/ai/models/Phi-4-mini-instruct-Q6_K.gguf"
 mkdir -p "$(dirname "$MODEL_DEST")"
-curl -L "$MODEL_URL" -o "$MODEL_DEST"
+
+ls /opt/ai/models/Phi-4-mini-instruct-Q6_K.gguf || sudo curl -L -o "$MODEL_DEST" "$MODEL_URL"
 
 sudo tee $ISO_WORKSPACE/usr/local/bin/start-llama-server << 'EOF'
 #!/bin/bash
 /usr/local/bin/llama-server \
-    -m /opt/ai/models/qwen2.5-1.5b.gguf \
+    -m /opt/ai/models/Phi-4-mini-instruct-Q6_K.gguf \
     --port 8080 \
     --host 0.0.0.0 \
     --ctx-size 2048 \
@@ -274,10 +276,9 @@ sudo chmod +x $ISO_WORKSPACE/etc/rc.d/init.d/llama-server
 sudo ln -sf ../init.d/llama-server $ISO_WORKSPACE/etc/rc.d/rc3.d/S99llama-server
 
 # Create the Wargames script
-sudo tee $ISO_WORKSPACE/usr/local/bin/wargame << 'EOF'
+sudo tee $ISO_WORKSPACE/usr/local/bin/ask << 'EOF'
 #!/bin/bash
 
-# Effetto digitazione Wargames
 function typewriter {
   text="$1"
   for (( i=0; i<${#text}; i++ )); do
@@ -288,8 +289,7 @@ function typewriter {
 }
 
 if [ -z "$1" ]; then
-  typewriter "SALVE PROFESSOR FALKEN."
-  typewriter "VUOLE GIOCARE A UNA PARTITA?"
+  typewriter "Ask me anything, or type 'exit' to quit."
 fi
 
 while true; do
@@ -299,14 +299,14 @@ while true; do
 
   # Exit the loop if the user types "exit"
   if [[ "$USER_INPUT" == "exit" ]]; then
-    typewriter "ARRIVEDERCI, PROFESSOR FALKEN."
+    typewriter "Goodbye!"
     break
   fi
 
   # Correzione per llama.cpp
   RESPONSE=$(curl -s http://localhost:8080/completion \
     -H "Content-Type: application/json" \
-    -d "{\"prompt\": \"<|system|>Sei HAL... <|user|>$USER_INPUT <|assistant|>\", \"n_predict\": 200}" | jq -r '.content')
+    -d "{\"prompt\": \"$USER_INPUT\", \"n_predict\": 200}" | jq -r '.content')
     
   typewriter "$RESPONSE"
 

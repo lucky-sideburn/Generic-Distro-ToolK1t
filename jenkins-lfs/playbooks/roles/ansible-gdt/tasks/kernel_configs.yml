@@ -1,0 +1,11 @@
+- name: Copy kernel_config_x86_64
+  ansible.builtin.copy:
+    src: kernel/kernel_config_x86_64
+    dest: /mnt/lfs/sources/kernel_configs/kernel_config_x86_64 
+    mode: '0644'
+
+- name: Copy kernel_config_aarch64
+  ansible.builtin.copy:
+    src: kernel/kernel_config_aarch64
+    dest: /mnt/lfs/sources/kernel_configs/kernel_config_aarch64
+    mode: '0644'

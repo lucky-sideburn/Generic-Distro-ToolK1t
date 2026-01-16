@@ -89,7 +89,8 @@ function show_menu() {
   echo "17) Start AARCH64 VM on QEMU"
   echo "18) Provision an AARCH64 build node using Vagrant"
   echo "19) Provision an AMD64 build node directly with Ansible"
-  echo "20) Exit"
+  echo "20) Copy Kernel Configs"
+  echo "21) Exit"
   echo
   read -p "Enter your choice: " choice
 
@@ -202,6 +203,11 @@ function show_menu() {
       ;;
 
     20)
+      echo "Copying Kernel Configs..."
+      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/kernel_configs.yml
+      ;;
+
+    21)
       echo "Exiting..."
       exit 0
       ;;

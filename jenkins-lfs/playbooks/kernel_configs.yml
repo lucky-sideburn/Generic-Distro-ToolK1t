@@ -1,0 +1,12 @@
+- name: Copy Kernel Configs for LFS Nodes
+  gather_facts: true
+  hosts: all
+  tasks:
+    - name: Display the node name
+      debug:
+        msg: "Node name: {{ inventory_hostname }}"
+
+    - name: Start kernel_configs.yml
+      include_role:
+        name: ansible-gdt
+        tasks_from: kernel_configs.yml
