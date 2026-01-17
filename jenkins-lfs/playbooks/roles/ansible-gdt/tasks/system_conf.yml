@@ -52,18 +52,6 @@
     dest: /mnt/lfs/sources/conf_tmp/profile
     mode: '0644'
 
-- name: Copy kernel_config_x86_64
-  ansible.builtin.copy:
-    src: kernel_config_x86_64
-    dest: /mnt/lfs/sources/kernel_configs/kernel_config_x86_64 
-    mode: '0644'
-
-- name: Copy kernel_config_aarch64
-  ansible.builtin.copy:
-    src: kernel_config_aarch64
-    dest: /mnt/lfs/sources/kernel_configs/kernel_config_aarch64
-    mode: '0644'
-
 - name: Copy sysctl.conf
   ansible.builtin.copy:
     src: sysctl.conf
