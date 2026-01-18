@@ -212,15 +212,15 @@ sudo mksquashfs /mnt/lfs/ $ISO_WORKSPACE/live/filesystem.squashfs \
 # Create the directory structure for AI models
 sudo mkdir -p $ISO_WORKSPACE/opt/ai/models
 
-MODEL_DEST="$ISO_WORKSPACE/opt/ai/models/Llama-3.2-1B-Instruct-Q2_K.gguf"
+MODEL_DEST="$ISO_WORKSPACE/opt/ai/models/llama-3.2-1b-instruct-q8_0.gguf"
 mkdir -p "$(dirname "$MODEL_DEST")"
 
-ls "$MODEL_DEST" || sudo /bin/cp /opt/ai/models/Llama-3.2-1B-Instruct-Q2_K.gguf "$MODEL_DEST"
+ls "$MODEL_DEST" || sudo /bin/cp /opt/ai/models/llama-3.2-1b-instruct-q8_0.gguf "$MODEL_DEST"
 
 sudo tee $ISO_WORKSPACE/usr/local/bin/start-llama-server << 'EOF'
 #!/bin/bash
 /usr/local/bin/llama-server \
-  -m /opt/ai/models/Llama-3.2-1B-Instruct-Q2_K.gguf \
+  -m /opt/ai/models/llama-3.2-1b-instruct-q8_0.gguf \
   --port 8080 \
   --host 0.0.0.0 \
   --ctx-size 2048 \
