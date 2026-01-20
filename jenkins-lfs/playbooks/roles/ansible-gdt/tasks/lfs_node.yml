@@ -42,7 +42,7 @@
 
 - name: Copy agent.jar to Jenkins home
   ansible.builtin.copy:
-    src: agent.jar
+    src: utils/agent.jar
     dest: /opt/jenkins/agent/agent.jar
     owner: jenkins
     group: jenkins
@@ -220,7 +220,7 @@
 
 - name: Copy chroot_lfs.sh to /home/jenkins
   ansible.builtin.copy:
-    src: chroot_lfs.sh
+    src: utils/chroot_lfs.sh
     dest: /home/jenkins/chroot_lfs.sh
     owner: jenkins
     group: jenkins
@@ -241,7 +241,7 @@
 
 - name: Copy version-check.sh to /tmp
   ansible.builtin.copy:
-    src: version-check.sh
+    src: utils/version-check.sh
     dest: /tmp/version-check.sh
     owner: jenkins
     group: jenkins
