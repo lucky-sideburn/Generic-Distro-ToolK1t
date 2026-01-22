@@ -1,10 +1,12 @@
 #!/bin/bash
 
+# Set default values
+EXTRA_VARS_ARG=""
+MAIN_PLAYBOOK_PATH="./jenkins-lfs/playbooks/start.yml"
+
 function create_qemu_vm_from_img() {
   OS_IMAGE_BASE_DIR=./os_images
-  VM_NAME=GenericDistroToolkitVM01
-  #[ -f $OS_IMAGE_BASE_DIR/lfs.qcow2 ] && rm -f $OS_IMAGE_BASE_DIR/lfs.qcow2
-  # echo "Creating QEMU VM from image: $OS_IMAGE_BASE_DIR/lfs.img"
+
   qemu-img convert -f raw -O qcow2 $OS_IMAGE_BASE_DIR/lfs.img $OS_IMAGE_BASE_DIR/lfs.qcow2
   qemu-img convert -f raw -O qcow2 $OS_IMAGE_BASE_DIR/lfs-clone.img $OS_IMAGE_BASE_DIR/lfs-clone.qcow2
 
@@ -29,7 +31,7 @@ function create_qemu_vm_from_img() {
       -serial mon:stdio \
       -boot d
 
-  # echo "Starting the AARCH64 VM with the LFS image..."
+  echo "Starting the AARCH64 VM with the LFS image..."
   qemu-system-aarch64 \
       -M virt \
       -cpu host \
@@ -64,18 +66,27 @@ ansible_cmd() {
     echo
   fi
 
-  if [ -f /vagrant ]; then
+  if [ -d /vagrant ]; then
     echo "You are inside a Vagrant machine. Make sure to set the JENKINS_TOKEN environment variable if not already set."
+    EXTRA_VARS_ARG="-e ansible_connection=local"
   else
     echo "You are not inside a Vagrant machine."
   fi
 
   if [ ! -z "$JENKINS_TOKEN" ]; then
-      echo "Using JENKINS_TOKEN from environment variable."
-      EXTRA_VARS_ARG="--extra-vars jenkins_token=$JENKINS_TOKEN"
+    echo "Using JENKINS_TOKEN from environment variable."
+    EXTRA_VARS_ARG="$EXTRA_VARS_ARG -e jenkins_token=$JENKINS_TOKEN"
   fi
 
-  ansible-playbook $EXTRA_VARS_ARG -v -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml "$@"
+  if [ "$EXTRA_VARS_ARG" == "" ]; then
+    echo "Running this Ansible command..."
+    echo "ansible-playbook -v -i jenkins-lfs/inventories/hosts_prod.ini $@"
+    ansible-playbook -v -i jenkins-lfs/inventories/hosts_prod.ini "$@"
+  else
+    echo "Running this Ansible command..."
+    echo "ansible-playbook $EXTRA_VARS_ARG -v -i jenkins-lfs/inventories/hosts_prod.ini $@"
+    ansible-playbook $EXTRA_VARS_ARG -v -i jenkins-lfs/inventories/hosts_prod.ini "$@"
+  fi
 }
 
 function show_menu() {
@@ -101,94 +112,97 @@ function show_menu() {
   echo "18) Provision an AARCH64 build node using Vagrant"
   echo "19) Provision an AMD64 build node directly with Ansible"
   echo "20) Copy Kernel Configs"
-  echo "21) Exit"
+  echo "21) Copy System Configs"
+
+  echo "22) Exit"
   echo
   read -p "Enter your choice: " choice
 
   case $choice in
     0)
       echo "Building Jenkins Folders..."
-      ansible_cmd --tags amd64_folders,aarch64_folders
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags amd64_folders,aarch64_folders
     ;;
 
     1)
       echo "Building AMD64 all Jenkins Jobs..."
-      ansible_cmd --tags amd64_jobs
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags amd64_jobs
       ;;
 
     2)
       echo "Building AMD64 cross_toolchain Jenkins Jobs..."
-      ansible_cmd --tags amd64_cross_toolchain
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags amd64_cross_toolchain
       ;;
 
     3)
       echo "Building AMD64 cross_compiling_temporary_tools Jenkins Jobs..."
-      ansible_cmd --tags amd64_cross_compiling_temporary_tools
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags amd64_cross_compiling_temporary_tools
       ;;
 
     4)
       echo "Building AMD64 chroot_and_building_additional_temporary_tools Jenkins Jobs..."
-      ansible_cmd --tags amd64_chroot_and_building_additional_temporary_tools
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags amd64_chroot_and_building_additional_temporary_tools
       ;;
 
     5)
       echo "Building AMD64 basic_system_software Jenkins Jobs..."
-      ansible_cmd --tags amd64_basic_system_software
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags amd64_basic_system_software
       ;;
 
     6)
       echo "Building AMD64 system_configuration Jenkins Jobs..."
-      ansible_cmd --tags amd64_system_configuration
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags amd64_system_configuration
       ;;
 
     7)
       echo "Building AMD64 containers Jenkins Jobs..."
-      ansible_cmd --tags amd64_containers
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags amd64_containers
       ;;
     
     8) echo "Building AMD64 GenAI Jenkins Jobs..."
-      ansible_cmd --tags amd64_genai
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags amd64_genai
       ;;
 
     9)
       echo "Building AARCH64 all Jenkins Jobs..."
-      ansible_cmd --tags aarch64_jobs
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags aarch64_jobs
       ;;
 
     10)
       echo "Building AARCH64 cross_toolchain Jenkins Jobs..."
-      ansible_cmd --tags aarch64_cross_toolchain
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags aarch64_cross_toolchain
 
       ;;
 
     11)
       echo "Building AARCH64 cross_compiling_temporary_tools Jenkins Jobs..."
-      ansible_cmd --tags aarch64_cross_compiling_temporary_tools
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags aarch64_cross_compiling_temporary_tools
       ;;
 
     12)
       echo "Building AARCH64 chroot_and_building_additional_temporary_tools Jenkins Jobs..."
-      ansible_cmd --tags aarch64_chroot_and_building_additional_temporary_tools
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags aarch64_chroot_and_building_additional_temporary_tools
       ;;
 
     13)
       echo "Building AARCH64 basic_system_software Jenkins Jobs..."
-      ansible_cmd --tags aarch64_basic_system_software
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags aarch64_basic_system_software
       ;;
 
     14)
       echo "Building AARCH64 system_configuration Jenkins Jobs..."
-      ansible_cmd --tags aarch64_system_configuration
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags aarch64_system_configuration 
+
       ;;
 
     15)
       echo "Building AARCH64 containers Jenkins Jobs..."
-      ansible_cmd --tags aarch64_containers
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags aarch64_containers
       ;;
 
     16)
       echo "Building AARCH64 GenAI Jenkins Jobs..."
-      ansible_cmd --tags aarch64_genai
+      ansible_cmd $MAIN_PLAYBOOK_PATH --tags aarch64_genai
       ;;
 
     17)
@@ -215,10 +229,15 @@ function show_menu() {
 
     20)
       echo "Copying Kernel Configs..."
-      ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/kernel_configs.yml
+      ansible_cmd jenkins-lfs/playbooks/kernel_configs.yml -i jenkins-lfs/inventories/hosts_prod.ini 
       ;;
 
     21)
+      echo "Copying System Configs..."
+      ansible_cmd jenkins-lfs/playbooks/system_conf.yml -i jenkins-lfs/inventories/hosts_prod.ini 
+      ;;
+
+    22)
       echo "Exiting..."
       exit 0
       ;;

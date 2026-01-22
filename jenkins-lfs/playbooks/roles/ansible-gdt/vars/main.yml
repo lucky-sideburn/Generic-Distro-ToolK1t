@@ -3543,6 +3543,20 @@ jenkins_jobs:
       exec_command: |
         cd /mnt/lfs/sources
         ./prepare_image.sh --buildmode $BUILD_MODE
+
+    - name: 0005 - Prepare ISO (System Configuration)
+      version: 1.0
+      archive_file: /mnt/lfs/sources/empty.tar.xz
+      source_dir: /mnt/lfs/sources
+      description: |
+        This job prepares the ISO image for the LFS environment by running a script that sets up the necessary configurations and files.
+      category:
+        This job is part of the operating system setup, specifically for preparing the ISO image.
+      build_tool: false
+      build_command: echo
+      exec_command: |
+        cd /mnt/lfs/sources
+        ./prepare_iso.sh --buildmode $BUILD_MODE
   
   genai:
     - name: 0001 - llama.cpp (GenAI)

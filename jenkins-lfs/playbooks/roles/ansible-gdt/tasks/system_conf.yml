@@ -2,7 +2,7 @@
   ansible.builtin.file:
     path: /mnt/lfs/sources/conf_tmp 
     state: directory
-    mode: '0755'
+    mode: '0777'
 
 - name: Create kernel_configs directory
   ansible.builtin.file:
@@ -32,6 +32,12 @@
   ansible.builtin.copy:
     src: utils/prepare_image.sh
     dest: /mnt/lfs/sources/prepare_image.sh
+    mode: '0755'
+
+- name: Cop prepare_iso.sh
+  ansible.builtin.copy:
+    src: utils/prepare_iso.sh
+    dest: /mnt/lfs/sources/prepare_iso.sh
     mode: '0755'
 
 - name: Copy sshd init script
