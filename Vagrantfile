@@ -18,11 +18,6 @@ Vagrant.configure("2") do |config|
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "./jenkins-lfs/playbooks/aarch64_lfs.yml"
     ansible.become = true
-
-    config.vm.provision "shell", inline: <<-SHELL
-    # Use the variable passed via 'env' argument
-    echo "Running ansible-playbook with the provided token..."
-  
     ansible.extra_vars = {
       "jenkins_agent_jar" => "/opt/jenkins/agent/agent.jar",
       "jenkins_master_url" => "https://jenkins.garantideltalento.it",
