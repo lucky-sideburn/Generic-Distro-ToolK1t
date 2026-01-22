@@ -4,11 +4,16 @@
 
 # 1. Create workspace
 ISO_WORKSPACE="/tmp/lfs_iso_ws"
-sudo mkdir -p $ISO_WORKSPACE
+LFS_KERNEL_VERSION="6.13.4" # Change to your exact version
+LFS_ROOT="/mnt/lfs"         # Your LFS mount point
+LFS_HOSTNAME="devopstribe-linux"
+
+[ -d $ISO_WORKSPACE ] || sudo mkdir -p $ISO_WORKSPACE
+sudo rm -rf $ISO_WORKSPACE/*
 
 # 2. Copy EVERYTHING from your LFS root (except /proc, /sys, /dev)
 # Use -a to preserve permissions/symlinks which are critical for LFS
-sudo rsync -a --progress \
+sudo rsync -avz --progress \
   --exclude='/root/.cache' \
   --exclude='/sources' \
   --exclude='/root/go' \
@@ -17,13 +22,15 @@ sudo rsync -a --progress \
   --exclude='/proc/*' \
   --exclude='/sys/*' \
   --exclude='/dev/*' \
+  --exclude='/run/*' \
+  --exclude='/var/cache/*' \
+  --exclude='/var/log/*' \
+  --exclude='/tools' \
   /mnt/lfs/ $ISO_WORKSPACE/
 
 sudo mkdir -p $ISO_WORKSPACE/live
 
-LFS_KERNEL_VERSION="6.13.4" # Change to your exact version
-LFS_ROOT="/mnt/lfs"         # Your LFS mount point
-
+# Create initrd with dracut
 sudo dracut --force \
     --kver $LFS_KERNEL_VERSION \
     --kmoddir $LFS_ROOT/lib/modules/$LFS_KERNEL_VERSION \
@@ -33,12 +40,19 @@ sudo dracut --force \
     --drivers "virtio_pci virtio_blk virtio_scsi sr_mod cdrom sd_mod" \
     /tmp/initrd
 
+# Exit if the previous command fails
+if [ $? -ne 0 ]; then
+  echo "Error: Previous command failed. Exiting."
+  exit 1
+fi
+
 sudo cp /tmp/initrd $ISO_WORKSPACE/live/initrd
 sudo cp /mnt/lfs/boot/vmlinuz-6.13.4-lfs-12.3 $ISO_WORKSPACE/live/vmlinuz
 
-# 4. Create the GRUB config INSIDE the workspace
+# Create the GRUB config INSIDE the workspace
 sudo mkdir -p $ISO_WORKSPACE/boot/grub
 
+# Create grub.cfg
 sudo tee $ISO_WORKSPACE/boot/grub/grub.cfg << EOF
 insmod part_gpt
 insmod part_msdos
@@ -49,15 +63,16 @@ set default=0
 set timeout=5
 
 # GRUB cerca la partizione per caricare Kernel e Initrd
-search --no-floppy --set=root --label AIDOOKEN_ISO
+search --no-floppy --set=root --label ${LFS_HOSTNAME}_ISO
 
 menuentry "AIdooken GNU/Linux Live" {
     set gfxpayload=keep
-    linux /live/vmlinuz root=live:LABEL=AIDOOKEN_ISO rd.live.image rd.live.squashimg=filesystem.squashfs rd.live.overlay.overlayfs=1 console=tty1 console=ttyS0 rd.debug rd.shell quiet splash
+    linux /live/vmlinuz root=live:LABEL=${LFS_HOSTNAME}_ISO rd.live.image rd.live.squashimg=filesystem.squashfs rd.live.overlay.overlayfs=1 console=tty1 console=ttyS0 rd.debug rd.shell quiet splash
     initrd /live/initrd
 }
 EOF
 
+# Create /etc/inittab
 sudo tee $ISO_WORKSPACE/etc/inittab << 'EOF'
 # Default Runlevel
 id:3:initdefault:
@@ -89,9 +104,8 @@ l6:6:wait:/etc/rc.d/init.d/rc 6
 # End of /etc/inittab
 EOF
 
+# Create /etc/fstab
 sudo tee $ISO_WORKSPACE/etc/fstab << 'EOF'
-# Begin /etc/fstab for Live ISO
-
 # file system  mount-point    type     options             dump  fsck
 proc           /proc          proc     nosuid,noexec,nodev 0     0
 sysfs          /sys           sysfs    nosuid,noexec,nodev 0     0
@@ -117,7 +131,7 @@ sudo rm $ISO_WORKSPACE/etc/rc.d/rc3.d/S30sshd
 sudo rm $ISO_WORKSPACE/etc/rc.d/rcS.d/S30checkfs
 
 # Set the hostname
-echo "AIdooken-GNU_Linux" | sudo tee $ISO_WORKSPACE/etc/hostname
+echo "${LFS_HOSTNAME}" | sudo tee $ISO_WORKSPACE/etc/hostname
 
 # Also update /etc/hosts
 sudo tee $ISO_WORKSPACE/etc/hosts << 'EOF'
@@ -163,9 +177,6 @@ esac
 # End hostname
 EOF
 
-sudo cp /mnt/lfs/sources/utils/system-installer.sh $ISO_WORKSPACE/usr/local/bin/system-installer.sh
-sudo chmod +x $ISO_WORKSPACE/usr/local/bin/system-installer.sh
-
 > $ISO_WORKSPACE/root/.bashrc 
 > $ISO_WORKSPACE/root/.bash_profile
 
@@ -184,10 +195,7 @@ if [ -f ~/.bashrc ]; then
 fi
 EOF
 
-cat $ISO_WORKSPACE/root/.bash_profile
-
 sudo chmod +x $ISO_WORKSPACE/etc/rc.d/init.d/hostname
-
 sudo ln -sf ../init.d/hostname $ISO_WORKSPACE/etc/rc.d/rcS.d/S02hostname
 
 sudo mksquashfs /mnt/lfs/ $ISO_WORKSPACE/live/filesystem.squashfs \
@@ -204,6 +212,8 @@ sudo mksquashfs /mnt/lfs/ $ISO_WORKSPACE/live/filesystem.squashfs \
   -e var/log \
   -e var/tmp \
   -comp xz
+
+
 
 [ -f $ISO_WORKSPACE/initrd.img-no-kmods ] && sudo rm $ISO_WORKSPACE/initrd.img-no-kmods
 [ -d $ISO_WORKSPACE/dist ] && sudo rm -rf $ISO_WORKSPACE/dist
@@ -230,6 +240,11 @@ sudo tee $ISO_WORKSPACE/usr/local/bin/start-llama-server << 'EOF'
   # \
   #> /var/log/llama-server.log 2>&1 &
 EOF
+
+if [ $? -ne 0 ]; then
+  echo "Error: Previous command failed. Exiting."
+  exit 1
+fi
 
 sudo chmod +x $ISO_WORKSPACE/usr/local/bin/start-llama-server
 
@@ -318,9 +333,14 @@ sudo mkdir -p $ISO_WORKSPACE/var/log
 sudo mkdir -p $ISO_WORKSPACE/run
 
 sudo grub-mkrescue --iso-level 3 \
-  -o /var/lib/libvirt/images/lfs-system.iso $ISO_WORKSPACE -- -volid "AIDOOKEN_ISO" \
-     -publisher "AIDOOKEN_LINUX" \
-     -hfsplus off
+  -o /var/lib/libvirt/images/lfs-system.iso $ISO_WORKSPACE -- -volid "${LFS_HOSTNAME}_ISO" \
+  -publisher "${LFS_HOSTNAME}_LINUX" \
+  -hfsplus off
+
+if [ $? -ne 0 ]; then
+  echo "Error: grub-mkrescue failed. Exiting."
+  exit 1
+fi
 
 sudo chown libvirt-qemu:kvm /var/lib/libvirt/images/lfs-system.iso
 
