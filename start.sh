@@ -64,7 +64,18 @@ ansible_cmd() {
     echo
   fi
 
-  ansible-playbook -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml "$@"
+  if [ -f /vagrant ]; then
+    echo "You are inside a Vagrant machine. Make sure to set the JENKINS_TOKEN environment variable if not already set."
+  else
+    echo "You are not inside a Vagrant machine."
+  fi
+
+  if [ ! -z "$JENKINS_TOKEN" ]; then
+      echo "Using JENKINS_TOKEN from environment variable."
+      EXTRA_VARS_ARG="--extra-vars jenkins_token=$JENKINS_TOKEN"
+  fi
+
+  ansible-playbook $EXTRA_VARS_ARG -v -i jenkins-lfs/inventories/hosts_prod.ini jenkins-lfs/playbooks/start.yml "$@"
 }
 
 function show_menu() {

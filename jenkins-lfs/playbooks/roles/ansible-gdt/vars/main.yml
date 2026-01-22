@@ -1,6 +1,8 @@
 ---
 # vars file for ansible-gdt
 build_tool: true
+jenkins_url: https://jenkins.garantideltalento.it
+jenkins_user: admin
 
 lfs_packages:
   - binutils

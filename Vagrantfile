@@ -1,7 +1,7 @@
 # Vagrantfile for Ubuntu ARM
 
-if ENV['JENKINS_AGENT_SECRET'].nil? || ENV['JENKINS_AGENT_SECRET'].empty?
-  STDERR.puts "Warning: Environment variable JENKINS_AGENT_SECRET is not set. Jenkins slave provisioning via Ansible may not work as expected."
+if ENV['JENKINS_TOKEN'].nil? || ENV['JENKINS_TOKEN'].empty?
+  STDERR.puts "Warning: Environment variable JENKINS_TOKEN is not set. Jenkins slave provisioning via Ansible may not work as expected."
 end
 
 Vagrant.configure("2") do |config|
@@ -19,6 +19,10 @@ Vagrant.configure("2") do |config|
     ansible.playbook = "./jenkins-lfs/playbooks/aarch64_lfs.yml"
     ansible.become = true
 
+    config.vm.provision "shell", inline: <<-SHELL
+    # Use the variable passed via 'env' argument
+    echo "Running ansible-playbook with the provided token..."
+  
     ansible.extra_vars = {
       "jenkins_agent_jar" => "/opt/jenkins/agent/agent.jar",
       "jenkins_master_url" => "https://jenkins.garantideltalento.it",
