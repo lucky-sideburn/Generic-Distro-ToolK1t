@@ -1,6 +1,8 @@
 # Vagrantfile for Ubuntu ARM
 
-raise "Environment variable JENKINS_AGENT_SECRET is not set" if ENV['JENKINS_AGENT_SECRET'].nil? || ENV['JENKINS_AGENT_SECRET'].empty?
+if ENV['JENKINS_AGENT_SECRET'].nil? || ENV['JENKINS_AGENT_SECRET'].empty?
+  STDERR.puts "Warning: Environment variable JENKINS_AGENT_SECRET is not set. Jenkins slave provisioning via Ansible may not work as expected."
+end
 
 Vagrant.configure("2") do |config|
   config.vm.box = "arm64-boxes/ubuntu-22.04"
