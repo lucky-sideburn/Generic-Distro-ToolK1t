@@ -26,6 +26,11 @@ lfs_packages:
   - xz-utils
   - texinfo
   - libgmp-dev
+  - build-essential
+  - autoconf
+  - pkg-config
+  - gettext
+  - libtool
 
 lfs_extra_archives:
   - mpfr-4.2.1.tar.xz
@@ -3310,7 +3315,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0108 - cpio (Basic System Software) OPTIONAL
+    - name: 0108 - cpio (Basic System Software)
       version: 2.15
       archive_file: /sources/cpio-2.15.tar.bz2
       source_dir: /sources/cpio-2.15
@@ -3433,6 +3438,28 @@ jenkins_jobs:
           make
           make install
         '
+  
+    - name: 0114 Dracut (Basic System Software)
+      version: 190
+      archive_file: /sources/dracut-ng.tar.gz
+      source_dir: /sources/dracut-ng
+      description: |
+        Dracut is an initramfs infrastructure that is used to create the initial RAM filesystem for booting the Linux kernel. This job builds Dracut, which is essential for creating the initramfs in the LFS environment.
+      category:
+        This job is part of the system configuration setup, specifically for building Dracut.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+          
+          cd $LFS/sources/dracut-ng
+          ./configure
+          sudo make
+          echo $LFS
+          if [ -z "$LFS" ]; then
+            echo "Error: LFS variable is not set or empty. Exiting..."
+            exit 1
+          fi   
+          sudo make DESTDIR=$LFS install
 
   system_configuration:
     - name: 0001 - LFS-Bootscripts (System Configuration)
@@ -3530,7 +3557,34 @@ jenkins_jobs:
           fi
         '
 
-    - name: 0004 - Prepare System Image (System Configuration)
+    - name: 0004 - Run Dracut to create initramfs (System Configuration)
+      version: 1.0
+      archive_file: /mnt/lfs/sources/empty.tar.xz
+      source_dir: /mnt/lfs/sources
+      description: |
+        This job runs Dracut to create the initramfs for the LFS system. The initramfs is essential for booting the LFS system.
+      category:
+        This job is part of the operating system setup, specifically for creating the initramfs.
+      build_tool: false
+      build_command: echo
+      exec_command: |
+        {{ chroot_start_command }} -c '
+          LFS_KERNEL_VERSION="6.13.4" # Change to your exact version
+          # dracut --force --kver 6.13.4-lfs-12.3
+          dracut --force \
+          --kver $LFS_KERNEL_VERSION \
+          --libdirs /usr/lib/dracut \
+          --kmoddir /lib/modules/$LFS_KERNEL_VERSION \
+          --modules "dmsquash-live bash kernel-modules rootfs-block base loop" \
+          --omit "systemd multipath btrfs" \
+          --filesystems "iso9660 squashfs overlay" \
+          --drivers "virtio_pci virtio_blk virtio_scsi sr_mod cdrom sd_mod" \
+          --no-hostonly \
+          -l \
+          /boot/initrd
+        '
+
+    - name: 0005 - Prepare System Image (System Configuration)
       version: 1.0
       archive_file: /mnt/lfs/sources/empty.tar.xz
       source_dir: /mnt/lfs/sources
@@ -3544,7 +3598,7 @@ jenkins_jobs:
         cd /mnt/lfs/sources
         ./prepare_image.sh --buildmode $BUILD_MODE
 
-    - name: 0005 - Prepare ISO (System Configuration)
+    - name: 0006 - Prepare ISO (System Configuration)
       version: 1.0
       archive_file: /mnt/lfs/sources/empty.tar.xz
       source_dir: /mnt/lfs/sources

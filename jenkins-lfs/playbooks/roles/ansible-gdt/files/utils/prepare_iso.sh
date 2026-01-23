@@ -9,7 +9,7 @@ LFS_ROOT="/mnt/lfs"         # Your LFS mount point
 LFS_HOSTNAME="devopstribe-linux"
 
 [ -d $ISO_WORKSPACE ] || sudo mkdir -p $ISO_WORKSPACE
-sudo rm -rf $ISO_WORKSPACE/*
+[ -f /var/lib/libvirt/images/lfs-system.iso ] || sudo -r /var/lib/libvirt/images/lfs-system.iso
 
 # 2. Copy EVERYTHING from your LFS root (except /proc, /sys, /dev)
 # Use -a to preserve permissions/symlinks which are critical for LFS
@@ -29,24 +29,7 @@ sudo rsync -avz --progress \
   /mnt/lfs/ $ISO_WORKSPACE/
 
 sudo mkdir -p $ISO_WORKSPACE/live
-
-# Create initrd with dracut
-sudo dracut --force \
-    --kver $LFS_KERNEL_VERSION \
-    --kmoddir $LFS_ROOT/lib/modules/$LFS_KERNEL_VERSION \
-    --add "dmsquash-live bash kernel-modules rootfs-block base" \
-    --omit "systemd multipath btrfs" \
-    --filesystems "iso9660 squashfs overlay" \
-    --drivers "virtio_pci virtio_blk virtio_scsi sr_mod cdrom sd_mod" \
-    /tmp/initrd
-
-# Exit if the previous command fails
-if [ $? -ne 0 ]; then
-  echo "Error: Previous command failed. Exiting."
-  exit 1
-fi
-
-sudo cp /tmp/initrd $ISO_WORKSPACE/live/initrd
+sudo cp /boot/initrd $ISO_WORKSPACE/live/initrd
 sudo cp /mnt/lfs/boot/vmlinuz-6.13.4-lfs-12.3 $ISO_WORKSPACE/live/vmlinuz
 
 # Create the GRUB config INSIDE the workspace
@@ -65,9 +48,10 @@ set timeout=5
 # GRUB cerca la partizione per caricare Kernel e Initrd
 search --no-floppy --set=root --label ${LFS_HOSTNAME}_ISO
 
-menuentry "AIdooken GNU/Linux Live" {
+menuentry "$LFS_HOSTNAME GNU/Linux Live" {
     set gfxpayload=keep
-    linux /live/vmlinuz root=live:LABEL=${LFS_HOSTNAME}_ISO rd.live.image rd.live.squashimg=filesystem.squashfs rd.live.overlay.overlayfs=1 console=tty1 console=ttyS0 rd.debug rd.shell quiet splash
+    linux /live/vmlinuz root=live:LABEL=${LFS_HOSTNAME}_ISO rd.live.image rd.live.squashimg=filesystem.squashfs rd.live.overlay.overlayfs=1 console=tty1 console=ttyS0
+    # rd.debug rd.shell quiet splash
     initrd /live/initrd
 }
 EOF
@@ -146,10 +130,6 @@ ff02::2   ip6-allrouters
 # End /etc/hosts
 EOF
 
-# Make sure hostname is set at boot
-# Check if you have a hostname init script
-ls -l $ISO_WORKSPACE/etc/rc.d/init.d/hostname
-
 # If it doesn't exist, create one
 sudo tee $ISO_WORKSPACE/etc/rc.d/init.d/hostname << 'EOF'
 #!/bin/sh
@@ -177,8 +157,11 @@ esac
 # End hostname
 EOF
 
-> $ISO_WORKSPACE/root/.bashrc 
-> $ISO_WORKSPACE/root/.bash_profile
+sudo tee $ISO_WORKSPACE/root/.bashrc << 'EOF'
+EOF
+
+sudo tee $ISO_WORKSPACE/root/.bash_profile << 'EOF'
+EOF
 
 sudo tee -a $ISO_WORKSPACE/root/.bashrc << 'EOF'
 # Custom LFS Live ISO Bashrc

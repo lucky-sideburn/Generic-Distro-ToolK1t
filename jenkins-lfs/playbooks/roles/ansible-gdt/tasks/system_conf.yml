@@ -34,7 +34,7 @@
     dest: /mnt/lfs/sources/prepare_image.sh
     mode: '0755'
 
-- name: Cop prepare_iso.sh
+- name: Copy prepare_iso.sh
   ansible.builtin.copy:
     src: utils/prepare_iso.sh
     dest: /mnt/lfs/sources/prepare_iso.sh
