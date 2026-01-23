@@ -29,8 +29,8 @@ sudo rsync -avz --progress \
   /mnt/lfs/ $ISO_WORKSPACE/
 
 sudo mkdir -p $ISO_WORKSPACE/live
-sudo cp /boot/initrd $ISO_WORKSPACE/live/initrd
-sudo cp /mnt/lfs/boot/vmlinuz-6.13.4-lfs-12.3 $ISO_WORKSPACE/live/vmlinuz
+sudo cp $LFS/boot/initrd $ISO_WORKSPACE/live/initrd
+sudo cp $LFS/boot/vmlinuz-6.13.4-lfs-12.3 $ISO_WORKSPACE/live/vmlinuz
 
 # Create the GRUB config INSIDE the workspace
 sudo mkdir -p $ISO_WORKSPACE/boot/grub
