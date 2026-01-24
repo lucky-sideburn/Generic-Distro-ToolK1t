@@ -3611,8 +3611,13 @@ jenkins_jobs:
       build_command: echo
       exec_command: |
         {{ chroot_start_command }} -c '
+          mount -t proc proc /proc
+          mount -t sysfs sysfs /sys
+          mount -t devtmpfs devtmpfs /dev
+          mount -t devpts devpts /dev/pts
+
           LFS_KERNEL_VERSION="6.13.4" # Change to your exact version
-          # dracut --force --kver 6.13.4-lfs-12.3
+
           dracut --force \
           --kver $LFS_KERNEL_VERSION \
           --libdirs /usr/lib/dracut \
