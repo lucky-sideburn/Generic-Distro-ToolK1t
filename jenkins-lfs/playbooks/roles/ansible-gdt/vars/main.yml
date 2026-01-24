@@ -31,6 +31,9 @@ lfs_packages:
   - pkg-config
   - gettext
   - libtool
+  - asciidoctor
+  - libkmod-dev 
+  - kmod
 
 lfs_extra_archives:
   - mpfr-4.2.1.tar.xz
@@ -3440,9 +3443,9 @@ jenkins_jobs:
         '
   
     - name: 0114 - Dracut (Basic System Software)
-      version: 190
-      archive_file: /sources/dracut-ng.tar.gz
-      source_dir: /sources/dracut-ng
+      version: 109
+      archive_file: /sources/dracut-ng-109.tar.gz
+      source_dir: /sources/dracut-ng-109
       description: |
         Dracut is an initramfs infrastructure that is used to create the initial RAM filesystem for booting the Linux kernel. This job builds Dracut, which is essential for creating the initramfs in the LFS environment.
       category:
@@ -3451,7 +3454,7 @@ jenkins_jobs:
       build_tool: true
       build_command: |
           
-          cd $LFS/sources/dracut-ng
+          cd $LFS/sources/dracut-ng-109
           ./configure
           sudo make
           echo $LFS
