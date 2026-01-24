@@ -3439,7 +3439,7 @@ jenkins_jobs:
           make install
         '
   
-    - name: 0114 Dracut (Basic System Software)
+    - name: 0114 - Dracut (Basic System Software)
       version: 190
       archive_file: /sources/dracut-ng.tar.gz
       source_dir: /sources/dracut-ng
@@ -3460,6 +3460,45 @@ jenkins_jobs:
             exit 1
           fi   
           sudo make DESTDIR=$LFS install
+
+    - name: 0115 - libaio (Basic System Software)
+      version: 0.3.113
+      archive_file: /sources/libaio-0.3.113.tar.gz
+      source_dir: /sources/libaio-0.3.113
+      description: |
+        libaio is a library that provides support for asynchronous I/O operations in Linux. This job builds libaio, which is essential for applications that require asynchronous I/O in the LFS environment.
+      category:
+        This job is part of the system configuration setup, specifically for building libaio.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/libaio-0.3.113
+          ./configure --prefix=/usr --libdir=/usr/lib
+          make
+          make install
+        '
+
+    - name: 0116 - LVM2 (Basic System Software) OPTIONAL
+      version: 2.2.03.38
+      archive_file: /sources/LVM2.2.03.38.tgz
+      source_dir: /sources/LVM2.2.03.38
+      description: |
+        LVM2 is a device mapper that provides logical volume management for the Linux kernel. This job builds LVM2, which is essential for managing disk storage in the LFS environment.
+      category:
+        This job is part of the system configuration setup, specifically for building LVM2.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/LVM2.2.03.38
+          ./configure --prefix=/usr       \
+                      --enable-cmdlib     \
+                      --enable-pkgconfig  \
+                      --enable-udev_sync
+          make
+          make install 
+        '
 
   system_configuration:
     - name: 0001 - LFS-Bootscripts (System Configuration)
