@@ -3597,6 +3597,7 @@ jenkins_jobs:
             cp -iv .config /boot/config-6.13.4
             cp -r Documentation -T /usr/share/doc/linux-6.13.4
           fi
+          make modules_install
         '
 
     - name: 0004 - Run Dracut to create initramfs (System Configuration)
@@ -3618,6 +3619,11 @@ jenkins_jobs:
 
           LFS_KERNEL_VERSION="6.13.4" # Change to your exact version
 
+          mount -t proc proc /proc
+          mount -t sysfs sysfs /sys
+          mount -t devtmpfs devtmpfs /dev
+          mount -t devpts devpts /dev/pts
+
           dracut --force \
           --kver $LFS_KERNEL_VERSION \
           --libdirs /usr/lib/dracut \
@@ -3629,8 +3635,14 @@ jenkins_jobs:
           --no-hostonly \
           -l \
           /boot/initrd
-        '
 
+          umount /proc || echo "Failed to unmount /proc, continuing anyway"
+          umount /sys || echo "Failed to unmount /sys, continuing anyway"
+          umount /dev || echo "Failed to unmount /dev, continuing anyway"
+          umount /dev/pts || echo "Failed to unmount /dev/pts, continuing anyway"
+
+          '
+ 
     - name: 0005 - Prepare System Image (System Configuration)
       version: 1.0
       archive_file: /mnt/lfs/sources/empty.tar.xz
