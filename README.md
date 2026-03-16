@@ -45,39 +45,52 @@ Notes:
 ### Build AMD64 - GNU/Linux Operating System
 
 1. Clone this repo
-2. Run start.sh and select *17) Provision an AMD64 build node directly with Ansible*
-3. Run start.sh and create Jenkins folders 
+2. Run `start.sh`, go to *Infrastructure*, then select *3) Provision AMD64 build node (Ansible)*
+3. Run `start.sh` and select *1) Jenkins Setup (create folders)*
+4. Run `start.sh`, select *2) AMD64 Jobs*, then choose one of the following:
 ```bash
-    0)  Create Jenkins Folders
-    1)  Build AMD64 all Jenkins Jobs
-    2)  Build AMD64 cross_toolchain Jenkins Jobs
-    3)  Build AMD64 cross_compiling_temporary_tools Jenkins Jobs
-    4)  Build AMD64 chroot_and_building_additional_temporary_tools Jenkins Jobs
-    5)  Build AMD64 basic_system_software Jenkins Jobs
-    6)  Build AMD64 system_configuration Jenkins Jobs
-    7)  Build AMD64 containers Jenkins Jobs
+  0) All AMD64 Jobs
+  1) cross_toolchain
+  2) cross_compiling_temporary_tools
+  3) chroot_and_building_additional_temporary_tools
+  4) basic_system_software
+  5) system_configuration
+  6) containers
+  7) GenAI
+  8) Systemd Integration
 ```
-4. Run Jenkins jobs in the order of the numbered folders and jobs.
-5. The job *0004 - Prepare System Image (System Configuration)* will start the VMs, which can be monitored using Cockpit.
+5. Run Jenkins jobs in the order of the numbered folders and jobs.
+6. The job *0004 - Prepare System Image (System Configuration)* will start the VMs, which can be monitored using Cockpit.
 
 
 ### Build AARCH64 - GNU/Linux Operating System
 
 1. Clone this repo
-2. Run start.sh and select *16) Provision an AARCH64 build node using Vagrant*
-3. Run start.sh and create Jenkins folders 
+2. Run `start.sh`, go to *Infrastructure*, then select *2) Provision AARCH64 build node (Vagrant)*
+3. Run `start.sh` and select *1) Jenkins Setup (create folders)*
+4. Run `start.sh`, select *3) AARCH64 Jobs*, then choose one of the following:
 ```bash
-    0)  Create Jenkins Folders
-    8)  Build AARCH64 all Jenkins Jobs
-    9)  Build AARCH64 cross_toolchain Jenkins Jobs
-    10) Build AARCH64 cross_compiling_temporary_tools Jenkins Jobs
-    11) Build AARCH64 chroot_and_building_additional_temporary_tools Jenkins Jobs
-    12) Build AARCH64 basic_system_software Jenkins Jobs
-    13) Build AARCH64 system_configuration Jenkins Jobs
-    14) Build AARCH64 containers Jenkins Jobs
+  0) All AARCH64 Jobs
+  1) cross_toolchain
+  2) cross_compiling_temporary_tools
+  3) chroot_and_building_additional_temporary_tools
+  4) basic_system_software
+  5) system_configuration
+  6) containers
+  7) GenAI
+  8) Systemd Integration
 ```
-4. Run Jenkins jobs in the order of the numbered folders and jobs.
-5. Run `start.sh` and select *15) Start AARCH64 VM on QEMU* to work on your GNU/Linux system.
+5. Run Jenkins jobs in the order of the numbered folders and jobs.
+6. Run `start.sh`, go to *Infrastructure*, and select *1) Start AARCH64 VM on QEMU* to work on your GNU/Linux system.
+
+### Jenkins Job Sync Mode (Upsert)
+
+Jenkins job definitions are managed in upsert mode:
+
+- Update existing job config when the job already exists.
+- Create the job only when it does not exist yet.
+
+In practice, this prevents stale job configuration and ensures changes in Ansible templates are applied to existing Jenkins jobs.
 
 ### LFS Numbered Job Jenkins
 
