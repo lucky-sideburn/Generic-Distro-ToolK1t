@@ -45,7 +45,63 @@
     - amd64_jobs
   
 # CROSS TOOLCHAIN
-- name: "Create Jenkins Jobs - Cross Toolchain Jobs (amd64)"
+- name: "Upsert Jenkins Jobs - Cross Toolchain Jobs (amd64) - update"
+  ansible.builtin.uri:
+    url: "{{ jenkins_url }}/job/2.1%20-%20amd64_cross_toolchain/job/{{ item.name | urlencode }}/config.xml"
+    method: POST
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_token }}"
+    force_basic_auth: yes
+    status_code: [200, 404]
+    headers:
+      Content-Type: "application/xml"
+    body: |
+      <project>
+        <actions/>
+        <description>Jenkins job to execute a shell command</description>
+        <keepDependencies>false</keepDependencies>
+        <properties/>
+        <scm class="hudson.scm.NullSCM"/>
+        <canRoam>true</canRoam>
+        <assignedNode>amd64</assignedNode>
+        <disabled>false</disabled>
+        <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+        <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+        <triggers/>
+        <concurrentBuild>false</concurrentBuild>
+        <builders>
+          <hudson.tasks.Shell>
+            <command>{{ common_build_start_command }}
+              export BUILD_MODE=host_libvirt
+              if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+                if [ -d {{ item.source_dir | basename }} ]; then
+                  sudo rm -rf {{ item.source_dir | basename }}
+                fi
+                tar -xvf {{ item.archive_file | basename }}
+                cd "{{ item.source_dir | basename }}"
+              fi
+              
+              pwd
+
+              {{ item.build_command }}
+            </command>
+          </hudson.tasks.Shell>
+        </builders>
+        <publishers/>
+        <buildWrappers/>
+      </project>
+    body_format: raw
+    timeout: 60
+  register: amd64_cross_toolchain_upd
+  loop: "{{ jenkins_jobs.cross_toolchain }}"
+  loop_control:
+    index_var: loop_idx
+  failed_when: false
+  tags:
+    - amd64_cross_toolchain
+    - amd64_jobs
+
+- name: "Upsert Jenkins Jobs - Cross Toolchain Jobs (amd64) - create"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/job/2.1%20-%20amd64_cross_toolchain/createItem?name={{ item.name | urlencode }}"
     method: POST
@@ -93,12 +149,70 @@
     body_format: raw
     timeout: 60
   loop: "{{ jenkins_jobs.cross_toolchain }}"
+  loop_control:
+    index_var: loop_idx
+  when: amd64_cross_toolchain_upd.results[loop_idx].status == 404
   ignore_errors: yes
   tags:
     - amd64_cross_toolchain
     - amd64_jobs
 
-- name: "Create Jenkins Jobs - Cross Compiling Temporary Tools (amd64)"
+- name: "Upsert Jenkins Jobs - Cross Compiling Temporary Tools (amd64) - update"
+  ansible.builtin.uri:
+    url: "{{ jenkins_url }}/job/2.2%20-%20amd64_cross_compiling_temporary_tools/job/{{ item.name | urlencode }}/config.xml"
+    method: POST
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_token }}"
+    force_basic_auth: yes
+    status_code: [200, 404]
+    headers:
+      Content-Type: "application/xml"
+    body: |
+      <project>
+        <actions/>
+        <description>Jenkins job to execute a shell command</description>
+        <keepDependencies>false</keepDependencies>
+        <properties/>
+        <scm class="hudson.scm.NullSCM"/>
+        <canRoam>true</canRoam>
+        <assignedNode>amd64</assignedNode>
+        <disabled>false</disabled>
+        <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+        <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+        <triggers/>
+        <concurrentBuild>false</concurrentBuild>
+        <builders>
+          <hudson.tasks.Shell>
+            <command>{{ common_build_start_command }}
+              if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+                if [ -d {{ item.source_dir | basename }} ]; then
+                  sudo rm -rf {{ item.source_dir | basename }}
+                fi
+                tar -xvf {{ item.archive_file | basename }}
+                cd "{{ item.source_dir | basename }}"
+              fi
+
+              pwd
+
+              {{ item.build_command }}
+            </command>
+          </hudson.tasks.Shell>
+        </builders>
+        <publishers/>
+        <buildWrappers/>
+      </project>
+    body_format: raw
+    timeout: 60
+  register: amd64_cross_compiling_upd
+  loop: "{{ jenkins_jobs.cross_compiling_temporary_tools }}"
+  loop_control:
+    index_var: loop_idx
+  failed_when: false
+  tags:
+    - amd64_cross_compiling_temporary_tools
+    - amd64_jobs
+
+- name: "Upsert Jenkins Jobs - Cross Compiling Temporary Tools (amd64) - create"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/job/2.2%20-%20amd64_cross_compiling_temporary_tools/createItem?name={{ item.name | urlencode }}"
     method: POST
@@ -145,12 +259,73 @@
     body_format: raw
     timeout: 60
   loop: "{{ jenkins_jobs.cross_compiling_temporary_tools }}"
+  loop_control:
+    index_var: loop_idx
+  when: amd64_cross_compiling_upd.results[loop_idx].status == 404
   ignore_errors: yes
   tags:
     - amd64_cross_compiling_temporary_tools
     - amd64_jobs
 
-- name: "Create Jenkins Jobs - Chroot And Building Additional Temporary Tools (amd64)"
+- name: "Upsert Jenkins Jobs - Chroot And Building Additional Temporary Tools (amd64) - update"
+  ansible.builtin.uri:
+    url: "{{ jenkins_url }}/job/2.3%20-%20amd64_chroot_and_building_additional_temporary_tools/job/{{ item.name | urlencode }}/config.xml"
+    method: POST
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_token }}"
+    force_basic_auth: yes
+    status_code: [200, 404]
+    headers:
+      Content-Type: "application/xml"
+    body: |
+      <project>
+        <actions/>
+        <description>Jenkins job to execute a shell command</description>
+        <keepDependencies>false</keepDependencies>
+        <properties/>
+        <scm class="hudson.scm.NullSCM"/>
+        <canRoam>true</canRoam>
+        <assignedNode>amd64</assignedNode>
+        <disabled>false</disabled>
+        <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+        <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+        <triggers/>
+        <concurrentBuild>false</concurrentBuild>
+        <builders>
+          <hudson.tasks.Shell>
+            <command>{{ amd64_common_build_start_command }}
+            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+              if [ -d {{ item.source_dir | basename }} ]; then
+                sudo rm -rf {{ item.source_dir | basename }}
+              fi
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+            fi
+            
+            BUILD_TOOL={{ item.build_tool }}
+            if [ $BUILD_TOOL = "True" ]; then
+              {{ item.build_command }}
+            else
+              {{ item.exec_command }}
+            fi
+            </command>
+          </hudson.tasks.Shell>
+        </builders>
+        <publishers/>
+        <buildWrappers/>
+      </project>
+    body_format: raw
+    timeout: 60
+  register: amd64_chroot_upd
+  loop: "{{ jenkins_jobs.chroot_and_building_additional_temporary_tools }}"
+  loop_control:
+    index_var: loop_idx
+  failed_when: false
+  tags:
+    - amd64_chroot_and_building_additional_temporary_tools
+    - amd64_jobs
+
+- name: "Upsert Jenkins Jobs - Chroot And Building Additional Temporary Tools (amd64) - create"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/job/2.3%20-%20amd64_chroot_and_building_additional_temporary_tools/createItem?name={{ item.name | urlencode }}"
     method: POST
@@ -200,12 +375,76 @@
     body_format: raw
     timeout: 60
   loop: "{{ jenkins_jobs.chroot_and_building_additional_temporary_tools }}"
+  loop_control:
+    index_var: loop_idx
+  when: amd64_chroot_upd.results[loop_idx].status == 404
   ignore_errors: yes
   tags:
     - amd64_chroot_and_building_additional_temporary_tools
     - amd64_jobs
 
-- name: "Create Jenkins Jobs - Basic System Software (amd64)"
+- name: "Upsert Jenkins Jobs - Basic System Software (amd64) - update"
+  ansible.builtin.uri:
+    url: "{{ jenkins_url }}/job/2.4%20-%20amd64_basic_system_software/job/{{ item.name | urlencode }}/config.xml"
+    method: POST
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_token }}"
+    force_basic_auth: yes
+    status_code: [200, 404]
+    headers:
+      Content-Type: "application/xml"
+    body: |
+      <project>
+        <actions/>
+        <description>Jenkins job to execute a shell command</description>
+        <keepDependencies>false</keepDependencies>
+        <properties/>
+        <scm class="hudson.scm.NullSCM"/>
+        <canRoam>true</canRoam>
+        <assignedNode>amd64</assignedNode>
+        <disabled>false</disabled>
+        <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+        <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+        <triggers/>
+        <concurrentBuild>false</concurrentBuild>
+        <builders>
+          <hudson.tasks.Shell>
+            <command>{{ amd64_common_build_start_command }}
+            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+              if [ -d {{ item.source_dir | basename }} ]; then
+                sudo rm -rf {{ item.source_dir | basename }}
+              fi
+      
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+            fi
+            
+            pwd
+
+            BUILD_TOOL={{ item.build_tool }}
+            if [ $BUILD_TOOL = "True" ]; then
+              {{ item.build_command }}
+            else
+              {{ item.exec_command }}
+            fi
+            </command>
+          </hudson.tasks.Shell>
+        </builders>
+        <publishers/>
+        <buildWrappers/>
+      </project>
+    body_format: raw
+    timeout: 60
+  register: amd64_basic_sw_upd
+  loop: "{{ jenkins_jobs.basic_system_software }}"
+  loop_control:
+    index_var: loop_idx
+  failed_when: false
+  tags:
+    - amd64_basic_system_software
+    - amd64_jobs
+
+- name: "Upsert Jenkins Jobs - Basic System Software (amd64) - create"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/job/2.4%20-%20amd64_basic_system_software/createItem?name={{ item.name | urlencode }}"
     method: POST
@@ -258,12 +497,75 @@
     body_format: raw
     timeout: 60
   loop: "{{ jenkins_jobs.basic_system_software }}"
+  loop_control:
+    index_var: loop_idx
+  when: amd64_basic_sw_upd.results[loop_idx].status == 404
   ignore_errors: yes
   tags:
     - amd64_basic_system_software
     - amd64_jobs
 
-- name: "Create Jenkins Jobs - System Configuration (amd64)"
+- name: "Upsert Jenkins Jobs - System Configuration (amd64) - update"
+  ansible.builtin.uri:
+    url: "{{ jenkins_url }}/job/2.5%20-%20amd64_system_configuration/job/{{ item.name | urlencode }}/config.xml"
+    method: POST
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_token }}"
+    force_basic_auth: yes
+    status_code: [200, 404]
+    headers:
+      Content-Type: "application/xml"
+    body: |
+      <project>
+        <actions/>
+        <description>Jenkins job to execute a shell command</description>
+        <keepDependencies>false</keepDependencies>
+        <properties/>
+        <scm class="hudson.scm.NullSCM"/>
+        <canRoam>true</canRoam>
+        <assignedNode>amd64</assignedNode>
+        <disabled>false</disabled>
+        <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+        <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+        <triggers/>
+        <concurrentBuild>false</concurrentBuild>
+        <builders>
+          <hudson.tasks.Shell>
+            <command>{{ amd64_common_build_start_command }}
+            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+              if [ -d {{ item.source_dir | basename }} ]; then
+                sudo rm -rf {{ item.source_dir | basename }}
+              fi
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+            fi
+            
+            pwd
+
+            BUILD_TOOL={{ item.build_tool }}
+            if [ $BUILD_TOOL = "True" ]; then
+              {{ item.build_command }}
+            else
+              {{ item.exec_command }}
+            fi
+            </command>
+          </hudson.tasks.Shell>
+        </builders>
+        <publishers/>
+        <buildWrappers/>
+      </project>
+    body_format: raw
+    timeout: 60
+  register: amd64_syscfg_upd
+  loop: "{{ jenkins_jobs.system_configuration }}"
+  loop_control:
+    index_var: loop_idx
+  failed_when: false
+  tags:
+    - amd64_system_configuration
+    - amd64_jobs
+
+- name: "Upsert Jenkins Jobs - System Configuration (amd64) - create"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/job/2.5%20-%20amd64_system_configuration/createItem?name={{ item.name | urlencode }}"
     method: POST
@@ -315,12 +617,76 @@
     body_format: raw
     timeout: 60
   loop: "{{ jenkins_jobs.system_configuration }}"
+  loop_control:
+    index_var: loop_idx
+  when: amd64_syscfg_upd.results[loop_idx].status == 404
   ignore_errors: yes
   tags:
     - amd64_system_configuration
     - amd64_jobs
 
-- name: "Create Jenkins Jobs - Containers (amd64)"
+- name: "Upsert Jenkins Jobs - Containers (amd64) - update"
+  ansible.builtin.uri:
+    url: "{{ jenkins_url }}/job/2.6%20-%20amd64_containers/job/{{ item.name | urlencode }}/config.xml"
+    method: POST
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_token }}"
+    force_basic_auth: yes
+    status_code: [200, 404]
+    headers:
+      Content-Type: "application/xml"
+    body: |
+      <project>
+        <actions/>
+        <description>Jenkins job to execute a shell command</description>
+        <keepDependencies>false</keepDependencies>
+        <properties/>
+        <scm class="hudson.scm.NullSCM"/>
+        <canRoam>true</canRoam>
+        <assignedNode>amd64</assignedNode>
+        <disabled>false</disabled>
+        <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+        <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+        <triggers/>
+        <concurrentBuild>false</concurrentBuild>
+        <builders>
+          <hudson.tasks.Shell>
+            <command>{{ amd64_common_build_start_command }}
+            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+              if [ -d {{ item.source_dir | basename }} ]; then
+                sudo rm -rf {{ item.source_dir | basename }}
+              fi
+          
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+            fi
+            
+            pwd
+
+            BUILD_TOOL={{ item.build_tool }}
+            if [ $BUILD_TOOL = "True" ]; then
+              {{ item.build_command }}
+            else
+              {{ item.exec_command }}
+            fi
+            </command>
+          </hudson.tasks.Shell>
+        </builders>
+        <publishers/>
+        <buildWrappers/>
+      </project>
+    body_format: raw
+    timeout: 60
+  register: amd64_containers_upd
+  loop: "{{ jenkins_jobs.containers }}"
+  loop_control:
+    index_var: loop_idx
+  failed_when: false
+  tags:
+    - amd64_containers
+    - amd64_jobs
+
+- name: "Upsert Jenkins Jobs - Containers (amd64) - create"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/job/2.6%20-%20amd64_containers/createItem?name={{ item.name | urlencode }}"
     method: POST
@@ -373,12 +739,76 @@
     body_format: raw
     timeout: 60
   loop: "{{ jenkins_jobs.containers }}"
+  loop_control:
+    index_var: loop_idx
+  when: amd64_containers_upd.results[loop_idx].status == 404
   ignore_errors: yes
   tags:
     - amd64_containers
     - amd64_jobs
 
-- name: "Create Jenkins Jobs - GenAI (amd64)"
+- name: "Upsert Jenkins Jobs - GenAI (amd64) - update"
+  ansible.builtin.uri:
+    url: "{{ jenkins_url }}/job/2.7%20-%20amd64_genai/job/{{ item.name | urlencode }}/config.xml"
+    method: POST
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_token }}"
+    force_basic_auth: yes
+    status_code: [200, 404]
+    headers:
+      Content-Type: "application/xml"
+    body: |
+      <project>
+        <actions/>
+        <description>Jenkins job to execute a shell command</description>
+        <keepDependencies>false</keepDependencies>
+        <properties/>
+        <scm class="hudson.scm.NullSCM"/>
+        <canRoam>true</canRoam>
+        <assignedNode>amd64</assignedNode>
+        <disabled>false</disabled>
+        <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+        <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+        <triggers/>
+        <concurrentBuild>false</concurrentBuild>
+        <builders>
+          <hudson.tasks.Shell>
+            <command>{{ amd64_common_build_start_command }}
+            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+              if [ -d {{ item.source_dir | basename }} ]; then
+                sudo rm -rf {{ item.source_dir | basename }}
+              fi
+          
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+            fi
+            
+            pwd
+
+            BUILD_TOOL={{ item.build_tool }}
+            if [ $BUILD_TOOL = "True" ]; then
+              {{ item.build_command }}
+            else
+              {{ item.exec_command }}
+            fi
+            </command>
+          </hudson.tasks.Shell>
+        </builders>
+        <publishers/>
+        <buildWrappers/>
+      </project>
+    body_format: raw
+    timeout: 60
+  register: amd64_genai_upd
+  loop: "{{ jenkins_jobs.genai }}"
+  loop_control:
+    index_var: loop_idx
+  failed_when: false
+  tags:
+    - amd64_genai
+    - amd64_jobs
+
+- name: "Upsert Jenkins Jobs - GenAI (amd64) - create"
   ansible.builtin.uri:
     url: "{{ jenkins_url }}/job/2.7%20-%20amd64_genai/createItem?name={{ item.name | urlencode }}"
     method: POST
@@ -431,7 +861,132 @@
     body_format: raw
     timeout: 60
   loop: "{{ jenkins_jobs.genai }}"
+  loop_control:
+    index_var: loop_idx
+  when: amd64_genai_upd.results[loop_idx].status == 404
   ignore_errors: yes
   tags:
     - amd64_genai
+    - amd64_jobs
+
+- name: "Upsert Jenkins Jobs - Systemd Integration (amd64) - update"
+  ansible.builtin.uri:
+    url: "{{ jenkins_url }}/job/2.8%20-%20amd64_systemd_integration/job/{{ item.name | urlencode }}/config.xml"
+    method: POST
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_token }}"
+    force_basic_auth: yes
+    status_code: [200, 404]
+    headers:
+      Content-Type: "application/xml"
+    body: |
+      <project>
+        <actions/>
+        <description>Jenkins job to execute a shell command</description>
+        <keepDependencies>false</keepDependencies>
+        <properties/>
+        <scm class="hudson.scm.NullSCM"/>
+        <canRoam>true</canRoam>
+        <assignedNode>amd64</assignedNode>
+        <disabled>false</disabled>
+        <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+        <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+        <triggers/>
+        <concurrentBuild>false</concurrentBuild>
+        <builders>
+          <hudson.tasks.Shell>
+            <command>{{ amd64_common_build_start_command }}
+            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+              if [ -d {{ item.source_dir | basename }} ]; then
+                sudo rm -rf {{ item.source_dir | basename }}
+              fi
+          
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+            fi
+            
+            pwd
+
+            BUILD_TOOL={{ item.build_tool }}
+            if [ $BUILD_TOOL = "True" ]; then
+              {{ item.build_command }}
+            else
+              {{ item.exec_command }}
+            fi
+            </command>
+          </hudson.tasks.Shell>
+        </builders>
+        <publishers/>
+        <buildWrappers/>
+      </project>
+    body_format: raw
+    timeout: 60
+  register: amd64_systemd_upd
+  loop: "{{ jenkins_jobs.systemd_integration }}"
+  loop_control:
+    index_var: loop_idx
+  failed_when: false
+  tags:
+    - amd64_systemd_integration
+    - amd64_jobs
+
+- name: "Upsert Jenkins Jobs - Systemd Integration (amd64) - create"
+  ansible.builtin.uri:
+    url: "{{ jenkins_url }}/job/2.8%20-%20amd64_systemd_integration/createItem?name={{ item.name | urlencode }}"
+    method: POST
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_token }}"
+    force_basic_auth: yes
+    status_code: 200
+    headers:
+      Content-Type: "application/xml"
+    body: |
+      <project>
+        <actions/>
+        <description>Jenkins job to execute a shell command</description>
+        <keepDependencies>false</keepDependencies>
+        <properties/>
+        <scm class="hudson.scm.NullSCM"/>
+        <canRoam>true</canRoam>
+        <assignedNode>amd64</assignedNode>
+        <disabled>false</disabled>
+        <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+        <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+        <triggers/>
+        <concurrentBuild>false</concurrentBuild>
+        <builders>
+          <hudson.tasks.Shell>
+            <command>{{ amd64_common_build_start_command }}
+            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+              if [ -d {{ item.source_dir | basename }} ]; then
+                sudo rm -rf {{ item.source_dir | basename }}
+              fi
+          
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+            fi
+            
+            pwd
+
+            BUILD_TOOL={{ item.build_tool }}
+            if [ $BUILD_TOOL = "True" ]; then
+              {{ item.build_command }}
+            else
+              {{ item.exec_command }}
+            fi
+            </command>
+          </hudson.tasks.Shell>
+        </builders>
+        <publishers/>
+        <buildWrappers/>
+      </project>
+    body_format: raw
+    timeout: 60
+  loop: "{{ jenkins_jobs.systemd_integration }}"
+  loop_control:
+    index_var: loop_idx
+  when: amd64_systemd_upd.results[loop_idx].status == 404
+  ignore_errors: yes
+  tags:
+    - amd64_systemd_integration
     - amd64_jobs

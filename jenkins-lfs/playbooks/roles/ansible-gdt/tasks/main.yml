@@ -13,6 +13,7 @@
     - aarch64_system_configuration
     - aarch64_containers
     - aarch64_genai
+    - aarch64_systemd_integration
     - aarch64_folders
   
 - name: "Include amd64_jobs.yml tasks"
@@ -26,4 +27,5 @@
     - amd64_system_configuration
     - amd64_containers
     - amd64_genai
+    - amd64_systemd_integration
     - amd64_folders

@@ -107,6 +107,7 @@ jenkins_jobs:
     - 1.5 - aarch64_system_configuration
     - 1.6 - aarch64_containers
     - 1.7 - aarch64_genai
+    - 1.8 - aarch64_systemd_integration
 
   amd64_folders:
     - 2.1 - amd64_cross_toolchain
@@ -116,6 +117,7 @@ jenkins_jobs:
     - 2.5 - amd64_system_configuration
     - 2.6 - amd64_containers
     - 2.7 - amd64_genai
+    - 2.8 - amd64_systemd_integration
 
   setup:
     - Host System Requirements
@@ -3845,3 +3847,155 @@ jenkins_jobs:
 
         '
         
+  systemd_integration:
+    - name: 0001 - Systemd (Systemd Integration)
+      version: 257.3
+      archive_file: /mnt/lfs/sources/systemd-257.3.tar.gz
+      source_dir: /mnt/lfs/sources/systemd-257.3
+      description: |
+        Systemd is a system and service manager for Linux. This job builds the
+        full systemd package as an init system, replacing SysVinit/lfs-bootscripts
+        in the LFS environment.
+      category:
+        This job is part of the systemd integration setup, specifically for building systemd.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        if ! mountpoint -q $LFS/dev; then
+          sudo mount -v --bind /dev $LFS/dev
+        fi
+        if ! mountpoint -q $LFS/dev/pts; then
+          sudo mount -vt devpts devpts -o gid=5,mode=0620 $LFS/dev/pts
+        fi
+        if ! mountpoint -q $LFS/proc; then
+          sudo mount -vt proc proc $LFS/proc
+        fi
+        if ! mountpoint -q $LFS/sys; then
+          sudo mount -vt sysfs sysfs $LFS/sys
+        fi
+        if ! mountpoint -q $LFS/run; then
+          sudo mount -vt tmpfs tmpfs $LFS/run
+        fi
+        cd /mnt/lfs/sources
+        sudo rm -rf /mnt/lfs/sources/systemd-257.3 || echo "Removing systemd-257.3 directory failed, continuing anyway"
+        tar -xvf /mnt/lfs/sources/systemd-257.3.tar.gz
+        {{ chroot_start_command }} -c '
+          cd /sources/systemd-257.3
+          sed -i -e "s/GROUP=\"render\"/GROUP=\"video\"/" \
+                 -e "s/GROUP=\"sgx\", //" rules.d/50-udev-default.rules.in
+          mkdir -p build
+          cd build
+          meson setup \
+            --prefix=/usr                              \
+            --buildtype=release                        \
+            -D default-dnssec=no                       \
+            -D firstboot=false                         \
+            -D install-tests=false                     \
+            -D ldconfig=false                          \
+            -D man=auto                                \
+            -D sysusers=false                          \
+            -D rpmmacrosdir=no                         \
+            -D homed=disabled                          \
+            -D userdb=false                            \
+            -D mode=release                            \
+            -D pam=disabled                            \
+            -D dev-kvm-mode=0660                       \
+            -D nobody-group=nogroup                    \
+            -D sysupdate=disabled                      \
+            -D ukify=disabled                          \
+            -D docdir=/usr/share/doc/systemd-257.3     \
+            ..
+          ninja
+          ninja install
+        '
+
+    - name: 0002 - Systemd Man Pages (Systemd Integration)
+      version: 257.3
+      archive_file: /mnt/lfs/sources/systemd-man-pages-257.3.tar.xz
+      source_dir: /mnt/lfs/sources
+      description: |
+        This job installs the pre-built systemd man pages, providing documentation
+        for systemd commands and configuration files.
+      category:
+        This job is part of the systemd integration, specifically for installing systemd man pages.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          tar -xf /sources/systemd-man-pages-257.3.tar.xz \
+              --strip-components=1 -C /usr/share/man
+        '
+
+    - name: 0003 - Configure Systemd Journald (Systemd Integration)
+      version: 1.0
+      archive_file: /mnt/lfs/sources/empty.tar.xz
+      source_dir: /mnt/lfs/sources
+      description: |
+        This job configures systemd-journald for persistent log storage with
+        sensible size limits on the LFS system.
+      category:
+        This job is part of the systemd integration, specifically for configuring journald.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          mkdir -p /var/log/journal
+          systemd-tmpfiles --create --prefix /var/log/journal
+          cat > /etc/systemd/journald.conf << "EOF"
+[Journal]
+Storage=persistent
+Compress=yes
+SystemMaxUse=500M
+SystemKeepFree=100M
+MaxRetentionSec=1month
+ForwardToSyslog=no
+EOF
+        '
+
+    - name: 0004 - Configure Systemd Networkd (Systemd Integration)
+      version: 1.0
+      archive_file: /mnt/lfs/sources/empty.tar.xz
+      source_dir: /mnt/lfs/sources
+      description: |
+        This job configures systemd-networkd for basic wired DHCP networking on
+        all Ethernet interfaces, and links resolv.conf to systemd-resolved.
+      category:
+        This job is part of the systemd integration, specifically for configuring networkd.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          mkdir -p /etc/systemd/network
+          cat > /etc/systemd/network/20-wired-dhcp.network << "EOF"
+[Match]
+Name=en*
+
+[Network]
+DHCP=yes
+EOF
+          ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+          systemctl enable systemd-networkd
+          systemctl enable systemd-resolved
+        '
+
+    - name: 0005 - Enable Essential Systemd Services (Systemd Integration)
+      version: 1.0
+      archive_file: /mnt/lfs/sources/empty.tar.xz
+      source_dir: /mnt/lfs/sources
+      description: |
+        This job enables the essential systemd units required for booting the LFS
+        system: getty@tty1, udevd, journald, tmpfiles, and sets the default target
+        to multi-user.target.
+      category:
+        This job is part of the systemd integration, specifically for enabling essential services.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          systemctl enable getty@tty1
+          systemctl enable systemd-udevd
+          systemctl enable systemd-journald
+          systemctl enable systemd-tmpfiles-setup
+          systemctl enable systemd-tmpfiles-clean.timer
+          systemctl set-default multi-user.target
+        '
