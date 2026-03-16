@@ -3942,14 +3942,14 @@ jenkins_jobs:
           mkdir -p /var/log/journal
           systemd-tmpfiles --create --prefix /var/log/journal
           cat > /etc/systemd/journald.conf << "EOF"
-[Journal]
-Storage=persistent
-Compress=yes
-SystemMaxUse=500M
-SystemKeepFree=100M
-MaxRetentionSec=1month
-ForwardToSyslog=no
-EOF
+          [Journal]
+          Storage=persistent
+          Compress=yes
+          SystemMaxUse=500M
+          SystemKeepFree=100M
+          MaxRetentionSec=1month
+          ForwardToSyslog=no
+          EOF
         '
 
     - name: 0004 - Configure Systemd Networkd (Systemd Integration)
@@ -3967,12 +3967,12 @@ EOF
         {{ chroot_start_command }} -c '
           mkdir -p /etc/systemd/network
           cat > /etc/systemd/network/20-wired-dhcp.network << "EOF"
-[Match]
-Name=en*
+          [Match]
+          Name=en*
 
-[Network]
-DHCP=yes
-EOF
+          [Network]
+          DHCP=yes
+          EOF
           ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
           systemctl enable systemd-networkd
           systemctl enable systemd-resolved
