@@ -81,8 +81,10 @@
                   git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                   cd "{{ item.source_dir | basename }}"
                   git checkout {{ item.git_branch | default('main') }}
+                elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                  tar -xvf {{ (item.archive_file | string) | basename }}
+                  cd "{{ item.source_dir | basename }}"
                 else
-                  tar -xvf {{ item.archive_file | basename }}
                   cd "{{ item.source_dir | basename }}"
                 fi
               fi
@@ -143,8 +145,10 @@
                   git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                   cd "{{ item.source_dir | basename }}"
                   git checkout {{ item.git_branch | default('main') }}
+                elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                  tar -xvf {{ (item.archive_file | string) | basename }}
+                  cd "{{ item.source_dir | basename }}"
                 else
-                  tar -xvf {{ item.archive_file | basename }}
                   cd "{{ item.source_dir | basename }}"
                 fi
               fi
@@ -204,8 +208,10 @@
                   git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                   cd "{{ item.source_dir | basename }}"
                   git checkout {{ item.git_branch | default('main') }}
+                elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                  tar -xvf {{ (item.archive_file | string) | basename }}
+                  cd "{{ item.source_dir | basename }}"
                 else
-                  tar -xvf {{ item.archive_file | basename }}
                   cd "{{ item.source_dir | basename }}"
                 fi
               fi
@@ -265,8 +271,10 @@
                   git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                   cd "{{ item.source_dir | basename }}"
                   git checkout {{ item.git_branch | default('main') }}
+                elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                  tar -xvf {{ (item.archive_file | string) | basename }}
+                  cd "{{ item.source_dir | basename }}"
                 else
-                  tar -xvf {{ item.archive_file | basename }}
                   cd "{{ item.source_dir | basename }}"
                 fi
               fi
@@ -326,8 +334,10 @@
                 git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
+              elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                tar -xvf {{ (item.archive_file | string) | basename }}
+                cd "{{ item.source_dir | basename }}"
               else
-                tar -xvf {{ item.archive_file | basename }}
                 cd "{{ item.source_dir | basename }}"
               fi
             fi
@@ -390,8 +400,10 @@
                 git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
+              elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                tar -xvf {{ (item.archive_file | string) | basename }}
+                cd "{{ item.source_dir | basename }}"
               else
-                tar -xvf {{ item.archive_file | basename }}
                 cd "{{ item.source_dir | basename }}"
               fi
             fi
@@ -455,8 +467,10 @@
                 git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
+              elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                tar -xvf {{ (item.archive_file | string) | basename }}
+                cd "{{ item.source_dir | basename }}"
               else
-                tar -xvf {{ item.archive_file | basename }}
                 cd "{{ item.source_dir | basename }}"
               fi
             fi
@@ -522,8 +536,10 @@
                 git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
+              elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                tar -xvf {{ (item.archive_file | string) | basename }}
+                cd "{{ item.source_dir | basename }}"
               else
-                tar -xvf {{ item.archive_file | basename }}
                 cd "{{ item.source_dir | basename }}"
               fi
             fi
@@ -588,8 +604,10 @@
                 git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
+              elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                tar -xvf {{ (item.archive_file | string) | basename }}
+                cd "{{ item.source_dir | basename }}"
               else
-                tar -xvf {{ item.archive_file | basename }}
                 cd "{{ item.source_dir | basename }}"
               fi
             fi
@@ -654,8 +672,10 @@
                 git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
+              elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                tar -xvf {{ (item.archive_file | string) | basename }}
+                cd "{{ item.source_dir | basename }}"
               else
-                tar -xvf {{ item.archive_file | basename }}
                 cd "{{ item.source_dir | basename }}"
               fi
             fi
@@ -721,8 +741,10 @@
                 git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
+              elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                tar -xvf {{ (item.archive_file | string) | basename }}
+                cd "{{ item.source_dir | basename }}"
               else
-                tar -xvf {{ item.archive_file | basename }}
                 cd "{{ item.source_dir | basename }}"
               fi
             fi
@@ -788,8 +810,10 @@
                 git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
+              elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                tar -xvf {{ (item.archive_file | string) | basename }}
+                cd "{{ item.source_dir | basename }}"
               else
-                tar -xvf {{ item.archive_file | basename }}
                 cd "{{ item.source_dir | basename }}"
               fi
             fi
@@ -855,8 +879,10 @@
                 git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
+              elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                tar -xvf {{ (item.archive_file | string) | basename }}
+                cd "{{ item.source_dir | basename }}"
               else
-                tar -xvf {{ item.archive_file | basename }}
                 cd "{{ item.source_dir | basename }}"
               fi
             fi
@@ -922,8 +948,10 @@
                 git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
+              elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                tar -xvf {{ (item.archive_file | string) | basename }}
+                cd "{{ item.source_dir | basename }}"
               else
-                tar -xvf {{ item.archive_file | basename }}
                 cd "{{ item.source_dir | basename }}"
               fi
             fi
@@ -989,8 +1017,10 @@
                 git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
+              elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                tar -xvf {{ (item.archive_file | string) | basename }}
+                cd "{{ item.source_dir | basename }}"
               else
-                tar -xvf {{ item.archive_file | basename }}
                 cd "{{ item.source_dir | basename }}"
               fi
             fi
@@ -1056,8 +1086,10 @@
                 git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
+              elif [ "{{ item.archive_file | string | lower }}" != "false" ] && [ -n "{{ item.archive_file | string }}" ]; then
+                tar -xvf {{ (item.archive_file | string) | basename }}
+                cd "{{ item.source_dir | basename }}"
               else
-                tar -xvf {{ item.archive_file | basename }}
                 cd "{{ item.source_dir | basename }}"
               fi
             fi
