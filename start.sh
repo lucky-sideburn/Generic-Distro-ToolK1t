@@ -186,6 +186,7 @@ menu_infra() {
     echo "  4) Copy Kernel Configs"
     echo "  5) Copy System Configs"
     echo "  6) Create EL9 packages map (Rocky/libvirt)"
+    echo "  7) Generate EL9 Jenkins jobs into main.yml"
     echo "  b) Back"
     echo
     read -rp "$(echo -e "${BOLD}Choice: ${RESET}")" choice
@@ -233,6 +234,23 @@ menu_infra() {
           echo -e "${GREEN}✔ EL9 package maps committed to git${RESET}"
         else
           echo -e "${YELLOW}⚠ Could not commit (files may not have changed, or git error)${RESET}"
+        fi
+        ;;
+      7)
+        confirm "Generate EL9 Jenkins jobs into main.yml?" || continue
+        if [ ! -f jenkins-lfs/package_maps/el9_pkgs.tsv ]; then
+          echo -e "${RED}Error: el9_pkgs.tsv not found. Run option 6 first.${RESET}"
+          continue
+        fi
+        echo -e "${CYAN}Generating EL9 Jenkins job blocks in main.yml...${RESET}"
+        if python3 jenkins-lfs/scripts/gen_el9_jobs.py; then
+          echo -e "${GREEN}✔ EL9 Jenkins jobs appended to main.yml${RESET}"
+          git add jenkins-lfs/playbooks/roles/ansible-gdt/vars/main.yml && \
+            git commit -m "chore: append EL9 Jenkins job blocks from el9_pkgs baseline" && \
+            echo -e "${GREEN}✔ Committed to git${RESET}" || \
+            echo -e "${YELLOW}⚠ Could not commit (no changes or git error)${RESET}"
+        else
+          echo -e "${RED}Error: Failed to generate EL9 jobs${RESET}"
         fi
         ;;
       b|B) return ;;
