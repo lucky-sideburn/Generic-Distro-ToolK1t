@@ -1018,15 +1018,6 @@
         <builders>
           <hudson.tasks.Shell>
             <command>{{ amd64_common_build_start_command }}
-            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
-              if [ -d {{ item.source_dir | basename }} ]; then
-                sudo rm -rf {{ item.source_dir | basename }}
-              fi
-          
-              tar -xvf {{ item.archive_file | basename }}
-              cd "{{ item.source_dir | basename }}"
-            fi
-            
             pwd
 
             BUILD_TOOL={{ item.build_tool }}
@@ -1080,15 +1071,6 @@
         <builders>
           <hudson.tasks.Shell>
             <command>{{ amd64_common_build_start_command }}
-            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
-              if [ -d {{ item.source_dir | basename }} ]; then
-                sudo rm -rf {{ item.source_dir | basename }}
-              fi
-          
-              tar -xvf {{ item.archive_file | basename }}
-              cd "{{ item.source_dir | basename }}"
-            fi
-            
             pwd
 
             BUILD_TOOL={{ item.build_tool }}
