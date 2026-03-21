@@ -224,6 +224,13 @@ menu_infra() {
           continue
         fi
         echo -e "${GREEN}EL9 package maps generated at jenkins-lfs/package_maps/el9_pkgs.tsv and jenkins-lfs/package_maps/el9_pkgs.json${RESET}"
+        echo -e "${CYAN}Adding and committing EL9 package maps to git...${RESET}"
+        if git add jenkins-lfs/package_maps/el9_pkgs.* && \
+           git commit -m "chore: update EL9 package maps from Rocky Linux 9"; then
+          echo -e "${GREEN}✔ EL9 package maps committed to git${RESET}"
+        else
+          echo -e "${YELLOW}⚠ Could not commit (files may not have changed, or git error)${RESET}"
+        fi
         ;;
       b|B) return ;;
       *) echo -e "${RED}Invalid choice.${RESET}" ;;
