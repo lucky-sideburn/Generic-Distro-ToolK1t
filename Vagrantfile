@@ -42,6 +42,14 @@ Vagrant.configure("2") do |config|
     rocky.vm.provider "libvirt" do |libvirt|
       libvirt.memory = "40960"
       libvirt.cpus = 2
+      libvirt.storage_pool_name = "lfs"
+    end
+    rocky.vm.provision "ansible" do |ansible|
+      ansible.playbook = "./jenkins-lfs/playbooks/el9_pkgs.yml"
+      ansible.extra_vars = {
+        "el9_pkgs_tsv_output" => "/vagrant/jenkins-lfs/package_maps/el9_pkgs.tsv",
+        "el9_pkgs_json_output" => "/vagrant/jenkins-lfs/package_maps/el9_pkgs.json"
+      }
     end
     rocky.vm.network "private_network", type: "dhcp"
   end

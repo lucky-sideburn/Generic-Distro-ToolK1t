@@ -83,6 +83,21 @@ Notes:
 5. Run Jenkins jobs in the order of the numbered folders and jobs.
 6. Run `start.sh`, go to *Infrastructure*, and select *1) Start AARCH64 VM on QEMU* to work on your GNU/Linux system.
 
+### EL9 Package Map for Jenkins Build Inputs
+
+Use `start.sh` -> *Infrastructure* -> *6) Create EL9 packages map (Rocky/libvirt)*.
+
+This action will:
+
+1. Start `rocky9-lfs` using `VAGRANT_DEFAULT_PROVIDER=libvirt vagrant up rocky9-lfs --no-provision`
+2. Provision `rocky9-lfs` with Ansible (`jenkins-lfs/playbooks/el9_pkgs.yml`)
+3. Upgrade all packages in the Rocky Linux 9 system
+4. Export parse-friendly package maps into:
+  - `jenkins-lfs/package_maps/el9_pkgs.tsv`
+  - `jenkins-lfs/package_maps/el9_pkgs.json`
+
+The generated map is intended to be versioned in git and used by Jenkins jobs to decide which upstream package versions should be built.
+
 ### Jenkins Job Sync Mode (Upsert)
 
 Jenkins job definitions are managed in upsert mode:

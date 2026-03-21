@@ -185,6 +185,7 @@ menu_infra() {
     echo "  3) Provision AMD64 build node (Ansible)"
     echo "  4) Copy Kernel Configs"
     echo "  5) Copy System Configs"
+    echo "  6) Create EL9 packages map (Rocky/libvirt)"
     echo "  b) Back"
     echo
     read -rp "$(echo -e "${BOLD}Choice: ${RESET}")" choice
@@ -209,6 +210,21 @@ menu_infra() {
         ;;
       4) ansible_cmd jenkins-lfs/playbooks/kernel_configs.yml ;;
       5) ansible_cmd jenkins-lfs/playbooks/system_conf.yml ;;
+      6)
+        confirm "Create EL9 packages map using rocky9-lfs (libvirt)?" || continue
+        [ -f Vagrantfile ] || { echo -e "${RED}Error: Vagrantfile not found.${RESET}"; continue; }
+        echo -e "${CYAN}Starting rocky9-lfs with libvirt...${RESET}"
+        if ! VAGRANT_DEFAULT_PROVIDER=libvirt vagrant up rocky9-lfs --no-provision; then
+          echo -e "${RED}Error: Failed to start rocky9-lfs with libvirt.${RESET}"
+          continue
+        fi
+        echo -e "${CYAN}Running EL9 package map provisioning...${RESET}"
+        if ! VAGRANT_DEFAULT_PROVIDER=libvirt vagrant provision rocky9-lfs --provision-with ansible; then
+          echo -e "${RED}Error: Failed to provision rocky9-lfs for EL9 package map generation.${RESET}"
+          continue
+        fi
+        echo -e "${GREEN}EL9 package maps generated at jenkins-lfs/package_maps/el9_pkgs.tsv and jenkins-lfs/package_maps/el9_pkgs.json${RESET}"
+        ;;
       b|B) return ;;
       *) echo -e "${RED}Invalid choice.${RESET}" ;;
     esac

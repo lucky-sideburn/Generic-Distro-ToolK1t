@@ -1,0 +1,51 @@
+- name: Build EL9 package map on Rocky Linux 9
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    el9_pkgs_tsv_output: "/vagrant/jenkins-lfs/package_maps/el9_pkgs.tsv"
+    el9_pkgs_json_output: "/vagrant/jenkins-lfs/package_maps/el9_pkgs.json"
+  tasks:
+    - name: Upgrade all installed packages
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+        update_cache: true
+
+    - name: Ensure package map directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop: "{{ [el9_pkgs_tsv_output | dirname, el9_pkgs_json_output | dirname] | unique }}"
+
+    - name: Collect package name and version map (TSV)
+      ansible.builtin.shell: |
+        set -o pipefail
+        rpm -qa --qf '%{NAME}\t%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort
+      args:
+        executable: /bin/bash
+      register: el9_pkgs_tsv_map
+      changed_when: false
+
+    - name: Write package map TSV to repository
+      ansible.builtin.copy:
+        dest: "{{ el9_pkgs_tsv_output }}"
+        content: "{{ el9_pkgs_tsv_map.stdout }}\n"
+        mode: "0644"
+
+    - name: Collect package map (JSON)
+      ansible.builtin.shell: |
+        set -o pipefail
+        rpm -qa --qf '%{NAME}\t%{EPOCHNUM}\t%{VERSION}\t%{RELEASE}\t%{ARCH}\n' | sort | \
+          python3 -c 'import json,sys; rows=[]; [rows.append({"name":p[0],"epoch":p[1],"version":p[2],"release":p[3],"arch":p[4]}) for line in sys.stdin if (p:=line.rstrip("\n").split("\t")) and len(p)==5]; print(json.dumps(rows, indent=2))'
+      args:
+        executable: /bin/bash
+      register: el9_pkgs_json_map
+      changed_when: false
+
+    - name: Write package map JSON to repository
+      ansible.builtin.copy:
+        dest: "{{ el9_pkgs_json_output }}"
+        content: "{{ el9_pkgs_json_map.stdout }}\n"
+        mode: "0644"
