@@ -3506,6 +3506,25 @@ jenkins_jobs:
           make install 
         '
 
+    - name: 0117 - dnf (Basic System Software) OPTIONAL
+      version: 4.14.0
+      archive_file: /sources/4.14.0.tar.gz
+      source_dir: /sources/4.14.0
+      git_url: https://github.com/rpm-software-management/dnf.git
+      git_branch: 4.14.0
+      description: |
+        DNF is a package manager for RPM-based Linux distributions. This job builds DNF, which is essential for managing packages in the LFS environment.
+      category:
+        This job is part of the system configuration setup, specifically for building DNF.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/dnf
+          python3 setup.py build
+          python3 setup.py install --prefix=/usr
+        '
+
   system_configuration:
     - name: 0001 - LFS-Bootscripts (System Configuration)
       version: 20240825
