@@ -167,7 +167,7 @@
   loop: "{{ jenkins_jobs.cross_toolchain }}"
   loop_control:
     index_var: loop_idx
-  when: amd64_cross_toolchain_upd.results[loop_idx].status == 404
+  when: amd64_cross_toolchain_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags:
     - amd64_cross_toolchain
@@ -293,7 +293,7 @@
   loop: "{{ jenkins_jobs.cross_compiling_temporary_tools }}"
   loop_control:
     index_var: loop_idx
-  when: amd64_cross_compiling_upd.results[loop_idx].status == 404
+  when: amd64_cross_compiling_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags:
     - amd64_cross_compiling_temporary_tools
@@ -425,7 +425,7 @@
   loop: "{{ jenkins_jobs.chroot_and_building_additional_temporary_tools }}"
   loop_control:
     index_var: loop_idx
-  when: amd64_chroot_upd.results[loop_idx].status == 404
+  when: amd64_chroot_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags:
     - amd64_chroot_and_building_additional_temporary_tools
@@ -563,7 +563,7 @@
   loop: "{{ jenkins_jobs.basic_system_software }}"
   loop_control:
     index_var: loop_idx
-  when: amd64_basic_sw_upd.results[loop_idx].status == 404
+  when: amd64_basic_sw_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags:
     - amd64_basic_system_software
@@ -699,7 +699,7 @@
   loop: "{{ jenkins_jobs.system_configuration }}"
   loop_control:
     index_var: loop_idx
-  when: amd64_syscfg_upd.results[loop_idx].status == 404
+  when: amd64_syscfg_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags:
     - amd64_system_configuration
@@ -837,7 +837,7 @@
   loop: "{{ jenkins_jobs.containers }}"
   loop_control:
     index_var: loop_idx
-  when: amd64_containers_upd.results[loop_idx].status == 404
+  when: amd64_containers_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags:
     - amd64_containers
@@ -975,7 +975,7 @@
   loop: "{{ jenkins_jobs.genai }}"
   loop_control:
     index_var: loop_idx
-  when: amd64_genai_upd.results[loop_idx].status == 404
+  when: amd64_genai_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags:
     - amd64_genai
@@ -1113,7 +1113,7 @@
   loop: "{{ jenkins_jobs.systemd_integration }}"
   loop_control:
     index_var: loop_idx
-  when: amd64_systemd_upd.results[loop_idx].status == 404
+  when: amd64_systemd_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags:
     - amd64_systemd_integration

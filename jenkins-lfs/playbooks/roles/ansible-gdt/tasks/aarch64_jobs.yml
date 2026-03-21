@@ -171,7 +171,7 @@
   loop: "{{ jenkins_jobs.cross_toolchain }}"
   loop_control:
     index_var: loop_idx
-  when: aarch64_cross_toolchain_upd.results[loop_idx].status == 404
+  when: aarch64_cross_toolchain_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags:
     - aarch64_jobs
@@ -301,7 +301,7 @@
   loop: "{{ jenkins_jobs.cross_compiling_temporary_tools }}"
   loop_control:
     index_var: loop_idx
-  when: aarch64_cross_compiling_upd.results[loop_idx].status == 404
+  when: aarch64_cross_compiling_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags:
     - aarch64_jobs
@@ -439,7 +439,7 @@
   loop: "{{ jenkins_jobs.chroot_and_building_additional_temporary_tools }}"
   loop_control:
     index_var: loop_idx
-  when: aarch64_chroot_upd.results[loop_idx].status == 404
+  when: aarch64_chroot_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags:
     - aarch64_jobs
@@ -583,7 +583,7 @@
   loop: "{{ jenkins_jobs.basic_system_software }}"
   loop_control:
     index_var: loop_idx
-  when: aarch64_basic_sw_upd.results[loop_idx].status == 404
+  when: aarch64_basic_sw_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags:
     - aarch64_jobs
@@ -722,7 +722,7 @@
   loop: "{{ jenkins_jobs.system_configuration }}"
   loop_control:
     index_var: loop_idx
-  when: aarch64_syscfg_upd.results[loop_idx].status == 404
+  when: aarch64_syscfg_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags:
     - aarch64_jobs
@@ -864,7 +864,7 @@
   loop: "{{ jenkins_jobs.genai }}"
   loop_control:
     index_var: loop_idx
-  when: aarch64_genai_upd.results[loop_idx].status == 404
+  when: aarch64_genai_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags: 
     - aarch64_jobs
@@ -1006,7 +1006,7 @@
   loop: "{{ jenkins_jobs.systemd_integration }}"
   loop_control:
     index_var: loop_idx
-  when: aarch64_systemd_upd.results[loop_idx].status == 404
+  when: aarch64_systemd_upd.results[loop_idx].status != 200
   ignore_errors: yes
   tags: 
     - aarch64_jobs
