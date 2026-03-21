@@ -991,14 +991,14 @@
     - amd64_systemd_integration
     - amd64_jobs
 
-- name: "Upsert Jenkins Jobs - EL9 Packages (amd64) - update"
+- name: "Create Jenkins Jobs - EL9 Packages (amd64)"
   ansible.builtin.uri:
-    url: "{{ jenkins_url }}/job/2.9%20-%20amd64_el9_packages/job/{{ item.name | urlencode }}/config.xml"
+    url: "{{ jenkins_url }}/job/2.9%20-%20amd64_el9_packages/createItem?name={{ item.name | urlencode }}"
     method: POST
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: [200, 404]
+    status_code: [200, 400]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -1043,7 +1043,7 @@
       </project>
     body_format: raw
     timeout: 60
-  register: amd64_el9_upd
+  register: amd64_el9_create
   loop: "{{ jenkins_jobs.el9_packages }}"
   loop_control:
     index_var: loop_idx
@@ -1052,9 +1052,10 @@
     - amd64_el9_packages
     - amd64_jobs
 
-- name: "Upsert Jenkins Jobs - EL9 Packages (amd64) - create"
+
+- name: "Update existing Jenkins Jobs - EL9 Packages (amd64)"
   ansible.builtin.uri:
-    url: "{{ jenkins_url }}/job/2.9%20-%20amd64_el9_packages/createItem?name={{ item.name | urlencode }}"
+    url: "{{ jenkins_url }}/job/2.9%20-%20amd64_el9_packages/job/{{ item.name | urlencode }}/config.xml"
     method: POST
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
@@ -1107,9 +1108,7 @@
   loop: "{{ jenkins_jobs.el9_packages }}"
   loop_control:
     index_var: loop_idx
-  when: amd64_el9_upd.results[loop_idx].status == 404
-  ignore_errors: yes
+  when: amd64_el9_create.results[loop_idx].status == 400
   tags:
     - amd64_el9_packages
-    - amd64_jobs
     - amd64_jobs
