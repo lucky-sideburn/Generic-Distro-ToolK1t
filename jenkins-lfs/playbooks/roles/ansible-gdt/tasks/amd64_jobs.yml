@@ -13,7 +13,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: 200
+    status_code: [200, 302]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -52,7 +52,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: [200, 404]
+    status_code: [200, 302, 404]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -114,7 +114,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: 200
+    status_code: [200, 302]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -176,7 +176,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: [200, 404]
+    status_code: [200, 302, 404]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -237,7 +237,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: 200
+    status_code: [200, 302]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -298,7 +298,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: [200, 404]
+    status_code: [200, 302, 404]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -362,7 +362,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: 200
+    status_code: [200, 302]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -426,7 +426,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: [200, 404]
+    status_code: [200, 302, 404]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -493,7 +493,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: 200
+    status_code: [200, 302]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -560,7 +560,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: [200, 404]
+    status_code: [200, 302, 404]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -626,7 +626,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: 200
+    status_code: [200, 302]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -692,7 +692,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: [200, 404]
+    status_code: [200, 302, 404]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -759,7 +759,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: 200
+    status_code: [200, 302]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -826,7 +826,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: [200, 404]
+    status_code: [200, 302, 404]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -893,7 +893,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: 200
+    status_code: [200, 302]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -960,7 +960,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: [200, 404]
+    status_code: [200, 302, 404]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -1027,7 +1027,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: 200
+    status_code: [200, 302]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -1094,7 +1094,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: [200, 400]
+    status_code: [200, 302, 400, 409]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -1147,7 +1147,7 @@
     user: "{{ jenkins_user }}"
     password: "{{ jenkins_token }}"
     force_basic_auth: yes
-    status_code: 200
+    status_code: [200, 302]
     headers:
       Content-Type: "application/xml"
     body: |
@@ -1186,7 +1186,7 @@
   loop: "{{ jenkins_jobs.el9_packages }}"
   loop_control:
     index_var: loop_idx
-  when: amd64_el9_create.results[loop_idx].status == 400
+  when: amd64_el9_create.results[loop_idx].status != 200
   tags:
     - amd64_el9_packages
     - amd64_jobs
