@@ -3520,7 +3520,7 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
-          cd /sources/dnf
+          cd /sources/dnf-4.14.0
           python3 setup.py build
           python3 setup.py install --prefix=/usr
         '
