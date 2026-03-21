@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-Append Jenkins job definitions for every package in el9_pkgs.tsv into main.yml.
+Regenerate the el9_packages section in main.yml from el9_pkgs.tsv.
+
+Jobs are numbered 0001-NNNN (section-relative, not global).
+If an el9_packages: section already exists it is replaced; otherwise it is appended.
 
 Usage (from repo root):
     python3 jenkins-lfs/scripts/gen_el9_jobs.py
   or with explicit paths:
     python3 jenkins-lfs/scripts/gen_el9_jobs.py <el9_pkgs.tsv> <main.yml>
-
-The script auto-detects the highest existing job number and continues from there.
 """
 import re
 import sys
@@ -21,14 +22,6 @@ main = Path(sys.argv[2]) if len(sys.argv) > 2 else REPO_ROOT / "jenkins-lfs/play
 if not tsv.exists():
     sys.exit(f"Error: {tsv} not found. Run option 6 in start.sh first.")
 
-# Find highest job number already in file
-highest = max(
-    [int(m.group(1)) for line in main.read_text().splitlines()
-     for m in [re.search(r'name: (\d{4}) -', line)] if m],
-    default=0
-)
-print(f"Highest existing job number: {highest}")
-
 # Parse TSV
 packages = []
 for line in tsv.read_text().splitlines():
@@ -39,32 +32,44 @@ for line in tsv.read_text().splitlines():
         upstream = re.sub(r'-\d+[\.\w]*\.el\d.*$', '', ver_rel)
         packages.append((pkg_name, upstream))
 
-print(f"Packages to append: {len(packages)}")
+print(f"Packages from TSV: {len(packages)}")
 
-# Build YAML blocks
-blocks = []
-for i, (pkg, ver) in enumerate(packages, start=highest + 1):
-    block = f"""
-    - name: {i:04d} - {pkg} (EL9 Packages)
-      version: {ver}
-      archive_file: /sources/{pkg}-{ver}.tar.gz
-      source_dir: /sources/{pkg}-{ver}
-      description: |
-        Build {pkg} version {ver} from Rocky Linux 9 (EL9) baseline.
-      category:
-        This job is part of the EL9 packages build, providing {pkg} from the Rocky Linux 9 package baseline.
-      exec_command: echo
-      build_tool: true
-      build_command: |
-        {{{{ chroot_start_command }}}} -c '
-          dnf install -y {pkg}-{ver}
-        '
-"""
-    blocks.append(block)
+jinja_open  = '{{ '
+jinja_close = ' }}'
 
-# Append to main.yml
-with main.open('a') as f:
-    f.write('\n')
-    f.writelines(blocks)
+# Build replacement section lines
+section_lines = ['\n  el9_packages:\n']
+for i, (pkg, ver) in enumerate(packages, start=1):
+    section_lines.append(
+        f"\n"
+        f"    - name: {i:04d} - {pkg} (EL9 Packages)\n"
+        f"      version: {ver}\n"
+        f"      archive_file: /sources/{pkg}-{ver}.tar.gz\n"
+        f"      source_dir: /sources/{pkg}-{ver}\n"
+        f"      description: |\n"
+        f"        Build {pkg} version {ver} from Rocky Linux 9 (EL9) baseline.\n"
+        f"      category:\n"
+        f"        This job is part of the EL9 packages build, providing {pkg} from the Rocky Linux 9 package baseline.\n"
+        f"      exec_command: echo\n"
+        f"      build_tool: true\n"
+        f"      build_command: |\n"
+        f"        {jinja_open}chroot_start_command{jinja_close} -c '\n"
+        f"          dnf install -y {pkg}-{ver}\n"
+        f"        '\n"
+    )
 
-print(f"Done. Appended {len(blocks)} EL9 job blocks to {main}")
+content = main.read_text()
+
+# If el9_packages section exists, replace it; otherwise append
+if '\n  el9_packages:\n' in content:
+    # Find start of el9_packages section and strip to end-of-file (it's always the last section)
+    idx = content.index('\n  el9_packages:\n')
+    new_content = content[:idx] + ''.join(section_lines)
+    main.write_text(new_content)
+    print(f"Replaced existing el9_packages section in {main}")
+else:
+    with main.open('a') as f:
+        f.writelines(section_lines)
+    print(f"Appended el9_packages section to {main}")
+
+print(f"Done. {len(packages)} EL9 job blocks written (0001-{len(packages):04d})")

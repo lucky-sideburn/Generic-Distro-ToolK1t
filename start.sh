@@ -125,6 +125,7 @@ menu_amd64() {
     echo "  6) containers"
     echo "  7) GenAI"
     echo "  8) Systemd Integration"
+    echo "  9) EL9 Packages"
     echo "  b) Back"
     echo
     read -rp "$(echo -e "${BOLD}Choice: ${RESET}")" choice
@@ -138,6 +139,7 @@ menu_amd64() {
       6) ansible_cmd "$MAIN_PLAYBOOK_PATH" --tags amd64_containers ;;
       7) ansible_cmd "$MAIN_PLAYBOOK_PATH" --tags amd64_genai ;;
       8) ansible_cmd "$MAIN_PLAYBOOK_PATH" --tags amd64_systemd_integration ;;
+      9) ansible_cmd "$MAIN_PLAYBOOK_PATH" --tags amd64_el9_packages ;;
       b|B) return ;;
       *) echo -e "${RED}Invalid choice.${RESET}" ;;
     esac
@@ -157,6 +159,7 @@ menu_aarch64() {
     echo "  6) containers"
     echo "  7) GenAI"
     echo "  8) Systemd Integration"
+    echo "  9) EL9 Packages"
     echo "  b) Back"
     echo
     read -rp "$(echo -e "${BOLD}Choice: ${RESET}")" choice
@@ -170,6 +173,7 @@ menu_aarch64() {
       6) ansible_cmd "$MAIN_PLAYBOOK_PATH" --tags aarch64_containers ;;
       7) ansible_cmd "$MAIN_PLAYBOOK_PATH" --tags aarch64_genai ;;
       8) ansible_cmd "$MAIN_PLAYBOOK_PATH" --tags aarch64_systemd_integration ;;
+      9) ansible_cmd "$MAIN_PLAYBOOK_PATH" --tags aarch64_el9_packages ;;
       b|B) return ;;
       *) echo -e "${RED}Invalid choice.${RESET}" ;;
     esac
