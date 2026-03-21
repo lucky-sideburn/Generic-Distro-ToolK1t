@@ -223,7 +223,10 @@ menu_infra() {
           echo -e "${RED}Error: Failed to provision rocky9-lfs for EL9 package map generation.${RESET}"
           continue
         fi
-        echo -e "${GREEN}EL9 package maps generated at jenkins-lfs/package_maps/el9_pkgs.tsv and jenkins-lfs/package_maps/el9_pkgs.json${RESET}"
+        echo -e "${CYAN}Copying EL9 package maps from VM to host...${RESET}"
+        VAGRANT_DEFAULT_PROVIDER=libvirt vagrant ssh rocky9-lfs -c "cat /vagrant/jenkins-lfs/package_maps/el9_pkgs.tsv" > jenkins-lfs/package_maps/el9_pkgs.tsv
+        VAGRANT_DEFAULT_PROVIDER=libvirt vagrant ssh rocky9-lfs -c "cat /vagrant/jenkins-lfs/package_maps/el9_pkgs.json" > jenkins-lfs/package_maps/el9_pkgs.json
+        echo -e "${GREEN}✔ EL9 package maps copied to local repo${RESET}"
         echo -e "${CYAN}Adding and committing EL9 package maps to git...${RESET}"
         if git add jenkins-lfs/package_maps/el9_pkgs.* && \
            git commit -m "chore: update EL9 package maps from Rocky Linux 9"; then
