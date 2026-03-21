@@ -79,8 +79,14 @@
             sudo rm -rf {{ item.source_dir | basename }}
           fi
       
-          tar -xvf {{ item.archive_file | basename }}
-          cd "{{ item.source_dir | basename }}"
+          if [ -n "{{ item.git_url | default('') }}" ]; then
+            git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
+            cd "{{ item.source_dir | basename }}"
+            git checkout {{ item.git_branch | default('main') }}
+          else
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+          fi
 
         fi
       
@@ -137,8 +143,15 @@
             sudo rm -rf {{ item.source_dir | basename }}
           fi
       
+          if [ -n "{{ item.git_url | default('') }}" ]; then
+            git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
+            cd "{{ item.source_dir | basename }}"
+            git checkout {{ item.git_branch | default('main') }}
+          else
+      
           tar -xvf {{ item.archive_file | basename }}
           cd "{{ item.source_dir | basename }}"
+          fi
 
         fi
       
@@ -194,8 +207,14 @@
             sudo rm -rf {{ item.source_dir | basename }}
           fi
       
-          tar -xvf {{ item.archive_file | basename }}
-          cd {{ item.source_dir | basename }}
+          if [ -n "{{ item.git_url | default('') }}" ]; then
+            git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
+            cd "{{ item.source_dir | basename }}"
+            git checkout {{ item.git_branch | default('main') }}
+          else
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+          fi
         
         fi
     
@@ -251,8 +270,14 @@
             sudo rm -rf {{ item.source_dir | basename }}
           fi
       
-          tar -xvf {{ item.archive_file | basename }}
-          cd {{ item.source_dir | basename }}
+          if [ -n "{{ item.git_url | default('') }}" ]; then
+            git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
+            cd "{{ item.source_dir | basename }}"
+            git checkout {{ item.git_branch | default('main') }}
+          else
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+          fi
         
         fi
     
@@ -308,8 +333,14 @@
             sudo rm -rf {{ item.source_dir | basename }}
           fi
       
-          tar -xvf {{ item.archive_file | basename }}
-          cd {{ item.source_dir | basename }}
+          if [ -n "{{ item.git_url | default('') }}" ]; then
+            git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
+            cd "{{ item.source_dir | basename }}"
+            git checkout {{ item.git_branch | default('main') }}
+          else
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+          fi
         
         fi
     
@@ -369,8 +400,14 @@
             sudo rm -rf {{ item.source_dir | basename }}
           fi
       
-          tar -xvf {{ item.archive_file | basename }}
-          cd {{ item.source_dir | basename }}
+          if [ -n "{{ item.git_url | default('') }}" ]; then
+            git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
+            cd "{{ item.source_dir | basename }}"
+            git checkout {{ item.git_branch | default('main') }}
+          else
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+          fi
         
         fi
     
@@ -433,8 +470,14 @@
             sudo rm -rf {{ item.source_dir | basename }}
           fi
       
-          tar -xvf {{ item.archive_file | basename }}
-          cd {{ item.source_dir | basename }}
+          if [ -n "{{ item.git_url | default('') }}" ]; then
+            git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
+            cd "{{ item.source_dir | basename }}"
+            git checkout {{ item.git_branch | default('main') }}
+          else
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+          fi
         
         fi
     
@@ -497,8 +540,14 @@
             sudo rm -rf {{ item.source_dir | basename }}
           fi
       
-          tar -xvf {{ item.archive_file | basename }}
-          cd {{ item.source_dir | basename }}
+          if [ -n "{{ item.git_url | default('') }}" ]; then
+            git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
+            cd "{{ item.source_dir | basename }}"
+            git checkout {{ item.git_branch | default('main') }}
+          else
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+          fi
         
         fi
     
@@ -559,8 +608,14 @@
             sudo rm -rf {{ item.source_dir | basename }}
           fi
       
-          tar -xvf {{ item.archive_file | basename }}
-          cd {{ item.source_dir | basename }}
+          if [ -n "{{ item.git_url | default('') }}" ]; then
+            git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
+            cd "{{ item.source_dir | basename }}"
+            git checkout {{ item.git_branch | default('main') }}
+          else
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+          fi
         
         fi
     
@@ -621,8 +676,15 @@
             sudo rm -rf {{ item.source_dir | basename }}
           fi
       
+          if [ -n "{{ item.git_url | default('') }}" ]; then
+            git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
+            cd "{{ item.source_dir | basename }}"
+            git checkout {{ item.git_branch | default('main') }}
+          else
+      
           tar -xvf {{ item.archive_file | basename }}
           cd {{ item.source_dir | basename }}
+          fi
         
         fi
     
@@ -685,8 +747,15 @@
             sudo rm -rf {{ item.source_dir | basename }}
           fi
       
+          if [ -n "{{ item.git_url | default('') }}" ]; then
+            git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
+            cd "{{ item.source_dir | basename }}"
+            git checkout {{ item.git_branch | default('main') }}
+          else
+      
           tar -xvf {{ item.archive_file | basename }}
           cd {{ item.source_dir | basename }}
+          fi
         
         fi
     
@@ -749,8 +818,15 @@
             sudo rm -rf {{ item.source_dir | basename }}
           fi
       
+          if [ -n "{{ item.git_url | default('') }}" ]; then
+            git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
+            cd "{{ item.source_dir | basename }}"
+            git checkout {{ item.git_branch | default('main') }}
+          else
+      
           tar -xvf {{ item.archive_file | basename }}
           cd {{ item.source_dir | basename }}
+          fi
         
         fi
     
@@ -813,8 +889,15 @@
             sudo rm -rf {{ item.source_dir | basename }}
           fi
       
+          if [ -n "{{ item.git_url | default('') }}" ]; then
+            git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
+            cd "{{ item.source_dir | basename }}"
+            git checkout {{ item.git_branch | default('main') }}
+          else
+      
           tar -xvf {{ item.archive_file | basename }}
           cd {{ item.source_dir | basename }}
+          fi
         
         fi
     
@@ -877,8 +960,15 @@
             sudo rm -rf {{ item.source_dir | basename }}
           fi
       
+          if [ -n "{{ item.git_url | default('') }}" ]; then
+            git clone {{ item.git_url | default('') }} {{ item.source_dir | basename }}
+            cd "{{ item.source_dir | basename }}"
+            git checkout {{ item.git_branch | default('main') }}
+          else
+      
           tar -xvf {{ item.archive_file | basename }}
           cd {{ item.source_dir | basename }}
+          fi
         
         fi
     
