@@ -990,3 +990,126 @@
   tags:
     - amd64_systemd_integration
     - amd64_jobs
+
+- name: "Upsert Jenkins Jobs - EL9 Packages (amd64) - update"
+  ansible.builtin.uri:
+    url: "{{ jenkins_url }}/job/2.9%20-%20amd64_el9_packages/job/{{ item.name | urlencode }}/config.xml"
+    method: POST
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_token }}"
+    force_basic_auth: yes
+    status_code: [200, 404]
+    headers:
+      Content-Type: "application/xml"
+    body: |
+      <project>
+        <actions/>
+        <description>Jenkins job to execute a shell command</description>
+        <keepDependencies>false</keepDependencies>
+        <properties/>
+        <scm class="hudson.scm.NullSCM"/>
+        <canRoam>true</canRoam>
+        <assignedNode>amd64</assignedNode>
+        <disabled>false</disabled>
+        <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+        <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+        <triggers/>
+        <concurrentBuild>false</concurrentBuild>
+        <builders>
+          <hudson.tasks.Shell>
+            <command>{{ amd64_common_build_start_command }}
+            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+              if [ -d {{ item.source_dir | basename }} ]; then
+                sudo rm -rf {{ item.source_dir | basename }}
+              fi
+          
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+            fi
+            
+            pwd
+
+            BUILD_TOOL={{ item.build_tool }}
+            if [ $BUILD_TOOL = "True" ]; then
+              {{ item.build_command }}
+            else
+              {{ item.exec_command }}
+            fi
+            </command>
+          </hudson.tasks.Shell>
+        </builders>
+        <publishers/>
+        <buildWrappers/>
+      </project>
+    body_format: raw
+    timeout: 60
+  register: amd64_el9_upd
+  loop: "{{ jenkins_jobs.el9_packages }}"
+  loop_control:
+    index_var: loop_idx
+  failed_when: false
+  tags:
+    - amd64_el9_packages
+    - amd64_jobs
+
+- name: "Upsert Jenkins Jobs - EL9 Packages (amd64) - create"
+  ansible.builtin.uri:
+    url: "{{ jenkins_url }}/job/2.9%20-%20amd64_el9_packages/createItem?name={{ item.name | urlencode }}"
+    method: POST
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_token }}"
+    force_basic_auth: yes
+    status_code: 200
+    headers:
+      Content-Type: "application/xml"
+    body: |
+      <project>
+        <actions/>
+        <description>Jenkins job to execute a shell command</description>
+        <keepDependencies>false</keepDependencies>
+        <properties/>
+        <scm class="hudson.scm.NullSCM"/>
+        <canRoam>true</canRoam>
+        <assignedNode>amd64</assignedNode>
+        <disabled>false</disabled>
+        <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+        <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+        <triggers/>
+        <concurrentBuild>false</concurrentBuild>
+        <builders>
+          <hudson.tasks.Shell>
+            <command>{{ amd64_common_build_start_command }}
+            if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
+              if [ -d {{ item.source_dir | basename }} ]; then
+                sudo rm -rf {{ item.source_dir | basename }}
+              fi
+          
+              tar -xvf {{ item.archive_file | basename }}
+              cd "{{ item.source_dir | basename }}"
+            fi
+            
+            pwd
+
+            BUILD_TOOL={{ item.build_tool }}
+            if [ $BUILD_TOOL = "True" ]; then
+              {{ item.build_command }}
+            else
+              {{ item.exec_command }}
+            fi
+            </command>
+          </hudson.tasks.Shell>
+        </builders>
+        <publishers/>
+        <buildWrappers/>
+      </project>
+    body_format: raw
+    timeout: 60
+  loop: "{{ jenkins_jobs.el9_packages }}"
+  loop_control:
+    index_var: loop_idx
+  when: amd64_el9_upd.results[loop_idx].status == 404
+  ignore_errors: yes
+  tags:
+    - amd64_el9_packages
+    - amd64_jobs
+    - amd64_jobs

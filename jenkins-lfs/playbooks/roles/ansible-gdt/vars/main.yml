@@ -118,6 +118,7 @@ jenkins_jobs:
     - 2.6 - amd64_containers
     - 2.7 - amd64_genai
     - 2.8 - amd64_systemd_integration
+    - 2.9 - amd64_el9_packages
 
   setup:
     - Host System Requirements
