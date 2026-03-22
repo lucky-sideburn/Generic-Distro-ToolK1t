@@ -53,12 +53,12 @@ chroot_start_command: |-
   fi
 
   sudo chroot "$LFS" /usr/bin/env -i   \
-      HOME=/root                  \
-      TERM="$TERM"                \
-      PS1='(lfs chroot) \u:\w\$ ' \
-      PATH=/usr/bin:/usr/sbin     \
-      MAKEFLAGS="-j$(nproc)"      \
-      TESTSUITEFLAGS="-j$(nproc)" \
+      HOME=/root                       \
+      TERM="$TERM"                     \
+      PS1='(lfs chroot) \u:\w\$ '      \
+      PATH=/usr/local/bin:/usr/bin:/usr/sbin \
+      MAKEFLAGS="-j$(nproc)"           \
+      TESTSUITEFLAGS="-j$(nproc)"      \
       /bin/bash
 
 amd64_common_build_start_command: |-
@@ -3424,6 +3424,7 @@ jenkins_jobs:
                       --no-system-librhash \
                       --docdir=/share/doc/cmake-4.2.1
           make
+          make install
         '
 
     - name: 0113 - jq (Basic System Software) OPTIONAL
@@ -3520,9 +3521,10 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
-          cd /sources/dnf-4.14.0
+          cd /sources/dnf
+          git checkout 4.14.0
           python3 setup.py build
-          python3 setup.py install --prefix=/usr
+          python3 setup.py install
         '
 
   system_configuration:
