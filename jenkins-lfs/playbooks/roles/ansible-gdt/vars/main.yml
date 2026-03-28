@@ -3519,6 +3519,38 @@ jenkins_jobs:
           make install 
         '
 
+    - name: 0116A - libdnf bootstrap (Basic System Software) OPTIONAL
+      version: 0.69.0
+      archive_file: false
+      source_dir: /sources/libdnf-0.69.0
+      git_url: https://github.com/rpm-software-management/libdnf.git
+      git_branch: 0.69.0
+      description: |
+        Build libdnf directly from source to bootstrap DNF in LFS chroot environments.
+      category:
+        This job is part of the system configuration setup, specifically for building libdnf before DNF.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          set -e
+          cd /sources
+          if [ ! -d /sources/libdnf-0.69.0 ]; then
+            git clone --branch 0.69.0 --depth 1 https://github.com/rpm-software-management/libdnf.git /sources/libdnf-0.69.0
+          else
+            git -C /sources/libdnf-0.69.0 pull --ff-only
+          fi
+
+          cd /sources/libdnf-0.69.0
+          git config --global --add safe.directory /sources/libdnf-0.69.0
+          mkdir -p build
+          cd build
+          /usr/bin/cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+          make
+          make install
+          ldconfig
+        '
+
     - name: 0117 - dnf (Basic System Software) OPTIONAL
       version: 4.14.0
       archive_file: false
@@ -3533,13 +3565,25 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
+          if ! /usr/bin/python3 -c "import libdnf" >/dev/null 2>&1; then
+            echo "ERROR: python3 cannot import libdnf. Build/install libdnf and python3-libdnf first." >&2
+            
+            exit 1
+          fi
+
           cd /sources/dnf-4.14.0
           git config --global --add safe.directory /sources/dnf-4.14.0
           mkdir -p build
           cd build
-          /usr/bin/cmake .. -DPYTHON_DESIRED:FILEPATH=/usr/bin/python3 -DCMAKE_INSTALL_PREFIX=/usr/local -DWITH_MAN=0
+          /usr/bin/cmake .. -DPYTHON_DESIRED:FILEPATH=/usr/bin/python3 -DCMAKE_INSTALL_PREFIX=/usr -DWITH_MAN=0 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
           make
           make install
+
+          if [ -x /usr/bin/dnf-3 ]; then
+            ln -sf /usr/bin/dnf-3 /usr/bin/dnf
+          fi
+
+          /usr/bin/python3 -c "import dnf, libdnf; print(\"dnf/libdnf import OK\")"
         '
 
   system_configuration:
