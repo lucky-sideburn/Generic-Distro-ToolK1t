@@ -3534,15 +3534,30 @@ jenkins_jobs:
       build_command: |
         {{ chroot_start_command }} -c '
           set -e
+
+          # libdnf needs LibSolv CMake config. Build libsolv if missing.
           cd /sources
-          if [ ! -d /sources/libdnf-0.69.0 ]; then
-            git clone --branch 0.69.0 --depth 1 https://github.com/rpm-software-management/libdnf.git /sources/libdnf-0.69.0
-          else
-            git -C /sources/libdnf-0.69.0 pull --ff-only
+          if [ ! -f /usr/lib/cmake/LibSolv/LibSolvConfig.cmake ] && [ ! -f /usr/lib64/cmake/LibSolv/LibSolvConfig.cmake ]; then
+            if [ ! -d /sources/libsolv-0.7.30 ]; then
+              git clone --branch 0.7.30 --depth 1 https://github.com/openSUSE/libsolv.git /sources/libsolv-0.7.30
+            else
+              git -C /sources/libsolv-0.7.30 pull --ff-only
+            fi
+
+            cd /sources/libsolv-0.7.30
+            mkdir -p build
+            cd build
+            /usr/bin/cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_STATIC=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+            make
+            make install
+            ldconfig
+            cd /sources
           fi
 
           cd /sources/libdnf-0.69.0
-          git config --global --add safe.directory /sources/libdnf-0.69.0
+          if grep -q "cmake_policy(SET CMP0005 OLD)" CMakeLists.txt; then
+            sed -i "s/cmake_policy(SET CMP0005 OLD)/cmake_policy(SET CMP0005 NEW)/" CMakeLists.txt
+          fi
           mkdir -p build
           cd build
           /usr/bin/cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
