@@ -3413,8 +3413,8 @@ jenkins_jobs:
     
     - name: 0112 - Cmake  (Basic System Software) OPTIONAL
       version: 4.2.1
-      archive_file: /sources/cmake-4.2.1.tar.gz
-      source_dir: /sources/cmake-4.2.1
+      archive_file: /sources/cmake-4.3.0.tar.gz
+      source_dir: /sources/cmake-4.3.0
       description: |
         CMake is a cross-platform, open-source build system that is used to manage the build process of software projects. This job builds CMake, which is essential for building software in the LFS environment.
       category:
@@ -3424,7 +3424,7 @@ jenkins_jobs:
       build_command: |
         # TO DO verify if it works for ARM, change lib64 if necessary
         {{ chroot_start_command }} -c '
-          cd /sources/cmake-4.2.1
+          cd /sources/cmake-4.3.0
           sed -i "/\"lib64\"/s/64//" Modules/GNUInstallDirs.cmake
 
           ./bootstrap --prefix=/usr        \
@@ -3434,7 +3434,7 @@ jenkins_jobs:
                       --no-system-jsoncpp  \
                       --no-system-cppdap   \
                       --no-system-librhash \
-                      --docdir=/share/doc/cmake-4.2.1
+                      --docdir=/share/doc/cmake-4.3.0
           make
           make install
         '
