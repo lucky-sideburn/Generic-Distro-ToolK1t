@@ -3556,13 +3556,26 @@ jenkins_jobs:
             fi
           fi
 
+          LIBSOLV_CONFIG=$(find /usr -type f \( -name LibSolvConfig.cmake -o -name libsolv-config.cmake \) 2>/dev/null | head -n 1)
+          if [ -z "$LIBSOLV_CONFIG" ]; then
+            echo "ERROR: LibSolvConfig.cmake not found after libsolv build/install" >&2
+            exit 1
+          fi
+          LIBSOLV_DIR=$(dirname "$LIBSOLV_CONFIG")
+
+          if [ ! -d /sources/libdnf-0.69.0 ]; then
+            git clone --branch 0.69.0 --depth 1 https://github.com/rpm-software-management/libdnf.git /sources/libdnf-0.69.0
+          else
+            git -C /sources/libdnf-0.69.0 pull --ff-only
+          fi
+
           cd /sources/libdnf-0.69.0
           if grep -q "cmake_policy(SET CMP0005 OLD)" CMakeLists.txt; then
             sed -i "s/cmake_policy(SET CMP0005 OLD)/cmake_policy(SET CMP0005 NEW)/" CMakeLists.txt
           fi
           mkdir -p build
           cd build
-          /usr/bin/cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+          /usr/bin/cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DLibSolv_DIR="$LIBSOLV_DIR" -DCMAKE_PREFIX_PATH="$(dirname "$LIBSOLV_DIR")" -DCMAKE_POLICY_VERSION_MINIMUM=3.5
           make
           make install
           ldconfig
