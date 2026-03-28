@@ -52,6 +52,18 @@ chroot_start_command: |-
     sudo mount -vt devpts devpts -o gid=5,mode=0620 $LFS/dev/pts
   fi
 
+  if ! mountpoint -q $LFS/proc; then
+    sudo mount -vt proc proc $LFS/proc
+  fi
+
+  if ! mountpoint -q $LFS/sys; then
+    sudo mount -vt sysfs sysfs $LFS/sys
+  fi
+
+  if ! mountpoint -q $LFS/run; then
+    sudo mount -vt tmpfs tmpfs $LFS/run
+  fi
+
   sudo chroot "$LFS" /usr/bin/env -i   \
       HOME=/root                       \
       TERM="$TERM"                     \
@@ -3521,10 +3533,13 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
-          cd /sources/dnf
-          git checkout 4.14.0
-          python3 setup.py build
-          python3 setup.py install
+          cd /sources/dnf-4.14.0
+          git config --global --add safe.directory /sources/dnf-4.14.0
+          mkdir -p build
+          cd build
+          /usr/bin/cmake .. -DPYTHON_DESIRED:FILEPATH=/usr/bin/python3 -DCMAKE_INSTALL_PREFIX=/usr/local -DWITH_MAN=0
+          make
+          make install
         '
 
   system_configuration:
