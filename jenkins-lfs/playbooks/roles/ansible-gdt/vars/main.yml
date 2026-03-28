@@ -3537,12 +3537,14 @@ jenkins_jobs:
 
           # libdnf needs LibSolv CMake config. Build libsolv if missing.
           cd /sources
-          if [ ! -f /usr/lib/cmake/LibSolv/LibSolvConfig.cmake ] && [ ! -f /usr/lib64/cmake/LibSolv/LibSolvConfig.cmake ]; then
-            if [ ! -d /sources/libsolv-0.7.30 ]; then
-              git clone --branch 0.7.30 --depth 1 https://github.com/openSUSE/libsolv.git /sources/libsolv-0.7.30
-            else
-              git -C /sources/libsolv-0.7.30 pull --ff-only
-            fi
+          if [ ! -f /usr/lib/cmake/LibSolv/LibSolvConfig.cmake ]; then
+            # TO DO use && but it causes Jenkins error 500 at moment, investigate later
+            if [ ! -f /usr/lib64/cmake/LibSolv/LibSolvConfig.cmake ]; then
+              if [ ! -d /sources/libsolv-0.7.30 ]; then
+                git clone --branch 0.7.30 --depth 1 https://github.com/openSUSE/libsolv.git /sources/libsolv-0.7.30
+              else
+                git -C /sources/libsolv-0.7.30 pull --ff-only
+              fi
 
             cd /sources/libsolv-0.7.30
             mkdir -p build
@@ -3552,6 +3554,7 @@ jenkins_jobs:
             make install
             ldconfig
             cd /sources
+            fi
           fi
 
           cd /sources/libdnf-0.69.0
