@@ -3591,50 +3591,12 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
-          set -e
-
-          # libdnf needs LibSolv CMake config. Build libsolv if missing.
-          cd /sources
-          if ! find /usr -type f \( -name LibSolvConfig.cmake -o -name libsolv-config.cmake \) 2>/dev/null | grep -q .; then
-            if [ ! -d /sources/libsolv-0.7.30 ]; then
-              git clone --branch 0.7.30 --depth 1 https://github.com/openSUSE/libsolv.git /sources/libsolv-0.7.30
-            else
-              git -C /sources/libsolv-0.7.30 pull --ff-only || true
-            fi
-
-            cd /sources/libsolv-0.7.30
-            mkdir -p build
-            cd build
-            /usr/bin/cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_STATIC=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-            make
-            make install
-            ldconfig
-            cd /sources
-          fi
-
-          LIBSOLV_CONFIG=$(find /usr -type f \( -name LibSolvConfig.cmake -o -name libsolv-config.cmake \) 2>/dev/null | head -n 1)
-          if [ -z "$LIBSOLV_CONFIG" ]; then
-            echo "ERROR: LibSolvConfig.cmake not found after libsolv build/install" >&2
-            exit 1
-          fi
-          LIBSOLV_DIR=$(dirname "$LIBSOLV_CONFIG")
-
-          if [ ! -d /sources/libdnf-0.69.0 ]; then
-            git clone --branch 0.69.0 --depth 1 https://github.com/rpm-software-management/libdnf.git /sources/libdnf-0.69.0
-          else
-            git -C /sources/libdnf-0.69.0 pull --ff-only || true
-          fi
-
           cd /sources/libdnf-0.69.0
-          if grep -q "cmake_policy(SET CMP0005 OLD)" CMakeLists.txt; then
-            sed -i "s/cmake_policy(SET CMP0005 OLD)/cmake_policy(SET CMP0005 NEW)/" CMakeLists.txt
-          fi
           mkdir -p build
           cd build
-          /usr/bin/cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DLibSolv_DIR="$LIBSOLV_DIR" -DCMAKE_PREFIX_PATH="$(dirname "$LIBSOLV_DIR")" -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+          cmake .. -DPYTHON_DESIRED=3
           make
           make install
-          ldconfig
         '
 
     - name: 0117 - dnf (Basic System Software) OPTIONAL
@@ -3651,25 +3613,12 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
-          if ! /usr/bin/python3 -c "import libdnf" >/dev/null 2>&1; then
-            echo "ERROR: python3 cannot import libdnf. Build/install libdnf and python3-libdnf first." >&2
-            
-            exit 1
-          fi
-
           cd /sources/dnf-4.14.0
-          git config --global --add safe.directory /sources/dnf-4.14.0
-          mkdir -p build
-          cd build
-          /usr/bin/cmake .. -DPYTHON_DESIRED:FILEPATH=/usr/bin/python3 -DCMAKE_INSTALL_PREFIX=/usr -DWITH_MAN=0 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+          mkdir build;
+          pushd build;
+          cmake .. -DPYTHON_DESIRED="3"
           make
-          make install
-
-          if [ -x /usr/bin/dnf-3 ]; then
-            ln -sf /usr/bin/dnf-3 /usr/bin/dnf
-          fi
-
-          /usr/bin/python3 -c "import dnf, libdnf; print(\"dnf/libdnf import OK\")"
+          popd
         '
 
   system_configuration:
