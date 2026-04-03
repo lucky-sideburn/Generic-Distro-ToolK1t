@@ -3519,6 +3519,31 @@ jenkins_jobs:
           make install 
         '
 
+    - name: 0116B - PCRE2 (Basic System Software) OPTIONAL
+      version: pcre2-10.40
+      archive_file: false
+      source_dir: /sources/pcre2-10.40
+      git_url: https://github.com/PCRE2Project/pcre2.git
+      git_branch: pcre2-10.40
+      description: |
+        PCRE2 is a library that implements Perl-compatible regular expressions. This job builds PCRE2, which is useful for tools and applications requiring advanced pattern matching.
+      category:
+        This job is part of the basic system software setup, specifically for building PCRE2.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/pcre2-10.40
+          ./configure --prefix=/usr           \
+                --docdir=/usr/share/doc/pcre2-10.40 \
+                --enable-unicode        \
+                --enable-jit            \
+                --enable-pcre2-16       \
+                --enable-pcre2-32
+          make
+          make install
+        '
+
     - name: 0116A - Swig (Basic System Software) OPTIONAL
       version: 4.0.2
       archive_file: https://sourceforge.net/projects/swig/files/swig/swig-4.0.2/swig-4.0.2.tar.gz
