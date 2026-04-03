@@ -3575,9 +3575,114 @@ jenkins_jobs:
         {{ chroot_start_command }} -c '
           cd /sources/yaml
           ./bootstrap
-          ./configure
+          ./configure --prefix=/usr --disable-static
           make
           make install
+          ldconfig
+        '
+
+    - name: 0116A001 - popt (Basic System Software) OPTIONAL
+      version: 1.19
+      archive_file: false
+      git_url: https://github.com/rpm-software-management/popt.git
+      git_branch: popt-1.19-release
+      source_dir: /sources/popt-1.19
+      description: |
+        popt is a C library for parsing command line parameters. This job builds popt,
+        which is required by rpm and other components.
+      category:
+        This job is part of the basic system software setup, specifically for building popt.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/popt
+          autoreconf -fiv
+          ./configure --prefix=/usr --disable-static
+          make
+          make install
+          ldconfig
+        '
+
+    - name: 0116A002 - sqlite3 (Basic System Software) OPTIONAL
+      version: 3.45.1
+      archive_file: false
+      git_url: https://github.com/sqlite/sqlite.git
+      git_branch: version-3.45.1
+      source_dir: /sources/sqlite-3.45.1
+      description: |
+        SQLite is a self-contained, serverless SQL database engine. This job builds sqlite3,
+        which is required by rpm and other components.
+      category:
+        This job is part of the basic system software setup, specifically for building sqlite3.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/sqlite
+          ./configure --prefix=/usr \
+            --disable-static \
+            --enable-fts5 \
+            CPPFLAGS="-DSQLITE_ENABLE_FTS3=1 \
+                      -DSQLITE_ENABLE_FTS4=1 \
+                      -DSQLITE_ENABLE_COLUMN_METADATA=1 \
+                      -DSQLITE_ENABLE_UNLOCK_NOTIFY=1 \
+                      -DSQLITE_ENABLE_DBSTAT_VTAB=1 \
+                      -DSQLITE_SECURE_DELETE=1"
+          make
+          make install
+          ldconfig
+        '
+
+    - name: 0116A003 - lua (Basic System Software) OPTIONAL
+      version: 5.4.6
+      archive_file: https://www.lua.org/ftp/lua-5.5.0.tar.gz
+      source_dir: /sources/lua-5.4.6
+      description: |
+        Lua is a lightweight embeddable scripting language. This job builds lua,
+        which is required by rpm.
+      category:
+        This job is part of the basic system software setup, specifically for building lua.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/lua
+          make all test
+          make install
+        '
+
+    - name: 0116A004 - rpm (Basic System Software) OPTIONAL
+      version: 4.16.1.3
+      archive_file: false
+      git_url: https://github.com/rpm-software-management/rpm.git
+      git_branch: rpm-4.16.1.3-release
+      source_dir: /sources/rpm-4.16.1.3
+      description: |
+        RPM is a powerful package management system. This job builds librpm and
+        its development headers, required by libdnf and other components that
+        interact with the RPM package database.
+      category:
+        This job is part of the basic system software setup, specifically for building rpm.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/rpm
+          mkdir -p build && cd build
+          cmake .. \
+            -DCMAKE_INSTALL_PREFIX=/usr \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DRPM_CONFIGDIR=/usr/lib/rpm \
+            -DWITH_CRYPTO=openssl \
+            -DENABLE_NLS=ON \
+            -DENABLE_PYTHON=OFF \
+            -DENABLE_PLUGINS=ON \
+            -DWITH_ARCHIVE=OFF \
+            -DENABLE_OPENMP=OFF
+          make
+          make install
+          ldconfig
         '
 
     - name: 0116A00 - libmodulemd (Basic System Software) OPTIONAL
