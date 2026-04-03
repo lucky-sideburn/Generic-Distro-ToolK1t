@@ -3519,6 +3519,26 @@ jenkins_jobs:
           make install 
         '
 
+    - name: 0116A - Swig (Basic System Software) OPTIONAL
+      version: 4.2.1
+      git_url: https://github.com/swig/swig.git
+      archive_file: /sources/swig-4.2.1.tar.gz
+      source_dir: /sources/swig-4.2.1
+      description: |
+       SWIG is a tool that connects C/C++ programs with various high-level languages. This job builds SWIG, which is required by some package builds in the LFS environment.
+      category:
+       This job is part of the basic system software setup, specifically for building SWIG.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/swig-4.2.1
+          ./configure --prefix=/usr --without-java --without-ocaml --without-ruby --without-php
+          make
+          make install
+          swig -version
+        '
+
     - name: 0116A0 - json-c (Basic System Software) OPTIONAL
       version: 0.18
       archive_file: /sources/json-c-0.18.tar.gz
