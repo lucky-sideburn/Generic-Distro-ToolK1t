@@ -259,79 +259,106 @@
 
 - name: Download lfs_extra_archives archive files if not exists
   ansible.builtin.get_url:
-    url: "{{ lfs_repo_url }}/{{ item | basename }}"
+    url: "{{ (item if (item | string | regex_search('^https?://')) else (lfs_repo_url ~ '/' ~ (item | basename))) }}"
     dest: /mnt/lfs/sources/{{ item | basename }}
     owner: jenkins
     group: jenkins
     mode: '0644'
     force: no
   loop: "{{ lfs_extra_archives}}"
-  when: jenkins_download_lfs_archives | bool
+  when:
+    - jenkins_download_lfs_archives | bool
+    - (item | string | lower) != 'false'
+    - (item | string | length) > 0
 
 - name: Download cross_toolchain archive files if not exists
   ansible.builtin.get_url:
-    url: "{{ lfs_repo_url }}/{{ item.archive_file | basename }}"
+    url: "{{ ((item.archive_file | string) if (item.archive_file | string | regex_search('^https?://')) else (lfs_repo_url ~ '/' ~ (item.archive_file | basename))) }}"
     dest: /mnt/lfs/sources/{{ item.archive_file | basename }}
     owner: jenkins
     group: jenkins
     mode: '0644'
     force: no
   loop: "{{ jenkins_jobs.cross_toolchain }}"
-  when: jenkins_download_lfs_archives | bool
+  when:
+    - jenkins_download_lfs_archives | bool
+    - item.archive_file is defined
+    - (item.archive_file | string | lower) != 'false'
+    - (item.archive_file | string | length) > 0
 
 - name: Download cross_compiling_temporary_tools archive files
   ansible.builtin.get_url:
-    url: "{{ lfs_repo_url }}/{{ item.archive_file | basename }}"
+    url: "{{ ((item.archive_file | string) if (item.archive_file | string | regex_search('^https?://')) else (lfs_repo_url ~ '/' ~ (item.archive_file | basename))) }}"
     dest: /mnt/lfs/sources/
     owner: jenkins
     group: jenkins
     mode: '0644'
     force: no
   loop: "{{ jenkins_jobs.cross_compiling_temporary_tools }}"
-  when: jenkins_download_lfs_archives | bool
+  when:
+    - jenkins_download_lfs_archives | bool
+    - item.archive_file is defined
+    - (item.archive_file | string | lower) != 'false'
+    - (item.archive_file | string | length) > 0
 
 - name: Download chroot_and_building_additional_temporary_tools archive files
   ansible.builtin.get_url:
-    url: "{{ lfs_repo_url }}/{{ item.archive_file | basename }}"
+    url: "{{ ((item.archive_file | string) if (item.archive_file | string | regex_search('^https?://')) else (lfs_repo_url ~ '/' ~ (item.archive_file | basename))) }}"
     dest: /mnt/lfs/sources/
     owner: jenkins
     group: jenkins
     mode: '0644'
   loop: "{{ jenkins_jobs.chroot_and_building_additional_temporary_tools }}"
-  when: jenkins_download_lfs_archives | bool
+  when:
+    - jenkins_download_lfs_archives | bool
+    - item.archive_file is defined
+    - (item.archive_file | string | lower) != 'false'
+    - (item.archive_file | string | length) > 0
 
 - name: Download basic_system_software archive files
   ansible.builtin.get_url:
-    url: "{{ lfs_repo_url }}/{{ item.archive_file | basename }}"
+    url: "{{ ((item.archive_file | string) if (item.archive_file | string | regex_search('^https?://')) else (lfs_repo_url ~ '/' ~ (item.archive_file | basename))) }}"
     dest: /mnt/lfs/sources/
     owner: jenkins
     group: jenkins
     mode: '0644'
     force: no
   loop: "{{ jenkins_jobs.basic_system_software }}"
-  when: jenkins_download_lfs_archives | bool
+  when:
+    - jenkins_download_lfs_archives | bool
+    - item.archive_file is defined
+    - (item.archive_file | string | lower) != 'false'
+    - (item.archive_file | string | length) > 0
 
 - name: Download system_configuration archive files
   ansible.builtin.get_url:
-    url: "{{ lfs_repo_url }}/{{ item.archive_file | basename }}"
+    url: "{{ ((item.archive_file | string) if (item.archive_file | string | regex_search('^https?://')) else (lfs_repo_url ~ '/' ~ (item.archive_file | basename))) }}"
     dest: /mnt/lfs/sources/
     owner: jenkins
     group: jenkins
     mode: '0644'
     force: no
   loop: "{{ jenkins_jobs.system_configuration }}"
-  when: jenkins_download_lfs_archives | bool
+  when:
+    - jenkins_download_lfs_archives | bool
+    - item.archive_file is defined
+    - (item.archive_file | string | lower) != 'false'
+    - (item.archive_file | string | length) > 0
 
 - name: Download containers archive files
   ansible.builtin.get_url:
-    url: "{{ lfs_repo_url }}/{{ item.archive_file | basename }}"
+    url: "{{ ((item.archive_file | string) if (item.archive_file | string | regex_search('^https?://')) else (lfs_repo_url ~ '/' ~ (item.archive_file | basename))) }}"
     dest: /mnt/lfs/sources/
     owner: jenkins
     group: jenkins
     mode: '0644'
     force: no
   loop: "{{ jenkins_jobs.containers }}"
-  when: jenkins_download_lfs_archives | bool
+  when:
+    - jenkins_download_lfs_archives | bool
+    - item.archive_file is defined
+    - (item.archive_file | string | lower) != 'false'
+    - (item.archive_file | string | length) > 0
 
 - name: Copy Kernel Configs
   include_tasks: kernel_configs.yml
