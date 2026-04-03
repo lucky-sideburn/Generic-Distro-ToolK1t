@@ -3559,6 +3559,27 @@ jenkins_jobs:
           make install
         '
 
+    - name: 0116A000 - yaml (Basic System Software) OPTIONAL
+      version: 0.2.5
+      archive_file: false
+      git_url: https://github.com/yaml/libyaml.git
+      git_branch: 0.2.5
+      source_dir: /sources/yaml-0.2.5
+      description: |
+       LibYAML is a C library for parsing and emitting YAML. This job builds libyaml, which is required by components that process YAML metadata.
+      category:
+       This job is part of the basic system software setup, specifically for building libyaml.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/yaml
+          ./bootstrap
+          ./configure
+          make
+          make install
+        '
+
     - name: 0116A00 - libmodulemd (Basic System Software) OPTIONAL
       version: 2.15.0
       archive_file: false
@@ -3574,8 +3595,6 @@ jenkins_jobs:
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/libmodulemd-2.15.0
-          mkdir -p build
-          cd build
           meson --buildtype=debug -Db_coverage=true debugbuild
           ninja
           ninja install

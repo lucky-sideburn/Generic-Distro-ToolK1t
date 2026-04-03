@@ -84,8 +84,12 @@
             cd "{{ item.source_dir | basename }}"
             git checkout {{ item.git_branch | default('main') }}
           elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
-              if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
-                curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+              if [ ! -f "{{ (item.archive_file | string) | basename }}" ]; then
+                if echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                elif [ -n "{{ lfs_repo_url | default('') }}" ]; then
+                  curl -fL "{{ lfs_repo_url | default('') }}/{{ (item.archive_file | string) | basename }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
               fi
               tar -xvf {{ (item.archive_file | string) | basename }}
               cd "{{ item.source_dir | basename }}"
@@ -154,9 +158,17 @@
             git checkout {{ item.git_branch | default('main') }}
           else
       
-          if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+          if [ ! -f "{{ (item.archive_file | string) | basename }}" ]; then
       
-            curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+            if echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+      
+              curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+      
+            elif [ -n "{{ lfs_repo_url | default('') }}" ]; then
+      
+              curl -fL "{{ lfs_repo_url | default('') }}/{{ (item.archive_file | string) | basename }}" -o "{{ (item.archive_file | string) | basename }}"
+      
+            fi
       
           fi
       
@@ -223,8 +235,12 @@
             cd "{{ item.source_dir | basename }}"
             git checkout {{ item.git_branch | default('main') }}
           elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
-              if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
-                curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+              if [ ! -f "{{ (item.archive_file | string) | basename }}" ]; then
+                if echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                elif [ -n "{{ lfs_repo_url | default('') }}" ]; then
+                  curl -fL "{{ lfs_repo_url | default('') }}/{{ (item.archive_file | string) | basename }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
               fi
               tar -xvf {{ (item.archive_file | string) | basename }}
               cd "{{ item.source_dir | basename }}"
@@ -291,8 +307,12 @@
             cd "{{ item.source_dir | basename }}"
             git checkout {{ item.git_branch | default('main') }}
           elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
-              if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
-                curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+              if [ ! -f "{{ (item.archive_file | string) | basename }}" ]; then
+                if echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                elif [ -n "{{ lfs_repo_url | default('') }}" ]; then
+                  curl -fL "{{ lfs_repo_url | default('') }}/{{ (item.archive_file | string) | basename }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
               fi
               tar -xvf {{ (item.archive_file | string) | basename }}
               cd "{{ item.source_dir | basename }}"
@@ -359,8 +379,12 @@
             cd "{{ item.source_dir | basename }}"
             git checkout {{ item.git_branch | default('main') }}
           elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
-              if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
-                curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+              if [ ! -f "{{ (item.archive_file | string) | basename }}" ]; then
+                if echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                elif [ -n "{{ lfs_repo_url | default('') }}" ]; then
+                  curl -fL "{{ lfs_repo_url | default('') }}/{{ (item.archive_file | string) | basename }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
               fi
               tar -xvf {{ (item.archive_file | string) | basename }}
               cd "{{ item.source_dir | basename }}"
@@ -431,8 +455,12 @@
             cd "{{ item.source_dir | basename }}"
             git checkout {{ item.git_branch | default('main') }}
           elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
-              if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
-                curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+              if [ ! -f "{{ (item.archive_file | string) | basename }}" ]; then
+                if echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                elif [ -n "{{ lfs_repo_url | default('') }}" ]; then
+                  curl -fL "{{ lfs_repo_url | default('') }}/{{ (item.archive_file | string) | basename }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
               fi
               tar -xvf {{ (item.archive_file | string) | basename }}
               cd "{{ item.source_dir | basename }}"
@@ -506,8 +534,12 @@
             cd "{{ item.source_dir | basename }}"
             git checkout {{ item.git_branch | default('main') }}
           elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
-              if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
-                curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+              if [ ! -f "{{ (item.archive_file | string) | basename }}" ]; then
+                if echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                elif [ -n "{{ lfs_repo_url | default('') }}" ]; then
+                  curl -fL "{{ lfs_repo_url | default('') }}/{{ (item.archive_file | string) | basename }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
               fi
               tar -xvf {{ (item.archive_file | string) | basename }}
               cd "{{ item.source_dir | basename }}"
@@ -581,8 +613,12 @@
             cd "{{ item.source_dir | basename }}"
             git checkout {{ item.git_branch | default('main') }}
           elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
-              if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
-                curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+              if [ ! -f "{{ (item.archive_file | string) | basename }}" ]; then
+                if echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                elif [ -n "{{ lfs_repo_url | default('') }}" ]; then
+                  curl -fL "{{ lfs_repo_url | default('') }}/{{ (item.archive_file | string) | basename }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
               fi
               tar -xvf {{ (item.archive_file | string) | basename }}
               cd "{{ item.source_dir | basename }}"
@@ -654,8 +690,12 @@
             cd "{{ item.source_dir | basename }}"
             git checkout {{ item.git_branch | default('main') }}
           elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
-              if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
-                curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+              if [ ! -f "{{ (item.archive_file | string) | basename }}" ]; then
+                if echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                elif [ -n "{{ lfs_repo_url | default('') }}" ]; then
+                  curl -fL "{{ lfs_repo_url | default('') }}/{{ (item.archive_file | string) | basename }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
               fi
               tar -xvf {{ (item.archive_file | string) | basename }}
               cd "{{ item.source_dir | basename }}"
@@ -728,9 +768,17 @@
             git checkout {{ item.git_branch | default('main') }}
           else
       
-          if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+          if [ ! -f "{{ (item.archive_file | string) | basename }}" ]; then
       
-            curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+            if echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+      
+              curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+      
+            elif [ -n "{{ lfs_repo_url | default('') }}" ]; then
+      
+              curl -fL "{{ lfs_repo_url | default('') }}/{{ (item.archive_file | string) | basename }}" -o "{{ (item.archive_file | string) | basename }}"
+      
+            fi
       
           fi
       
@@ -805,9 +853,17 @@
             git checkout {{ item.git_branch | default('main') }}
           else
       
-          if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+          if [ ! -f "{{ (item.archive_file | string) | basename }}" ]; then
       
-            curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+            if echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+      
+              curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+      
+            elif [ -n "{{ lfs_repo_url | default('') }}" ]; then
+      
+              curl -fL "{{ lfs_repo_url | default('') }}/{{ (item.archive_file | string) | basename }}" -o "{{ (item.archive_file | string) | basename }}"
+      
+            fi
       
           fi
       
@@ -882,9 +938,17 @@
             git checkout {{ item.git_branch | default('main') }}
           else
       
-          if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+          if [ ! -f "{{ (item.archive_file | string) | basename }}" ]; then
       
-            curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+            if echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+      
+              curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+      
+            elif [ -n "{{ lfs_repo_url | default('') }}" ]; then
+      
+              curl -fL "{{ lfs_repo_url | default('') }}/{{ (item.archive_file | string) | basename }}" -o "{{ (item.archive_file | string) | basename }}"
+      
+            fi
       
           fi
       
@@ -959,9 +1023,17 @@
             git checkout {{ item.git_branch | default('main') }}
           else
       
-          if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+          if [ ! -f "{{ (item.archive_file | string) | basename }}" ]; then
       
-            curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+            if echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+      
+              curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+      
+            elif [ -n "{{ lfs_repo_url | default('') }}" ]; then
+      
+              curl -fL "{{ lfs_repo_url | default('') }}/{{ (item.archive_file | string) | basename }}" -o "{{ (item.archive_file | string) | basename }}"
+      
+            fi
       
           fi
       
@@ -1036,9 +1108,17 @@
             git checkout {{ item.git_branch | default('main') }}
           else
       
-          if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+          if [ ! -f "{{ (item.archive_file | string) | basename }}" ]; then
       
-            curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+            if echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+      
+              curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+      
+            elif [ -n "{{ lfs_repo_url | default('') }}" ]; then
+      
+              curl -fL "{{ lfs_repo_url | default('') }}/{{ (item.archive_file | string) | basename }}" -o "{{ (item.archive_file | string) | basename }}"
+      
+            fi
       
           fi
       
