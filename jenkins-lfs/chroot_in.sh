@@ -1,3 +1,5 @@
+#!/bin/bash
+
 sudo chroot "$LFS" /usr/bin/env -i   \
     HOME=/root                  \
     TERM="$TERM"                \
