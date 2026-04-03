@@ -3519,6 +3519,64 @@ jenkins_jobs:
           make install 
         '
 
+    - name: 0116A0 - json-c (Basic System Software) OPTIONAL
+      version: 0.18
+      archive_file: /sources/json-c-0.18.tar.gz
+      git_url: https://github.com/json-c/json-c.git
+      git_branch: json-c-0.18
+      source_dir: /sources/json-c-0.18
+      description: |
+        json-c is a C library for working with JSON data. This job builds json-c, which is required by components such as libdnf in the LFS environment.
+      category:
+        This job is part of the system configuration setup, specifically for building json-c before libdnf and dnf.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/json-c-0.18
+          mkdir -p build
+          cd build
+          cmake ..                          \
+          -DCMAKE_INSTALL_PREFIX=/usr     \
+          -DCMAKE_BUILD_TYPE=Release      \
+          -DBUILD_STATIC_LIBS=OFF
+          make
+          make install
+        '
+    - name: 0116A1 - libsolv (Basic System Software) OPTIONAL
+      version: 0.7.30
+      archive_file: false
+      source_dir: /sources/libsolv-0.7.30
+      git_url: https://github.com/openSUSE/libsolv.git
+      git_branch: 0.7.30
+      description: |
+      Libsolv is a package dependency solver library used by DNF and related RPM tooling. This job builds libsolv, which is required before building libdnf.
+      category:
+      This job is part of the system configuration setup, specifically for building libsolv before libdnf and dnf.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          set -e
+
+          if [ ! -d /sources/libsolv-0.7.30 ]; then
+          git clone --branch 0.7.30 --depth 1 https://github.com/openSUSE/libsolv.git /sources/libsolv-0.7.30
+          else
+          git -C /sources/libsolv-0.7.30 pull --ff-only || true
+          fi
+
+          cd /sources/libsolv-0.7.30
+          mkdir -p build
+          cd build
+          /usr/bin/cmake ..                       \
+          -DCMAKE_INSTALL_PREFIX=/usr           \
+          -DENABLE_STATIC=OFF                   \
+          -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+          make
+          make install
+          ldconfig
+        '
+
     - name: 0116A - libdnf bootstrap (Basic System Software) OPTIONAL
       version: 0.69.0
       archive_file: false
