@@ -3550,9 +3550,9 @@ jenkins_jobs:
       git_url: https://github.com/openSUSE/libsolv.git
       git_branch: 0.7.30
       description: |
-      Libsolv is a package dependency solver library used by DNF and related RPM tooling. This job builds libsolv, which is required before building libdnf.
+        Libsolv is a package dependency solver library used by DNF and related RPM tooling. This job builds libsolv, which is required before building libdnf.
       category:
-      This job is part of the system configuration setup, specifically for building libsolv before libdnf and dnf.
+        This job is part of the system configuration setup, specifically for building libsolv before libdnf and dnf.
       exec_command: echo
       build_tool: true
       build_command: |
