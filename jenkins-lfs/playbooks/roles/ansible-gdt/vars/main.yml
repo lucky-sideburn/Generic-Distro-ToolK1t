@@ -3519,6 +3519,7 @@ jenkins_jobs:
           make install 
         '
 
+    # TODO I think we can remove it because in Swig I use --without-pcre, but I will keep it for now
     - name: 0116B - PCRE2 (Basic System Software) OPTIONAL
       version: pcre2-10.40
       archive_file: false
@@ -3534,12 +3535,8 @@ jenkins_jobs:
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/pcre2-10.40
-          ./configure --prefix=/usr           \
-                --docdir=/usr/share/doc/pcre2-10.40 \
-                --enable-unicode        \
-                --enable-jit            \
-                --enable-pcre2-16       \
-                --enable-pcre2-32
+          ./autogen.sh
+          ./configure
           make
           make install
         '
@@ -3557,9 +3554,31 @@ jenkins_jobs:
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/swig-4.0.2
-          ./configure --prefix=/usr --without-maximum-compile-warnings
+          ./configure --prefix=/usr --without-maximum-compile-warnings --without-pcre
           make -j$(nproc)
           make install
+        '
+
+    - name: 0116A00 - libmodulemd (Basic System Software) OPTIONAL
+      version: 2.15.0
+      archive_file: false
+      source_dir: /sources/libmodulemd-2.15.0
+      git_url: https://github.com/fedora-modularity/libmodulemd.git
+      git_branch: 2.15.0
+      description: |
+       libmodulemd is a C library for parsing and validating module metadata files. This job builds libmodulemd, which is required by components such as libdnf and dnf.
+      category:
+       This job is part of the system configuration setup, specifically for building libmodulemd before libdnf and dnf.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/libmodulemd-2.15.0
+          mkdir -p build
+          cd build
+          meson --buildtype=debug -Db_coverage=true debugbuild
+          ninja
+          ninja install
         '
 
     - name: 0116A0 - json-c (Basic System Software) OPTIONAL
@@ -3637,7 +3656,7 @@ jenkins_jobs:
           cd /sources/libdnf-0.69.0
           mkdir -p build
           cd build
-          cmake .. -DPYTHON_DESIRED=3
+          cmake .. -DPYTHON_DESIRED=3 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
           make
           make install
         '
