@@ -82,6 +82,9 @@
                   cd "{{ item.source_dir | basename }}"
                   git checkout {{ item.git_branch | default('main') }}
                 elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                  if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                    curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                  fi
                   tar -xvf {{ (item.archive_file | string) | basename }}
                   cd "{{ item.source_dir | basename }}"
                 else
@@ -146,6 +149,9 @@
                   cd "{{ item.source_dir | basename }}"
                   git checkout {{ item.git_branch | default('main') }}
                 elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                  if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                    curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                  fi
                   tar -xvf {{ (item.archive_file | string) | basename }}
                   cd "{{ item.source_dir | basename }}"
                 else
@@ -209,6 +215,9 @@
                   cd "{{ item.source_dir | basename }}"
                   git checkout {{ item.git_branch | default('main') }}
                 elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                  if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                    curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                  fi
                   tar -xvf {{ (item.archive_file | string) | basename }}
                   cd "{{ item.source_dir | basename }}"
                 else
@@ -272,6 +281,9 @@
                   cd "{{ item.source_dir | basename }}"
                   git checkout {{ item.git_branch | default('main') }}
                 elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                  if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                    curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                  fi
                   tar -xvf {{ (item.archive_file | string) | basename }}
                   cd "{{ item.source_dir | basename }}"
                 else
@@ -335,6 +347,9 @@
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
               elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
                 tar -xvf {{ (item.archive_file | string) | basename }}
                 cd "{{ item.source_dir | basename }}"
               else
@@ -401,6 +416,9 @@
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
               elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
                 tar -xvf {{ (item.archive_file | string) | basename }}
                 cd "{{ item.source_dir | basename }}"
               else
@@ -468,6 +486,9 @@
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
               elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
                 tar -xvf {{ (item.archive_file | string) | basename }}
                 cd "{{ item.source_dir | basename }}"
               else
@@ -537,6 +558,9 @@
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
               elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
                 tar -xvf {{ (item.archive_file | string) | basename }}
                 cd "{{ item.source_dir | basename }}"
               else
@@ -605,6 +629,9 @@
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
               elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
                 tar -xvf {{ (item.archive_file | string) | basename }}
                 cd "{{ item.source_dir | basename }}"
               else
@@ -673,6 +700,9 @@
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
               elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
                 tar -xvf {{ (item.archive_file | string) | basename }}
                 cd "{{ item.source_dir | basename }}"
               else
@@ -742,6 +772,9 @@
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
               elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
                 tar -xvf {{ (item.archive_file | string) | basename }}
                 cd "{{ item.source_dir | basename }}"
               else
@@ -811,6 +844,9 @@
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
               elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
                 tar -xvf {{ (item.archive_file | string) | basename }}
                 cd "{{ item.source_dir | basename }}"
               else
@@ -880,6 +916,9 @@
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
               elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
                 tar -xvf {{ (item.archive_file | string) | basename }}
                 cd "{{ item.source_dir | basename }}"
               else
@@ -949,6 +988,9 @@
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
               elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
                 tar -xvf {{ (item.archive_file | string) | basename }}
                 cd "{{ item.source_dir | basename }}"
               else
@@ -1018,6 +1060,9 @@
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
               elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
                 tar -xvf {{ (item.archive_file | string) | basename }}
                 cd "{{ item.source_dir | basename }}"
               else
@@ -1087,6 +1132,9 @@
                 cd "{{ item.source_dir | basename }}"
                 git checkout {{ item.git_branch | default('main') }}
               elif [ "{{ item.archive_file | string | lower }}" != "false" ] &amp;&amp; [ -n "{{ item.archive_file | string }}" ]; then
+                if [ ! -f "{{ (item.archive_file | string) | basename }}" ] &amp;&amp; echo "{{ item.archive_file | string }}" | grep -Eq "^https?://"; then
+                  curl -fL "{{ item.archive_file | string }}" -o "{{ (item.archive_file | string) | basename }}"
+                fi
                 tar -xvf {{ (item.archive_file | string) | basename }}
                 cd "{{ item.source_dir | basename }}"
               else
