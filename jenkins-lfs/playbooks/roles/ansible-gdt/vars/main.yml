@@ -3635,9 +3635,9 @@ jenkins_jobs:
         '
 
     - name: 0116A003 - lua (Basic System Software) OPTIONAL
-      version: 5.5.0
-      archive_file: https://www.lua.org/ftp/lua-5.5.0.tar.gz
-      source_dir: /sources/lua-5.5.0
+      version: 5.4.6
+      archive_file: https://www.lua.org/ftp/lua-5.4.6.tar.gz
+      source_dir: /sources/lua-5.4.6
       description: |
         Lua is a lightweight embeddable scripting language. This job builds lua,
         which is required by rpm.
@@ -3647,10 +3647,23 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
-          tar -xf /sources/lua-5.5.0.tar.gz -C /sources
-          cd /sources/lua-5.5.0
+          tar -xf /sources/lua-5.4.6.tar.gz -C /sources
+          cd /sources/lua-5.4.6
           make all test
           make install
+          cat > /usr/lib/pkgconfig/lua.pc << EOF
+            prefix=/usr
+            exec_prefix=/usr
+            libdir=/usr/lib
+            includedir=/usr/include
+
+            Name: Lua
+            Description: An embeddable scripting language
+            Version: 5.4.6
+            Libs: -L\${libdir} -llua -lm -ldl
+            Cflags: -I\${includedir}
+          EOF
+          ldconfig
         '
 
     - name: 0116A004 - rpm (Basic System Software) OPTIONAL
@@ -3768,7 +3781,7 @@ jenkins_jobs:
       version: 4.16.1.3
       archive_file: false
       git_url: https://github.com/rpm-software-management/rpm.git
-      git_branch: 4.16.1.3
+      git_branch: rpm-4.16.1.3
       source_dir: /sources/rpm-4.16.1.3
       description: |
         RPM is a powerful package management system. This job builds librpm and
@@ -3781,20 +3794,12 @@ jenkins_jobs:
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/rpm-4.16.1.3
-          mkdir -p build
-          cd build
-          cmake .. \
-            -DCMAKE_INSTALL_PREFIX=/usr \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DRPM_CONFIGDIR=/usr/lib/rpm \
-            -DWITH_CRYPTO=openssl \
-            -DENABLE_NLS=ON \
-            -DENABLE_PYTHON=OFF \
-            -DENABLE_PLUGINS=ON \
-            -DWITH_ARCHIVE=OFF \
-            -DENABLE_OPENMP=OFF
-          make
-          make install
+          ./configure --prefix=/usr \
+              --with-crypto=openssl \
+              --disable-bdb \
+              --without-archive \
+              --disable-plugins
+          
           ldconfig
         '
 
