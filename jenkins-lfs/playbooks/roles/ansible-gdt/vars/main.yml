@@ -3780,7 +3780,7 @@ jenkins_jobs:
           make
           make install
           ldconfig
-        '
+      '
   
     - name: 0116A006 - librepo (Basic System Software) OPTIONAL
       version: 1.14.5
