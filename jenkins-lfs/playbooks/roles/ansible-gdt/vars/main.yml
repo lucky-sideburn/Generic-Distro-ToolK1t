@@ -3759,13 +3759,35 @@ jenkins_jobs:
           ldconfig
         '
 
-   
-    - name: 0116A006 - librepo
-      version: 1.15.0
+    - name: 0116A005 - zchunk (Basic System Software) OPTIONAL
+      version: 1.5.1
+      archive_file: false
+      git_url: https://github.com/zchunk/zchunk.git
+      git_branch: 1.5.1
+      source_dir: /sources/zchunk-1.5.1
+      description: |
+        Build and install zchunk from source in the chroot environment. Zchunk is a compression format and library for delta updates, used by DNF and related tools to optimize package downloads.
+      category:
+        This job is part of the basic system software setup, specifically for building zchunk.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/zchunk-1.5.1
+          mkdir build
+          cd build/
+          cmake .. -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || exit 1
+          make
+          make install
+          ldconfig
+        '
+  
+    - name: 0116A006 - librepo (Basic System Software) OPTIONAL
+      version: 1.14.5
       archive_file: false
       git_url: https://github.com/rpm-software-management/librepo.git
-      git_branch: 1.15.0
-      source_dir: /sources/librepo-1.15.0
+      git_branch: 1.14.5
+      source_dir: /sources/librepo-1.14.5
       description: |
         Build and install librepo from source in the chroot environment. Librepo is a library
         for downloading and managing repository metadata, used by DNF and related tools.
@@ -3775,14 +3797,14 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
-          cd /sources/librepo-1.15.0
-          mkdir build
-          cd build/
-          cmake ..
-          make
-          make install
-          ldconfig
-        '
+        cd /sources/librepo-1.14.5
+        mkdir build
+        cd build/
+        cmake .. -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || exit 1
+        make
+        make install
+        ldconfig
+      '
   
     - name: 0116A00 - libmodulemd (Basic System Software) OPTIONAL
       version: 2.15.0
