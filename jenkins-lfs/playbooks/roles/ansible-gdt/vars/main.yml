@@ -3781,7 +3781,8 @@ jenkins_jobs:
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/rpm
-          mkdir -p build && cd build
+          mkdir -p build
+          cd build
           cmake .. \
             -DCMAKE_INSTALL_PREFIX=/usr \
             -DCMAKE_BUILD_TYPE=Release \
