@@ -3723,9 +3723,9 @@ jenkins_jobs:
       archive_file: https://download.gnome.org/sources/gobject-introspection/1.68/gobject-introspection-1.68.0.tar.xz
       source_dir: /sources/gobject-introspection-1.68.0
       description: |
-      Build and install gobject-introspection from source in the chroot environment.
+        Build and install gobject-introspection from source in the chroot environment.
       category:
-      This job is part of the basic system software setup, specifically for building gobject-introspection.
+        This job is part of the basic system software setup, specifically for building gobject-introspection.
       exec_command: echo
       build_tool: true
       build_command: |
