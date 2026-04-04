@@ -3651,18 +3651,6 @@ jenkins_jobs:
           cd /sources/lua-5.4.6
           make all test
           make install
-          cat > /usr/lib/pkgconfig/lua.pc << EOF
-            prefix=/usr
-            exec_prefix=/usr
-            libdir=/usr/lib
-            includedir=/usr/include
-
-            Name: Lua
-            Description: An embeddable scripting language
-            Version: 5.4.6
-            Libs: -L\${libdir} -llua -lm -ldl
-            Cflags: -I\${includedir}
-          EOF
           ldconfig
         '
 
