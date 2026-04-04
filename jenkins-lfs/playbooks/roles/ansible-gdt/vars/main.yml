@@ -3732,9 +3732,24 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
+          cd /sources
+          rm -rf  /sources/rocky-gobject-introspection
+          git clone -b r9 --single-branch https://git.rockylinux.org/staging/rpms/gobject-introspection.git rocky-gobject-introspection
           cd /sources/gobject-introspection-1.68.0
+
+          for p in  ../rocky-gobject-introspection/SOURCES/*.patch; do
+            if [ -f "$p" ]; then
+              echo "Applicazione della patch: $p"
+              patch -Np1 --batch --fuzz=0 -i "$p" || { echo "Patch $p failed!"; exit 1; }
+            fi
+          done
+          sed -i "s/^from distutils.msvccompiler import MSVCCompiler/try:\n    from distutils.msvccompiler import MSVCCompiler\nexcept ImportError:\n    class MSVCCompiler:\n        pass/" \
+          giscanner/ccompiler.py
           mkdir -p build
           cd build
+          export SETUPTOOLS_USE_DISTUTILS=local
+   
+    
           meson setup .. \
             --prefix=/usr \
             --buildtype=release \
@@ -3744,6 +3759,31 @@ jenkins_jobs:
           ldconfig
         '
 
+   
+    - name: 0116A006 - librepo
+      version: 1.15.0
+      archive_file: false
+      git_url: https://github.com/rpm-software-management/librepo.git
+      git_branch: 1.15.0
+      source_dir: /sources/librepo-1.15.0
+      description: |
+        Build and install librepo from source in the chroot environment. Librepo is a library
+        for downloading and managing repository metadata, used by DNF and related tools.
+      category:
+        This job is part of the basic system software setup, specifically for building librepo.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/librepo-1.15.0
+          mkdir build
+          cd build/
+          cmake ..
+          make
+          make install
+          ldconfig
+        '
+  
     - name: 0116A00 - libmodulemd (Basic System Software) OPTIONAL
       version: 2.15.0
       archive_file: false
@@ -3760,9 +3800,20 @@ jenkins_jobs:
         {{ chroot_start_command }} -c '
           cd /sources/libmodulemd-2.15.0
           # TODO: check with_docs=false, it seems to be required to avoid a build failure due to missing documentation dependencies, but we should verify if it's possible to build the docs without those dependencies or if we need to add them to the build environment
-          meson --buildtype=debug -Db_coverage=true debugbuild -Dwith_docs=false
+          cd /sources/libmodulemd-2.15.0 || exit 1
+          rm -rf build
+          mkdir -p build
+          cd build
+          
+          meson setup .. \
+            --prefix=/usr \
+            --buildtype=release \
+            -Dwith_py3=false \
+            -Dwith_docs=false
+
           ninja
           ninja install
+
         '
 
     - name: 0116A0 - json-c (Basic System Software) OPTIONAL
@@ -8310,11 +8361,11 @@ jenkins_jobs:
       version: 1.68.0
       archive_file: ""
       source_dir: /sources
-      source_repo: https://gitlab.com/redhat/centos-stream/rpms/gobject-introspection.git
+      source_repo: https://git.rockylinux.org/staging/rpms/gobject-introspection.git
       description: |
-        Build gobject-introspection from CentOS Stream RPM sources and install resulting RPM artifacts.
+        Build gobject-introspection from Rocky Linux r9 RPM sources and install resulting RPM artifacts.
       category:
-        This job compiles source from CentOS Stream RPM git and installs rebuilt EL9 artifacts for gobject-introspection.
+        This job compiles source from Rocky Linux r9 RPM git and installs rebuilt EL9 artifacts for gobject-introspection.
       exec_command: echo
       build_tool: true
       build_command: |
@@ -8324,18 +8375,24 @@ jenkins_jobs:
           cd /sources/centos-stream-rpms
           dnf install -y git rpm-build rpmdevtools dnf-plugins-core
           if [ ! -d gobject-introspection ]; then
-            git clone --depth 1 https://gitlab.com/redhat/centos-stream/rpms/gobject-introspection.git
+            git clone --depth 1 --branch r9 https://git.rockylinux.org/staging/rpms/gobject-introspection.git
           else
-            git -C gobject-introspection pull --ff-only
+            git -C gobject-introspection fetch --depth 1 origin r9
+            git -C gobject-introspection checkout -B r9 origin/r9
           fi
           SPEC_FILE=$(find gobject-introspection -type f -name "*.spec" | head -n 1)
           if [ -z "$SPEC_FILE" ]; then
             echo "ERROR: no spec file found for gobject-introspection"
             exit 1
           fi
-          spectool -g -R "$SPEC_FILE"
+          if [ -d gobject-introspection/SOURCES ]; then
+            SOURCE_DIR="/sources/centos-stream-rpms/gobject-introspection/SOURCES"
+          else
+            SOURCE_DIR="/sources/centos-stream-rpms/gobject-introspection"
+          fi
+          spectool -g -R --define "_sourcedir $SOURCE_DIR" "$SPEC_FILE"
           dnf builddep -y "$SPEC_FILE"
-          rpmbuild -ba "$SPEC_FILE"
+          rpmbuild -ba --define "_sourcedir $SOURCE_DIR" "$SPEC_FILE"
           RPMS=$(find /root/rpmbuild/RPMS -type f -name "*.rpm" ! -name "*debuginfo*" ! -name "*debugsource*")
           if [ -z "$RPMS" ]; then
             echo "ERROR: rpmbuild produced no installable RPMs for gobject-introspection"
