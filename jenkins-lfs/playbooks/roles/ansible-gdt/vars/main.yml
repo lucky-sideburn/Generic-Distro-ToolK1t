@@ -3649,8 +3649,11 @@ jenkins_jobs:
         {{ chroot_start_command }} -c '
           tar -xf /sources/lua-5.4.6.tar.gz -C /sources
           cd /sources/lua-5.4.6
-          make all test
-          make install
+          make clean
+          make INSTALL_TOP=/usr \
+              MYCFLAGS="-fPIC" \
+              linux
+          make INSTALL_TOP=/usr install
           ldconfig
         '
 
@@ -3670,20 +3673,73 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
-          cd /sources/rpm
-          mkdir -p build && cd build
-          cmake .. \
-            -DCMAKE_INSTALL_PREFIX=/usr \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DRPM_CONFIGDIR=/usr/lib/rpm \
-            -DWITH_CRYPTO=openssl \
-            -DENABLE_NLS=ON \
-            -DENABLE_PYTHON=OFF \
-            -DENABLE_PLUGINS=ON \
-            -DWITH_ARCHIVE=OFF \
-            -DENABLE_OPENMP=OFF
-          make
+
+          mkdir -p /usr/lib/pkgconfig
+
+          # TODO: We should ideally generate these .pc files from the rpm build system, but for now we can just create them manually to satisfy the dependencies of libdnf and other components.
+          # TODO: Understand why EOF doesn't work here, it should be possible to use it instead of multiple printf statements
+          /usr/bin/printf "%s\n" \
+          "prefix=/usr" \
+          "exec_prefix=/usr" \
+          "libdir=/usr/lib" \
+          "includedir=/usr/include" \
+          "" \
+          "Name: Lua" \
+          "Description: An embeddable scripting language" \
+          "Version: 5.4.6" \
+          "Libs: -L\${libdir} -llua -lm -ldl" \
+          "Cflags: -I\${includedir}" \
+          > /usr/lib/pkgconfig/lua.pc
+
+          /usr/bin/printf "%s\n" \
+          "prefix=/usr" \
+          "exec_prefix=/usr" \
+          "libdir=/usr/lib" \
+          "includedir=/usr/include" \
+          "" \
+          "Name: bzip2" \
+          "Description: A file compression library" \
+          "Version: 1.0.8" \
+          "Libs: -L\${libdir} -lbz2" \
+          "Cflags: -I\${includedir}" \
+          > /usr/lib/pkgconfig/bzip2.pc
+
+          cd /sources/rpm-4.16.1.3
+          ./autogen.sh
+          ./configure --prefix=/usr \
+              --with-crypto=openssl \
+              --disable-bdb \
+              --enable-sqlite \
+              --without-archive \
+              --disable-plugins \
+              --disable-nls
+          make -j$(nproc)
           make install
+          ldconfig
+        '
+
+    - name: 0116A005 - gobject-introspection (Basic System Software) OPTIONAL
+      version: 1.68.0
+      archive_file: https://download.gnome.org/sources/gobject-introspection/1.68/gobject-introspection-1.68.0.tar.xz
+      source_dir: /sources/gobject-introspection-1.68.0
+      description: |
+      Build and install gobject-introspection from source in the chroot environment.
+      category:
+      This job is part of the basic system software setup, specifically for building gobject-introspection.
+      exec_command: echo
+      build_tool: true
+      build_command: |
+        {{ chroot_start_command }} -c '
+          cd /sources/gobject-introspection-1.68.0
+          mkdir -p build
+          cd build
+          meson setup .. \
+            --prefix=/usr \
+            --buildtype=release \
+            -Ddoctool=disabled \
+            -Dtests=false
+          ninja
+          ninja install
           ldconfig
         '
 
@@ -3702,7 +3758,8 @@ jenkins_jobs:
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/libmodulemd-2.15.0
-          meson --buildtype=debug -Db_coverage=true debugbuild
+          # TODO: check with_docs=false, it seems to be required to avoid a build failure due to missing documentation dependencies, but we should verify if it's possible to build the docs without those dependencies or if we need to add them to the build environment
+          meson --buildtype=debug -Db_coverage=true debugbuild -Dwith_docs=false
           ninja
           ninja install
         '
