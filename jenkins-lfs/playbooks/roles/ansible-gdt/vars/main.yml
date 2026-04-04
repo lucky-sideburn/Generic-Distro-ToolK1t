@@ -2151,9 +2151,11 @@ jenkins_jobs:
         '
 
     - name: 0054 - Meson (Basic System Software)
-      version: 1.7.0
-      archive_file: /sources/meson-1.7.0.tar.gz
-      source_dir: /sources/meson-1.7.0
+      version: 0.63.3
+      archive_file: false
+      git_url: https://github.com/mesonbuild/meson.git
+      git_branch: 0.63.3
+      source_dir: /sources/meson-0.63.3
       description: |
         Meson is a build system that is designed to be fast and user-friendly. This job builds Meson, which is essential for building software in the LFS environment.
       category:
@@ -2162,7 +2164,7 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
-          cd /sources/meson-1.7.0
+          cd /sources/meson-0.63.3
           pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
           pip3 install --no-index --find-links dist meson
           install -vDm644 data/shell-completions/bash/meson /usr/share/bash-completion/completions/meson
@@ -3736,8 +3738,7 @@ jenkins_jobs:
           meson setup .. \
             --prefix=/usr \
             --buildtype=release \
-            -Ddoctool=disabled \
-            -Dtests=false
+            -Ddoctool=disabled
           ninja
           ninja install
           ldconfig
