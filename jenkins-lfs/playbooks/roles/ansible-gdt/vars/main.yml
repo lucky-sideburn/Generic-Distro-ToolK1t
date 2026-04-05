@@ -2864,18 +2864,18 @@ jenkins_jobs:
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/libgpg-error-1.55
-          ./configure --prefix=/usr
+          ./configure --prefix=/usr --enable-install-gpg-error-config
           make
           make install
           install -v -m644 -D README /usr/share/doc/libgpg-error-1.55/README
         '
     # TODO: GnuPG Made Easy. NOTE: Maintainers are not tracking this mirror. Do not make pull requests here, nor comment any commits, submit them usual way to bug tracker
     - name: 0088 - gpgme (Basic System Software) OPTIONAL
-      version: 1.18.0
-      archive_file: false
-      git_url: https://github.com/gpg/gpgme.git
-      git_branch: gpgme-1.18.0
-      source_dir: /sources/gpgme-1.18.0
+      version: 1.15.1
+      archive_file: https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-1.15.1.tar.bz2
+      git_url: false
+      git_branch: false
+      source_dir: /sources/gpgme-1.15.1
       description: |
         GPGME is a library that provides a high-level crypto API for GnuPG. This job builds GPGME, which is essential for cryptographic operations in the LFS environment.
       category:
@@ -2884,29 +2884,29 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
-          cd /sources/gpgme-1.18.0
+          cd /sources/gpgme-1.15.1
           ./autogen.sh
           ./configure --prefix=/usr --disable-static
           make
           make install
           # TODO: Understand why gpgme-config is not being installed by the make install command and why we need to create it manually
-          /usr/bin/printf "%s\n" \
-            "#!/bin/bash" \
-            "case \"\$1\" in" \
-            "--version) pkg-config --modversion gpgme ;;" \
-            "--libs) pkg-config --libs gpgme ;;" \
-            "--cflags) pkg-config --cflags gpgme ;;" \
-            "--thread=pthread)" \
-            "shift" \
-            "case \"\$1\" in" \
-            "--libs) pkg-config --libs gpgme ;;" \
-            "--cflags) pkg-config --cflags gpgme ;;" \
-            "esac" \
-            ";;" \
-            "*) pkg-config \"\$@\" gpgme ;;" \
-            "esac" \
-            > /usr/bin/gpgme-config
-          chmod 0755 /usr/bin/gpgme-config
+          # /usr/bin/printf "%s\n" \
+          #   "#!/bin/bash" \
+          #   "case \"\$1\" in" \
+          #   "--version) pkg-config --modversion gpgme ;;" \
+          #   "--libs) pkg-config --libs gpgme ;;" \
+          #   "--cflags) pkg-config --cflags gpgme ;;" \
+          #   "--thread=pthread)" \
+          #   "shift" \
+          #   "case \"\$1\" in" \
+          #   "--libs) pkg-config --libs gpgme ;;" \
+          #   "--cflags) pkg-config --cflags gpgme ;;" \
+          #   "esac" \
+          #   ";;" \
+          #   "*) pkg-config \"\$@\" gpgme ;;" \
+          #   "esac" \
+          #   > /usr/bin/gpgme-config
+          # chmod 0755 /usr/bin/gpgme-config
         '
 
     - name: 0089 - libassuan (Basic System Software) OPTIONAL
@@ -3679,7 +3679,7 @@ jenkins_jobs:
           ldconfig
         '
 
-    - name: 0116A004 - libcomp (Basic System Software) OPTIONAL
+    - name: 0116A004 - libcomps (Basic System Software) OPTIONAL
       version: 0.1.18
       archive_file: false
       git_url: https://github.com/rpm-software-management/libcomps.git
@@ -3692,14 +3692,22 @@ jenkins_jobs:
       exec_command: echo
       build_tool: true
       build_command: |
+        sudo sed -i '1s/^/set(pycopy "py3-copy")\nadd_custom_target(py3-copy ALL)\n/' /mnt/lfs/sources/libcomps-0.1.18/libcomps/src/python/pycopy.cmake
+
         {{ chroot_start_command }} -c '
-          cd /sources/libcomps-0.1.18
-          mkdir build
-          cd build/
-          cmake ../libcomps
-          make
-          make install
-          ldconfig
+        cd /sources/libcomps-0.1.18 
+        mkdir build
+        cd build/
+        cmake ../libcomps \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+        -DPYTHON_DESIRED=3 \
+        -DENABLE_DOCS=OFF \
+        -DENABLE_TESTS=OFF \
+        -DBUILD_TESTING=OFF
+        make
+        make install
+        ldconfig
         '
 
     - name: 0116A004 - rpm (Basic System Software) OPTIONAL
