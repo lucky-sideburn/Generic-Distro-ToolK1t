@@ -2873,8 +2873,6 @@ jenkins_jobs:
     - name: 0088 - gpgme (Basic System Software) OPTIONAL
       version: 1.15.1
       archive_file: https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-1.15.1.tar.bz2
-      git_url: false
-      git_branch: false
       source_dir: /sources/gpgme-1.15.1
       description: |
         GPGME is a library that provides a high-level crypto API for GnuPG. This job builds GPGME, which is essential for cryptographic operations in the LFS environment.
