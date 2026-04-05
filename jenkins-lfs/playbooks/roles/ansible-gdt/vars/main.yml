@@ -2885,17 +2885,16 @@ jenkins_jobs:
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/gpgme-1.15.1
-          ls build || mkdir build
-          cd build 
-          ../configure --prefix=/usr --disable-static
+          ./autogen.sh
+          ./configure --prefix=/usr --disable-static
           make
-          make install  
+          make install
         '
 
     - name: 0089 - libassuan (Basic System Software) OPTIONAL
-      version: 3.0.2
-      archive_file: /sources/libassuan-3.0.2.tar.bz2
-      source_dir: /sources/libassuan-3.0.2
+      version: 2.5.5
+      archive_file: https://gnupg.org/ftp/gcrypt/libassuan/libassuan-2.5.5.tar.bz2
+      source_dir: /sources/libassuan-2.5.5
       description: |
         Libassuan is a library that provides a simple IPC mechanism for communication between applications. This job builds Libassuan, which is essential for inter-process communication in the LFS environment.
       category:
@@ -2904,7 +2903,7 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
-          cd /sources/libassuan-3.0.2
+          cd /sources/libassuan-2.5.5
           ./configure --prefix=/usr
           make
           make -C doc html
@@ -2912,10 +2911,10 @@ jenkins_jobs:
           makeinfo --plaintext -o doc/assuan.txt doc/assuan.texi
           make -C doc pdf ps
           make install
-          install -v -dm755 /usr/share/doc/libassuan-3.0.2/html
-          install -v -m644 doc/assuan.html/* /usr/share/doc/libassuan-3.0.2/html
-          install -v -m644 doc/assuan_nochunks.html /usr/share/doc/libassuan-3.0.2
-          install -v -m644 doc/assuan.{txt,texi} /usr/share/doc/libassuan-3.0.2
+          install -v -dm755 /usr/share/doc/libassuan-2.5.5/html
+          install -v -m644 doc/assuan.html/* /usr/share/doc/libassuan-2.5.5/html
+          install -v -m644 doc/assuan_nochunks.html /usr/share/doc/libassuan-2.5.5
+          install -v -m644 doc/assuan.{txt,texi} /usr/share/doc/libassuan-2.5.5
         '
   
     - name: 0090 - gnupg (Basic System Software) OPTIONAL
