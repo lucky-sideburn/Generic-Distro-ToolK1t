@@ -71,7 +71,7 @@
         <concurrentBuild>false</concurrentBuild>
         <builders>
           <hudson.tasks.Shell>
-            <command>{{ common_build_start_command }}
+            <command>{{ amd64_common_build_start_command }}
               export BUILD_MODE=host_libvirt
               if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
                 if [ -d {{ item.source_dir | basename }} ]; then
@@ -142,7 +142,7 @@
         <concurrentBuild>false</concurrentBuild>
         <builders>
           <hudson.tasks.Shell>
-            <command>{{ common_build_start_command }}
+            <command>{{ amd64_common_build_start_command }}
               export BUILD_MODE=host_libvirt
               if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
                 if [ -d {{ item.source_dir | basename }} ]; then

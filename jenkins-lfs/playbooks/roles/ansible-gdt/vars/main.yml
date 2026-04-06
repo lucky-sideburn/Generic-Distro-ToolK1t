@@ -2882,11 +2882,19 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
+          # cd /sources/gpgme-1.18.0
+          # ./autogen.sh
+          # ./configure --prefix=/usr --disable-static
+          # make
+          # make install
+
           cd /sources/gpgme-1.15.1
-          ./autogen.sh
-          ./configure --prefix=/usr --disable-static
-          make
+          ./configure --prefix=/usr ac_cv_func_closefrom=no
+          sed -i 's/1.15.1-unknown/1.15.1/' lang/python/setup.py
+          make CFLAGS="-O2 -Wno-array-bounds"
           make install
+
+
           # TODO: Understand why gpgme-config is not being installed by the make install command and why we need to create it manually
           # /usr/bin/printf "%s\n" \
           #   "#!/bin/bash" \
@@ -4063,6 +4071,7 @@ jenkins_jobs:
         '
 
   system_configuration:
+  
     - name: 0001 - LFS-Bootscripts (System Configuration)
       version: 20240825
       archive_file: /sources/lfs-bootscripts-20240825.tar.xz
@@ -4201,7 +4210,7 @@ jenkins_jobs:
           umount /dev/pts || echo "Failed to unmount /dev/pts, continuing anyway"
 
           '
- 
+
     - name: 0005 - Prepare System Image (System Configuration)
       version: 1.0
       archive_file: /mnt/lfs/sources/empty.tar.xz
@@ -4230,6 +4239,27 @@ jenkins_jobs:
         cd /mnt/lfs/sources
         ./prepare_iso.sh --buildmode $BUILD_MODE
   
+
+    - name: 0006 - Prepare EL System (System Configuration)
+      version: 1.0
+      archive_file: /mnt/lfs/sources/empty.tar.xz
+      source_dir: /mnt/lfs/sources
+      description: |
+        This job prepares the EL system for the LFS environment by running a script that sets up the necessary configurations and files.
+      category:
+        This job is part of the operating system setup, specifically for preparing the EL system.
+      build_tool: false
+      build_command: echo
+      exec_command: |
+        {{ chroot_start_command }} -c '
+        mkdir -p /etc/rpm
+        cat > /etc/rpm/macros.db << 'EOF'
+        %_db_backend sqlite
+        EOF
+        rpm --initdb
+
+        '
+
   genai:
     - name: 0001 - llama.cpp (GenAI)
       version: b7690
