@@ -246,10 +246,10 @@ jenkins_jobs:
       category:
         This job is part of the cross toolchain setup, specifically for installing the Linux kernel API headers.
       build_command: |
-        make mrproper
-        make headers
-        find usr/include -type f ! -name '*.h' -delete
-        cp -rv usr/include $LFS/usr
+        sudo make mrproper
+        sudo make headers
+        sudo find usr/include -type f ! -name '*.h' -delete
+        sudo cp -rv usr/include $LFS/usr
 
     - name: 0004 - Glibc (Cross Toolchain)
       archive_file: /mnt/lfs/sources/glibc-2.41.tar.xz
@@ -260,12 +260,15 @@ jenkins_jobs:
       category:
         This job is part of the cross toolchain setup, specifically for building and installing glibc.
       build_command: |
+        # TODO: check if this vars are globals...
+        export LFS_TGT=x86_64-lfs-linux-gnu
+        export PATH=$LFS/tools/bin:/usr/bin:/bin
+
         case $(uname -m) in
             i?86)   
                 ln -sfv ld-linux.so.2 $LFS/lib/ld-lsb.so.3
             ;;
             x86_64) 
-                ln -sfv ../lib/ld-linux-x86-64.so.2 $LFS/lib64
                 ln -sfv ../lib/ld-linux-x86-64.so.2 $LFS/lib64/ld-lsb-x86-64.so.3
             ;;
         esac
