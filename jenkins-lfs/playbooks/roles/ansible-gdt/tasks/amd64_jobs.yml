@@ -213,7 +213,7 @@
         <concurrentBuild>false</concurrentBuild>
         <builders>
           <hudson.tasks.Shell>
-            <command>{{ common_build_start_command }}
+            <command>{{ amd64_common_build_start_command }}
               if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
                 if [ -d {{ item.source_dir | basename }} ]; then
                   sudo rm -rf {{ item.source_dir | basename }}
@@ -283,7 +283,7 @@
         <concurrentBuild>false</concurrentBuild>
         <builders>
           <hudson.tasks.Shell>
-            <command>{{ common_build_start_command }}
+            <command>{{ amd64_common_build_start_command }}
               if [ "$(basename {{ item.source_dir }})" != "sources" ]; then
                 if [ -d {{ item.source_dir | basename }} ]; then
                   sudo rm -rf {{ item.source_dir | basename }}
