@@ -454,6 +454,15 @@ jenkins_jobs:
         sed '/RTLDLIST=/s@/usr@@g' -i $LFS/usr/bin/ldd
         echo 'int main(){}' | $LFS_TGT-gcc -xc -
         readelf -l a.out | grep ld-linux
+        ls /mnt/lfs/usr/lib64 || sudo mkdir -p /mnt/lfs/usr/lib64
+
+        # lib64
+        sudo rm /mnt/lfs/lib64/ld-linux-x86-64.so.2
+        sudo ln -sv ../usr/lib/ld-linux-x86-64.so.2 /mnt/lfs/lib64/ld-linux-x86-64.so.2
+
+        # lib/x86_64-linux-gnu
+        sudo rm /mnt/lfs/lib/x86_64-linux-gnu/libc.so.6
+        sudo ln -sv ../../usr/lib/libc.so.6 /mnt/lfs/lib/x86_64-linux-gnu/libc.so.6
 
     - name: 0005 - Libstdc++ from GCC  (Cross Toolchain)
       version: 14.2.0
