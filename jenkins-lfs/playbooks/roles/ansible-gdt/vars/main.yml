@@ -74,7 +74,15 @@ chroot_start_command: |-
       /bin/bash
 
 amd64_common_build_start_command: |-
-  echo "Linux From Scratch - Version 12.3"
+  echo "  ██████╗  ██████╗ ████████╗    ██╗     ██╗███╗   ██╗██╗   ██╗██╗  ██╗"
+  echo "  ██╔══██╗██╔═══██╗╚══██╔══╝    ██║     ██║████╗  ██║██║   ██║╚██╗██╔╝"
+  echo "  ██║  ██║██║   ██║   ██║       ██║     ██║██╔██╗ ██║██║   ██║ ╚███╔╝ "
+  echo "  ██║  ██║██║   ██║   ██║       ██║     ██║██║╚██╗██║██║   ██║ ██╔██╗ "
+  echo "  ██████╔╝╚██████╔╝   ██║       ███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗"
+  echo "  ╚═════╝  ╚═════╝    ╚═╝       ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝"
+  echo ""
+  echo "  DevOpsTribe Linux - Powered by DevOpsTribe.it & GarantiDelTalento.it"
+  echo "  LFS 12.3 Build System"
   echo "Current Directory: $(pwd)"
   echo "Current User: $(whoami)"
   echo "Environment Variables:"
@@ -87,11 +95,63 @@ amd64_common_build_start_command: |-
   CONFIG_SITE=$LFS/usr/share/config.site
   export LFS LC_ALL LFS_TGT PATH CONFIG_SITE
   export MAKEFLAGS=-j$(nproc)
+
+  # We avoid heredoc (EOF) syntax because Jenkins YAML upload
+  # strips or misinterprets heredoc blocks during pipeline parsing.
+  # Instead we use individual echo/printf statements for idempotency.
+
+  mkdir -p /etc/environment.d
+
+  # Only write each variable if not already present in the file
+  LFSENV=/etc/environment.d/lfs.sh
+  touch $LFSENV
+
+  grep -q "^export LFS=" $LFSENV || echo "export LFS=$LFS" >> $LFSENV
+  grep -q "^export LC_ALL=" $LFSENV || echo "export LC_ALL=$LC_ALL" >> $LFSENV
+  grep -q "^export LFS_TGT=" $LFSENV || echo "export LFS_TGT=$LFS_TGT" >> $LFSENV
+  grep -q "^export PATH=" $LFSENV || echo "export PATH=$PATH" >> $LFSENV
+  grep -q "^export CONFIG_SITE=" $LFSENV || echo "export CONFIG_SITE=$CONFIG_SITE" >> $LFSENV
+  grep -q "^export MAKEFLAGS=" $LFSENV || echo "export MAKEFLAGS=$MAKEFLAGS" >> $LFSENV
+
+  # Preserve vars across sudo - idempotent
+  SUDOFILE=/etc/sudoers.d/lfs
+  if [ ! -f $SUDOFILE ]; then
+    echo 'Defaults env_keep += "LFS LC_ALL LFS_TGT PATH CONFIG_SITE MAKEFLAGS"' > $SUDOFILE
+    chmod 440 $SUDOFILE
+  fi
+
+  JENKINS_USER=$(whoami)
+  for dir in $LFS/usr $LFS/usr/bin $LFS/usr/lib $LFS/usr/sbin $LFS/var $LFS/etc $LFS/tools; do
+    if [ -d "$dir" ]; then
+      current_owner=$(stat -c '%U' "$dir")
+      if [ "$current_owner" != "$JENKINS_USER" ]; then
+        sudo chown -v $JENKINS_USER "$dir"
+      fi
+    fi
+  done
+
+  case $(uname -m) in
+    x86_64)
+      current_owner=$(stat -c '%U' "$LFS/lib64")
+      if [ "$current_owner" != "$JENKINS_USER" ]; then
+        sudo chown -v $JENKINS_USER "$LFS/lib64"
+      fi
+      ;;
+  esac
+
   cd $LFS/sources
   env
 
 aarch64_common_build_start_command: |-
-  echo "Linux From Scratch - Version 12.3"
+  echo "  ██████╗  ██████╗ ████████╗    ██╗     ██╗███╗   ██╗██╗   ██╗██╗  ██╗"
+  echo "  ██╔══██╗██╔═══██╗╚══██╔══╝    ██║     ██║████╗  ██║██║   ██║╚██╗██╔╝"
+  echo "  ██║  ██║██║   ██║   ██║       ██║     ██║██╔██╗ ██║██║   ██║ ╚███╔╝ "
+  echo "  ██║  ██║██║   ██║   ██║       ██║     ██║██║╚██╗██║██║   ██║ ██╔██╗ "
+  echo "  ██████╔╝╚██████╔╝   ██║       ███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗"
+  echo "  ╚═════╝  ╚═════╝    ╚═╝       ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝"
+  echo ""
+  echo "  DevOpsTribe Linux - Powered by DevOpsTribe.it & GarantiDelTalento.it"
+  echo "  LFS 12.3 Build System"
   echo "Current Directory: $(pwd)"
   echo "Current User: $(whoami)"
   echo "Environment Variables:"
@@ -103,6 +163,72 @@ aarch64_common_build_start_command: |-
   CONFIG_SITE=$LFS/usr/share/config.site
   export LFS LC_ALL LFS_TGT PATH CONFIG_SITE
   export MAKEFLAGS=-j$(nproc)
+  cd $LFS/sources
+
+  # We avoid heredoc (EOF) syntax because Jenkins YAML upload
+  # strips or misinterprets heredoc blocks during pipeline parsing.
+  # Instead we use individual echo/printf statements for idempotency.
+
+  mkdir -p /etc/environment.d
+
+  # Only write each variable if not already present in the file
+  LFSENV=/etc/environment.d/lfs.sh
+  touch $LFSENV
+
+  grep -q "^export LFS=" $LFSENV || echo "export LFS=$LFS" >> $LFSENV
+  grep -q "^export LC_ALL=" $LFSENV || echo "export LC_ALL=$LC_ALL" >> $LFSENV
+  grep -q "^export LFS_TGT=" $LFSENV || echo "export LFS_TGT=$LFS_TGT" >> $LFSENV
+  grep -q "^export PATH=" $LFSENV || echo "export PATH=$PATH" >> $LFSENV
+  grep -q "^export CONFIG_SITE=" $LFSENV || echo "export CONFIG_SITE=$CONFIG_SITE" >> $LFSENV
+  grep -q "^export MAKEFLAGS=" $LFSENV || echo "export MAKEFLAGS=$MAKEFLAGS" >> $LFSENV
+
+  # Preserve vars across sudo - idempotent
+  SUDOFILE=/etc/sudoers.d/lfs
+  if [ ! -f $SUDOFILE ]; then
+    echo 'Defaults env_keep += "LFS LC_ALL LFS_TGT PATH CONFIG_SITE MAKEFLAGS"' > $SUDOFILE
+    chmod 440 $SUDOFILE
+  fi
+
+  # Verify LFS directory structure is present - exit if not initialized
+  for required_dir in $LFS/etc $LFS/var $LFS/usr/bin $LFS/usr/lib $LFS/usr/sbin $LFS/bin $LFS/lib $LFS/sbin; do
+    if [ ! -d "$required_dir" ]; then
+      echo "ERROR: Required LFS directory $required_dir is missing. Please initialize the LFS structure first."
+      exit 1
+    fi
+  done
+
+  case $(uname -m) in
+    x86_64)
+      if [ ! -d "$LFS/lib64" ]; then
+        echo "ERROR: Required LFS directory $LFS/lib64 is missing. Please initialize the LFS structure first."
+        exit 1
+      fi
+      ;;
+  esac
+
+  echo "LFS directory structure verified OK"
+
+  (ls $LFS/tools || (echo "Error: LFS tools directory is missing. Please initialize the LFS structure first." && exit 1))
+
+  JENKINS_USER=$(whoami)
+  for dir in $LFS/usr $LFS/usr/bin $LFS/usr/lib $LFS/usr/sbin $LFS/var $LFS/etc $LFS/tools; do
+    if [ -d "$dir" ]; then
+      current_owner=$(stat -c '%U' "$dir")
+      if [ "$current_owner" != "$JENKINS_USER" ]; then
+        sudo chown -v $JENKINS_USER "$dir"
+      fi
+    fi
+  done
+
+  case $(uname -m) in
+    x86_64)
+      current_owner=$(stat -c '%U' "$LFS/lib64")
+      if [ "$current_owner" != "$JENKINS_USER" ]; then
+        sudo chown -v $JENKINS_USER "$LFS/lib64"
+      fi
+      ;;
+  esac
+
   cd $LFS/sources
   env
 
