@@ -81,7 +81,7 @@ amd64_common_build_start_command: |-
   echo "  ██████╔╝╚██████╔╝   ██║       ███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗"
   echo "  ╚═════╝  ╚═════╝    ╚═╝       ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝"
   echo ""
-  echo "  DevOpsTribe Linux - Powered by DevOpsTribe.it & GarantiDelTalento.it"
+  echo "  DevOpsTribe Linux - Powered by DevOpsTribe.it and GarantiDelTalento.it"
   echo "  LFS 12.3 Build System"
   echo "Current Directory: $(pwd)"
   echo "Current User: $(whoami)"
@@ -95,6 +95,8 @@ amd64_common_build_start_command: |-
   CONFIG_SITE=$LFS/usr/share/config.site
   export LFS LC_ALL LFS_TGT PATH CONFIG_SITE
   export MAKEFLAGS=-j$(nproc)
+
+  cd $LFS/sources
 
   # We avoid heredoc (EOF) syntax because Jenkins YAML upload
   # strips or misinterprets heredoc blocks during pipeline parsing.
@@ -119,6 +121,27 @@ amd64_common_build_start_command: |-
     echo 'Defaults env_keep += "LFS LC_ALL LFS_TGT PATH CONFIG_SITE MAKEFLAGS"' > $SUDOFILE
     chmod 440 $SUDOFILE
   fi
+
+  # Verify LFS directory structure is present - exit if not initialized
+  for required_dir in $LFS/etc $LFS/var $LFS/usr/bin $LFS/usr/lib $LFS/usr/sbin $LFS/bin $LFS/lib $LFS/sbin; do
+    if [ ! -d "$required_dir" ]; then
+      echo "ERROR: Required LFS directory $required_dir is missing. Please initialize the LFS structure first."
+      exit 1
+    fi
+  done
+
+  case $(uname -m) in
+    x86_64)
+      if [ ! -d "$LFS/lib64" ]; then
+        echo "ERROR: Required LFS directory $LFS/lib64 is missing. Please initialize the LFS structure first."
+        exit 1
+      fi
+      ;;
+  esac
+
+  echo "LFS directory structure verified OK"
+
+  (ls $LFS/tools || (echo "Error: LFS tools directory is missing. Please initialize the LFS structure first." ; exit 1))
 
   JENKINS_USER=$(whoami)
   for dir in $LFS/usr $LFS/usr/bin $LFS/usr/lib $LFS/usr/sbin $LFS/var $LFS/etc $LFS/tools; do
@@ -150,7 +173,7 @@ aarch64_common_build_start_command: |-
   echo "  ██████╔╝╚██████╔╝   ██║       ███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗"
   echo "  ╚═════╝  ╚═════╝    ╚═╝       ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝"
   echo ""
-  echo "  DevOpsTribe Linux - Powered by DevOpsTribe.it & GarantiDelTalento.it"
+  echo "  DevOpsTribe Linux - Powered by DevOpsTribe.it and GarantiDelTalento.it"
   echo "  LFS 12.3 Build System"
   echo "Current Directory: $(pwd)"
   echo "Current User: $(whoami)"
@@ -208,7 +231,7 @@ aarch64_common_build_start_command: |-
 
   echo "LFS directory structure verified OK"
 
-  (ls $LFS/tools || (echo "Error: LFS tools directory is missing. Please initialize the LFS structure first." && exit 1))
+  (ls $LFS/tools || (echo "Error: LFS tools directory is missing. Please initialize the LFS structure first." ; exit 1))
 
   JENKINS_USER=$(whoami)
   for dir in $LFS/usr $LFS/usr/bin $LFS/usr/lib $LFS/usr/sbin $LFS/var $LFS/etc $LFS/tools; do
