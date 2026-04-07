@@ -2959,7 +2959,7 @@ jenkins_jobs:
           find /usr -depth -name $(uname -m)-lfs-linux-gnu\* | xargs rm -rf
         '
 
-    - name: 0084 - libgcrypt (Basic System Software) OPTIONAL
+    - name: 0084 - libgcrypt (Basic System Software)[OPT]
       version: 1.11.1
       archive_file: /sources/libgcrypt-1.11.1.tar.bz2
       source_dir: /sources/libgcrypt-1.11.1
@@ -2991,7 +2991,7 @@ jenkins_jobs:
                               /usr/share/doc/libgcrypt-1.11.1
         '
 
-    - name: 0085 - OPTIONALlibksba (Basic System Software) OPTIONAL
+    - name: 0085 - libksba (Basic System Software)[OPT]
       version: 1.6.7
       archive_file: /sources/libksba-1.6.7.tar.bz2
       source_dir: /sources/libksba-1.6.7
@@ -3009,7 +3009,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0086 - npth (Basic System Software) OPTIONAL
+    - name: 0086 - npth (Basic System Software)[OPT]
       version: 1.8
       archive_file: /sources/npth-1.8.tar.bz2
       source_dir: /sources/npth-1.8
@@ -3026,7 +3026,7 @@ jenkins_jobs:
           make
           make install
         '
-    - name: 0087 - libgpg-error (Basic System Software) OPTIONAL
+    - name: 0087 - libgpg-error (Basic System Software)[OPT]
       version: 1.55
       archive_file: /sources/libgpg-error-1.55.tar.bz2
       source_dir: /sources/libgpg-error-1.55
@@ -3045,7 +3045,7 @@ jenkins_jobs:
           install -v -m644 -D README /usr/share/doc/libgpg-error-1.55/README
         '
     # TODO: GnuPG Made Easy. NOTE: Maintainers are not tracking this mirror. Do not make pull requests here, nor comment any commits, submit them usual way to bug tracker
-    - name: 0088 - gpgme (Basic System Software) OPTIONAL
+    - name: 0088 - gpgme (Basic System Software)[OPT]
       version: 1.15.1
       archive_file: https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-1.15.1.tar.bz2
       source_dir: /sources/gpgme-1.15.1
@@ -3090,7 +3090,7 @@ jenkins_jobs:
           # chmod 0755 /usr/bin/gpgme-config
         '
 
-    - name: 0089 - libassuan (Basic System Software) OPTIONAL
+    - name: 0089 - libassuan (Basic System Software)[OPT]
       version: 2.5.5
       archive_file: https://gnupg.org/ftp/gcrypt/libassuan/libassuan-2.5.5.tar.bz2
       source_dir: /sources/libassuan-2.5.5
@@ -3116,7 +3116,7 @@ jenkins_jobs:
           install -v -m644 doc/assuan.{txt,texi} /usr/share/doc/libassuan-2.5.5
         '
   
-    - name: 0090 - gnupg (Basic System Software) OPTIONAL
+    - name: 0090 - gnupg (Basic System Software)[OPT]
       version: 2.4.8
       archive_file: /sources/gnupg-2.4.8.tar.bz2
       source_dir: /sources/gnupg-2.4.8
@@ -3155,7 +3155,7 @@ jenkins_jobs:
                           /usr/share/doc/gnupg-2.4.8
         '
 
-    - name: 0091 - glib (Basic System Software) OPTIONAL
+    - name: 0091 - glib (Basic System Software)[OPT]
       version: 2.84.3
       archive_file: /sources/glib-2.84.3.tar.xz
       source_dir: /sources/glib-2.84.3
@@ -3190,7 +3190,7 @@ jenkins_jobs:
             ninja install
         '
 
-    - name: 0092 - GO (Basic System Software) OPTIONAL
+    - name: 0092 - GO (Basic System Software)[OPT]
       version: 1.22.9
       archive_file: /sources/empty.tar.gz
       source_dir: /sources/empty.tar.gz
@@ -3222,7 +3222,7 @@ jenkins_jobs:
           ln -s /usr/local/go/bin/go /usr/local/bin/go 
         '
 
-    - name: 0093 - conmon (Basic System Software) OPTIONAL
+    - name: 0093 - conmon (Basic System Software)[OPT]
       version: 2.1.13
       archive_file: /sources/conmon-v2.1.13.tar.gz
       source_dir: /sources/conmon-v2.1.13
@@ -3241,7 +3241,7 @@ jenkins_jobs:
           /bin/cp /sources/cri-o-1.33.1/bin/pinns /usr/local/bin
         '
 
-    - name: 0094 - libpsl (Basic System Software) OPTIONAL
+    - name: 0094 - libpsl (Basic System Software)[OPT]
       version: 0.21.5
       archive_file: /sources/libpsl-0.21.5.tar.gz
       source_dir: /sources/libpsl-0.21.5
@@ -3261,7 +3261,7 @@ jenkins_jobs:
           ninja install
         '
 
-    - name: 0095 - libidn2 (Basic System Software) OPTIONAL
+    - name: 0095 - libidn2 (Basic System Software)[OPT]
       version: 2.3.8
       archive_file: /sources/libidn2-2.3.8.tar.gz
       source_dir: /sources/libidn2-2.3.8
@@ -3279,7 +3279,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0096 - libunistring (Basic System Software) OPTIONAL
+    - name: 0096 - libunistring (Basic System Software)[OPT]
       version: 1.3
       archive_file: /sources/libunistring-1.3.tar.xz
       source_dir: /sources/libunistring-1.3.tar.xz
@@ -3297,7 +3297,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0097 - curl (Basic System Software) OPTIONAL
+    - name: 0097 - curl (Basic System Software)[OPT]
       version: 8.15.0
       archive_file: /sources/curl-8.15.0.tar.xz
       source_dir: /sources/curl-8.15.0
@@ -3317,7 +3317,7 @@ jenkins_jobs:
           make
           make install
         '
-    - name: 0098 - asciidoc (Basic System Software) OPTIONAL
+    - name: 0098 - asciidoc (Basic System Software)[OPT]
       version: 9.1.0
       archive_file: /sources/asciidoc-9.1.0.tar.gz
       source_dir: /sources/asciidoc-9.1.0
@@ -3340,7 +3340,7 @@ jenkins_jobs:
           make docs
         '
 
-    - name: 0099 - libxslt (Basic System Software) OPTIONAL
+    - name: 0099 - libxslt (Basic System Software)[OPT]
       version: 1.1.43
       archive_file: /sources/libxslt-1.1.43.tar.xz
       source_dir: /sources/libxslt-1.1.43
@@ -3360,7 +3360,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0100 - libxml2 (Basic System Software) OPTIONAL
+    - name: 0100 - libxml2 (Basic System Software)[OPT]
       version: 2.14.5
       archive_file: /sources/libxml2-2.14.5.tar.xz
       source_dir: /sources/libxml2-2.14.5
@@ -3384,7 +3384,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0101 - icu4c (Basic System Software) OPTIONAL
+    - name: 0101 - icu4c (Basic System Software)[OPT]
       version: 77.1_1
       archive_file: /sources/icu4c-77_1-src.tgz
       source_dir: /sources/icu4c-77_1-src
@@ -3402,7 +3402,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0102 - git (Basic System Software) OPTIONAL
+    - name: 0102 - git (Basic System Software)[OPT]
       version: 2.49.0
       archive_file: /sources/git-2.49.0.tar.xz
       source_dir: /sources/git-2.49.0
@@ -3421,7 +3421,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0103 - libseccomp (Basic System Software) OPTIONAL
+    - name: 0103 - libseccomp (Basic System Software)[OPT]
       version: 2.6.0
       archive_file: /sources/libseccomp
       source_dir: /sources/libseccomp
@@ -3442,7 +3442,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0104 - libtasn1 (Basic System Software) OPTIONAL
+    - name: 0104 - libtasn1 (Basic System Software)[OPT]
       version: 4.20.0
       archive_file: /sources/libtasn1-4.20.0.tar.gz
       source_dir: /sources/libtasn1-4.20.0
@@ -3461,7 +3461,7 @@ jenkins_jobs:
           make -C doc/reference install-data-local
         '
 
-    - name: 0105 - p11-kit (Basic System Software) OPTIONAL
+    - name: 0105 - p11-kit (Basic System Software)[OPT]
       version: 0.25.5
       archive_file: /sources/p11-kit-0.25.5.tar.xz
       source_dir: /sources/p11-kit-0.25.5
@@ -3498,7 +3498,7 @@ jenkins_jobs:
         ln -sfv ./pkcs11/p11-kit-trust.so /usr/lib/libnssckbi.so
 
         '
-    - name: 0106 - make-ca (Basic System Software) OPTIONAL
+    - name: 0106 - make-ca (Basic System Software)[OPT]
       version: 1.16.1
       archive_file: /sources/make-ca-1.16.1.tar.gz
       source_dir: /sources/make-ca-1.16.1
@@ -3516,7 +3516,7 @@ jenkins_jobs:
           /usr/sbin/make-ca -g
         '
 
-    - name: 0107 - iptables (Basic System Software) OPTIONAL
+    - name: 0107 - iptables (Basic System Software)[OPT]
       version: 1.8.11
       archive_file: /sources/iptables-1.8.11.tar.xz
       source_dir: /sources/iptables-1.8.11
@@ -3556,7 +3556,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0109 - Dialogs (Basic System Software) OPTIONAL
+    - name: 0109 - Dialogs (Basic System Software)[OPT]
       version: 2.15
       archive_file: /sources/dialog.tar.gz
       source_dir: /sources/dialog-1.3-20251223
@@ -3577,7 +3577,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0110 - libuv (Basic System Software) OPTIONAL
+    - name: 0110 - libuv (Basic System Software)[OPT]
       version: 1.51.0
       archive_file: /sources/libuv-v1.51.0.tar.gz
       source_dir: /sources/libuv-v1.51.0
@@ -3596,7 +3596,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0111 - libarchive (Basic System Software) OPTIONAL
+    - name: 0111 - libarchive (Basic System Software)[OPT]
       version: 3.8.5
       archive_file: /sources/libarchive-3.8.5.tar.xz
       source_dir: /sources/libarchive-3.8.5
@@ -3614,7 +3614,7 @@ jenkins_jobs:
           make install
         '
     
-    - name: 0112 - Cmake  (Basic System Software) OPTIONAL
+    - name: 0112 - Cmake  (Basic System Software)[OPT]
       version: 4.2.1
       archive_file: /sources/cmake-4.3.0.tar.gz
       source_dir: /sources/cmake-4.3.0
@@ -3642,7 +3642,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0113 - jq (Basic System Software) OPTIONAL
+    - name: 0113 - jq (Basic System Software)[OPT]
       version: 1.8.1
       archive_file: /sources/jq-1.8.1.tar.gz
       source_dir: /sources/jq-1.8.1
@@ -3701,7 +3701,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0116 - LVM2 (Basic System Software) OPTIONAL
+    - name: 0116 - LVM2 (Basic System Software)[OPT]
       version: 2.2.03.38
       archive_file: /sources/LVM2.2.03.38.tgz
       source_dir: /sources/LVM2.2.03.38
@@ -3723,7 +3723,7 @@ jenkins_jobs:
         '
 
     # TODO I think we can remove it because in Swig I use --without-pcre, but I will keep it for now
-    - name: 0116B - PCRE2 (Basic System Software) OPTIONAL
+    - name: 0116B - PCRE2 (Basic System Software)[DNF]
       version: pcre2-10.40
       archive_file: false
       source_dir: /sources/pcre2-10.40
@@ -3744,7 +3744,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0116A - Swig (Basic System Software) OPTIONAL
+    - name: 0116A - Swig (Basic System Software)[DNF]
       version: 4.0.2
       archive_file: https://sourceforge.net/projects/swig/files/swig/swig-4.0.2/swig-4.0.2.tar.gz
       source_dir: /sources/swig-4.0.2
@@ -3762,7 +3762,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0116A000 - yaml (Basic System Software) OPTIONAL
+    - name: 0116A000 - yaml (Basic System Software)[DNF]
       version: 0.2.5
       archive_file: false
       git_url: https://github.com/yaml/libyaml.git
@@ -3784,7 +3784,7 @@ jenkins_jobs:
           ldconfig
         '
 
-    - name: 0116A001 - popt (Basic System Software) OPTIONAL
+    - name: 0116A001 - popt (Basic System Software)[DNF]
       version: 1.19
       archive_file: false
       git_url: https://github.com/rpm-software-management/popt.git
@@ -3807,7 +3807,7 @@ jenkins_jobs:
           ldconfig
         '
 
-    - name: 0116A002 - sqlite3 (Basic System Software) OPTIONAL
+    - name: 0116A002 - sqlite3 (Basic System Software)[DNF]
       version: 3.45.1
       archive_file: false
       git_url: https://github.com/sqlite/sqlite.git
@@ -3837,7 +3837,7 @@ jenkins_jobs:
           ldconfig
         '
 
-    - name: 0116A003 - lua (Basic System Software) OPTIONAL
+    - name: 0116A003 - lua (Basic System Software)[DNF]
       version: 5.4.6
       archive_file: https://www.lua.org/ftp/lua-5.4.6.tar.gz
       source_dir: /sources/lua-5.4.6
@@ -3860,7 +3860,7 @@ jenkins_jobs:
           ldconfig
         '
 
-    - name: 0116A004 - libcomps (Basic System Software) OPTIONAL
+    - name: 0116A004 - libcomps (Basic System Software)[DNF]
       version: 0.1.18
       archive_file: false
       git_url: https://github.com/rpm-software-management/libcomps.git
@@ -3891,7 +3891,7 @@ jenkins_jobs:
         ldconfig
         '
 
-    - name: 0116A004 - rpm (Basic System Software) OPTIONAL
+    - name: 0116A004 - rpm (Basic System Software)[DNF]
       version: 4.16.1.3
       archive_file: false
       git_url: https://github.com/rpm-software-management/rpm.git
@@ -3956,7 +3956,7 @@ jenkins_jobs:
           ldconfig
         '
 
-    - name: 0116A005 - gobject-introspection (Basic System Software) OPTIONAL
+    - name: 0116A005 - gobject-introspection (Basic System Software)[DNF]
       version: 1.68.0
       archive_file: https://download.gnome.org/sources/gobject-introspection/1.68/gobject-introspection-1.68.0.tar.xz
       source_dir: /sources/gobject-introspection-1.68.0
@@ -3995,7 +3995,7 @@ jenkins_jobs:
           ldconfig
         '
 
-    - name: 0116A005 - zchunk (Basic System Software) OPTIONAL
+    - name: 0116A005 - zchunk (Basic System Software)[DNF]
       version: 1.5.1
       archive_file: false
       git_url: https://github.com/zchunk/zchunk.git
@@ -4017,7 +4017,7 @@ jenkins_jobs:
           ninja install
         '
   
-    - name: 0116A006 - librepo (Basic System Software) OPTIONAL
+    - name: 0116A006 - librepo (Basic System Software)[DNF]
       version: 1.14.5
       archive_file: false
       git_url: https://github.com/rpm-software-management/librepo.git
@@ -4047,7 +4047,7 @@ jenkins_jobs:
           ldconfig
         '
   
-    - name: 0116A00 - libmodulemd (Basic System Software) OPTIONAL
+    - name: 0116A00 - libmodulemd (Basic System Software)[DNF]
       version: 2.15.0
       archive_file: false
       source_dir: /sources/libmodulemd-2.15.0
@@ -4079,7 +4079,7 @@ jenkins_jobs:
 
         '
 
-    - name: 0116A0 - json-c (Basic System Software) OPTIONAL
+    - name: 0116A0 - json-c (Basic System Software)[DNF]
       version: 0.18
       archive_file: /sources/json-c-0.18.tar.gz
       git_url: https://github.com/json-c/json-c.git
@@ -4103,7 +4103,7 @@ jenkins_jobs:
           make
           make install
         '
-    - name: 0116A1 - libsolv (Basic System Software) OPTIONAL
+    - name: 0116A1 - libsolv (Basic System Software)[DNF]
       version: 0.7.30
       archive_file: false
       source_dir: /sources/libsolv-0.7.30
@@ -4152,7 +4152,7 @@ jenkins_jobs:
         sudo sed -i 's/^Version:.*/Version: 0.7.36/' /mnt/lfs/sources/usr/lib/pkgconfig/libsolv.pc
 
   
-    - name: 0116A004 - rpm (Basic System Software) OPTIONAL
+    - name: 0116A004 - rpm (Basic System Software)[DNF]
       version: 4.16.1.3
       archive_file: false
       git_url: https://github.com/rpm-software-management/rpm.git
@@ -4186,7 +4186,7 @@ jenkins_jobs:
           python3 -c "import rpm; print('rpm OK')"
         '
 
-    - name: 0116A - libdnf bootstrap (Basic System Software) OPTIONAL
+    - name: 0116A - libdnf bootstrap (Basic System Software)[DNF]
       version: 0.69.0
       archive_file: false
       source_dir: /sources/libdnf-0.69.0
@@ -4223,7 +4223,7 @@ jenkins_jobs:
           ldconfig
         '
 
-    - name: 0117 - dnf (Basic System Software) OPTIONAL
+    - name: 0117 - dnf (Basic System Software)[PackageManager]
       version: 4.14.0
       archive_file: false
       source_dir: /sources/dnf-4.14.0
@@ -4263,7 +4263,7 @@ jenkins_jobs:
           make install
         '
 
-    - name: 0002 - BLFS-bootscripts-IPTABLES OPTIONAL (System Configuration)
+    - name: 0002 - BLFS-bootscripts-IPTABLES[OPT] (System Configuration)
       version: 20250225
       archive_file: /sources/blfs-bootscripts-20250225.tar.xz
       source_dir: /sources/blfs-bootscripts-20250225
