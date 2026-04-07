@@ -1,17 +1,17 @@
+<div style="font-family: 'Courier New', Courier, monospace;">
+
 # Generic Distro ToolKit
 
-I am building an Enterprise Linux OS and creating many Jenkins jobs...
+Building an Enterprise Linux distro and automating everything with Jenkins.
 
-If you would like to join, I can offer my infrastructure for collaboration.
+If you want to collaborate, infrastructure is available.
 
-  echo "  ██████╗  ██████╗ ████████╗    ██╗     ██╗███╗   ██╗██╗   ██╗██╗  ██╗"
-  echo "  ██╔══██╗██╔═══██╗╚══██╔══╝    ██║     ██║████╗  ██║██║   ██║╚██╗██╔╝"
-  echo "  ██║  ██║██║   ██║   ██║       ██║     ██║██╔██╗ ██║██║   ██║ ╚███╔╝ "
-  echo "  ██║  ██║██║   ██║   ██║       ██║     ██║██║╚██╗██║██║   ██║ ██╔██╗ "
-  echo "  ██████╔╝╚██████╔╝   ██║       ███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗"
-  echo "  ╚═════╝  ╚═════╝    ╚═╝       ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝"
-  echo ""
-  echo "  DevOpsTribe Linux - Powered by DevOpsTribe.it & GarantiDelTalento.it"
-  echo "  LFS 12.3 Build System"
+```text
+DevOpsTribe Linux
+Based on LFS 12.3 Build System
+Powered by DevOpsTribe.it + GarantiDelTalento.it
+```
 
--- LuCkySideburn From Villa Gordiano (Roma) OpenSource Hub--
+— LuCkySideburn, Villa Gordiani (Roma) OpenSource Hub
+
+</div>
