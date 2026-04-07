@@ -337,7 +337,7 @@ jenkins_jobs:
                     --enable-new-dtags  \
                     --enable-default-hash-style=gnu
         make
-        make install
+        sudo make install
 
     - name: 0002 - GCC Pass 1 (Cross Toolchain)
       archive_file: /mnt/lfs/sources/gcc-14.2.0.tar.xz
@@ -391,7 +391,7 @@ jenkins_jobs:
             --disable-libstdcxx       \
             --enable-languages=c,c++
         make
-        make install
+        sudo make install
 
     - name: 0003 - Linux API Headers (Cross Toolchain)
       archive_file: /mnt/lfs/sources/linux-6.13.4.tar.xz
@@ -494,7 +494,7 @@ jenkins_jobs:
                     --host=$LFS_TGT \
                     --build=$(build-aux/config.guess)
         make
-        make DESTDIR=$LFS install
+        sudo make DESTDIR=$LFS install
 
     - name: 0002 - Ncurses (Cross Compiling Temporary Tools)
       version: 6.5
@@ -545,7 +545,7 @@ jenkins_jobs:
                     --host=$LFS_TGT                    \
                     --without-bash-malloc
         make
-        make DESTDIR=$LFS install
+        sudo sudo make install
         ln -sv bash $LFS/bin/sh || echo "Symlink bash to sh failed, continuing anyway"
 
     - name: 0004 - Coreutils (Cross Compiling Temporary Tools)
@@ -563,7 +563,7 @@ jenkins_jobs:
                 --enable-install-program=hostname \
                 --enable-no-install-program=kill,uptime
             make
-            make DESTDIR=$LFS install
+            sudo sudo make install
             mv -v $LFS/usr/bin/chroot              $LFS/usr/sbin
       # TODO - I have commented this out, think if I need it man pages for chroot            
       # mkdir -pv $LFS/usr/share/man/man8 || echo "Creating directory /usr/share
@@ -583,7 +583,7 @@ jenkins_jobs:
                     --host=$LFS_TGT \
                     --build=$(./build-aux/config.guess)
         make
-        make DESTDIR=$LFS install
+        sudo make DESTDIR=$LFS install
 
     - name: 0006 - File (Cross Compiling Temporary Tools)
       version: 5.46
@@ -604,7 +604,7 @@ jenkins_jobs:
         popd
         ./configure --prefix=/usr --host=$LFS_TGT --build=$(./config.guess)
         make FILE_COMPILE=$(pwd)/build/src/file
-        make DESTDIR=$LFS install
+        sudo make DESTDIR=$LFS install
         rm -v $LFS/usr/lib/libmagic.la
   
     - name: 0007 - Findutils (Cross Compiling Temporary Tools)
@@ -621,7 +621,7 @@ jenkins_jobs:
                     --host=$LFS_TGT                 \
                     --build=$(build-aux/config.guess)
           make
-          make DESTDIR=$LFS install  
+          sudo sudo make install 
 
     - name: 0008 - Gawk (Cross Compiling Temporary Tools)
       version: 5.3.1
@@ -637,7 +637,7 @@ jenkins_jobs:
                     --host=$LFS_TGT \
                     --build=$(build-aux/config.guess)
         make
-        make DESTDIR=$LFS install
+        sudo make DESTDIR=$LFS install
 
     - name: 0009 - Grep (Cross Compiling Temporary Tools)
       version: 3.11
@@ -652,7 +652,7 @@ jenkins_jobs:
                     --host=$LFS_TGT \
                     --build=$(./build-aux/config.guess)
         make
-        make DESTDIR=$LFS install
+        sudo sudo make install
 
     - name: 0010 - Gzip (Cross Compiling Temporary Tools)
       version: 1.13
@@ -665,7 +665,7 @@ jenkins_jobs:
       build_command: |
         ./configure --prefix=/usr --host=$LFS_TGT
         make
-        make DESTDIR=$LFS install
+        sudo make DESTDIR=$LFS install
 
     - name: 0011 - Make (Cross Compiling Temporary Tools)
       version: 4.4.1
@@ -681,7 +681,7 @@ jenkins_jobs:
                     --host=$LFS_TGT \
                     --build=$(build-aux/config.guess)
         make
-        make DESTDIR=$LFS install
+        sudo make DESTDIR=$LFS install
 
     - name: 0012 - Patch (Cross Compiling Temporary Tools)
       version: 2.7.6
@@ -696,7 +696,7 @@ jenkins_jobs:
                     --host=$LFS_TGT \
                     --build=$(build-aux/config.guess)
         make
-        make DESTDIR=$LFS install
+        sudo make DESTDIR=$LFS install
 
     - name: 0013 - Sed (Cross Compiling Temporary Tools)
       version: 4.9 
@@ -711,7 +711,7 @@ jenkins_jobs:
                     --host=$LFS_TGT \
                     --build=$(./build-aux/config.guess)
         make
-        make DESTDIR=$LFS install
+        sudo make DESTDIR=$LFS install
 
     - name: 0014 - Tar (Cross Compiling Temporary Tools)
       version: 1.35
@@ -726,7 +726,7 @@ jenkins_jobs:
                     --host=$LFS_TGT                   \
                     --build=$(build-aux/config.guess)
         make
-        make DESTDIR=$LFS install
+        sudo make DESTDIR=$LFS install
 
     - name: 0015 - Xz (Cross Compiling Temporary Tools)
       version: 5.6.4
@@ -743,7 +743,7 @@ jenkins_jobs:
                     --disable-static                  \
                     --docdir=/usr/share/doc/xz-5.6.4
         make
-        make DESTDIR=$LFS install
+        sudo make DESTDIR=$LFS install
         rm -v $LFS/usr/lib/liblzma.la
 
     - name: 0016 - Binutils (Cross Compiling Temporary Tools)
@@ -775,7 +775,7 @@ jenkins_jobs:
             --enable-new-dtags         \
             --enable-default-hash-style=gnu
         make
-        make DESTDIR=$LFS install
+        sudo make DESTDIR=$LFS install
         rm -v $LFS/usr/lib/lib{bfd,ctf,ctf-nobfd,opcodes,sframe}.{a,la}
 
     - name: 0017 - GCC Pass 2 (Cross Compiling Temporary Tools)
@@ -826,7 +826,7 @@ jenkins_jobs:
             --disable-libvtv                               \
             --enable-languages=c,c++
             make
-            make DESTDIR=$LFS install
+            sudo make DESTDIR=$LFS install
             if [ -L $LFS/usr/bin/cc ];then
               sudo unlink $LFS/usr/bin/cc
             fi
@@ -990,7 +990,7 @@ jenkins_jobs:
           ./configure --prefix=/usr \
                       --docdir=/usr/share/doc/bison-3.8.2
           make
-          make install
+          sudo make install
         '
 
     - name: 0004 - Perl (Chroot and Building Additional Temporary Tools)
@@ -1017,7 +1017,7 @@ jenkins_jobs:
                       -D vendorlib=/usr/lib/perl5/5.40/vendor_perl \
                       -D vendorarch=/usr/lib/perl5/5.40/vendor_perl 
           make
-          make install
+          sudo make install
         '
 
     - name: 0005 - Python (Chroot and Building Additional Temporary Tools)
@@ -1037,7 +1037,7 @@ jenkins_jobs:
                       --enable-shared \
                       --without-ensurepip
           make
-          make install
+          sudo make install
         '
 
     - name: 0006 - Texinfo (Chroot and Building Additional Temporary Tools)
@@ -1055,7 +1055,7 @@ jenkins_jobs:
           cd /sources/texinfo-7.2
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0007 - Util-linux (Chroot and Building Additional Temporary Tools)
@@ -1087,7 +1087,7 @@ jenkins_jobs:
                       ADJTIME_PATH=/var/lib/hwclock/adjtime \
                       --docdir=/usr/share/doc/util-linux-2.40.4
           make
-          make install
+          sudo make install
         '
 
     - name: 0008 - Cleaning up and Saving the Temporary System (Chroot and Building Additional Temporary Tools)
@@ -1170,7 +1170,7 @@ jenkins_jobs:
                       --disable-nscd                           \
                       libc_cv_slibdir=/usr/lib
           make
-          make install 
+          sudo make install
           sed '/RTLDLIST=/s@/usr@@g' -i /usr/bin/ldd
           localedef -i C -f UTF-8 C.UTF-8
           localedef -i cs_CZ -f UTF-8 cs_CZ.UTF-8
@@ -1261,7 +1261,7 @@ jenkins_jobs:
           cd /sources/zlib-1.3.1
           ./configure --prefix=/usr
           make check
-          make install
+          sudo make install
           rm -fv /usr/lib/libz.a
         '
 
@@ -1314,7 +1314,7 @@ jenkins_jobs:
                 --docdir=/usr/share/doc/xz-5.6.4
           make
           make check
-          make install
+          sudo make install
           mv -v /usr/bin/xz /bin
           mv -v /usr/lib/liblzma.so.* /lib
           ln -svf ../../lib/$(readlink /usr/lib/liblzma.so) /usr/lib/liblzma.so
@@ -1334,7 +1334,7 @@ jenkins_jobs:
         {{ chroot_start_command }} -c '
           cd /sources/lz4-1.10.0
           make
-          make install
+          sudo make install
         '
 
     - name: 0008 - Zstd (Basic System Software)
@@ -1370,7 +1370,7 @@ jenkins_jobs:
           cd /sources/file-5.46
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0010 - Readline (Basic System Software)
@@ -1388,7 +1388,7 @@ jenkins_jobs:
           cd /sources/readline-8.2.13
           ./configure --prefix=/usr --disable-static --with-curses --docdir=/usr/share/doc/readline-8.2.13
           make SHLIB_LIBS="-lncursesw"
-          make install
+          sudo make install
           mv -v /usr/lib/lib{readline,history}.so.* /lib
           ln -sfv ../../lib/$(readlink /usr/lib/libreadline.so) /usr/lib/libreadline.so
           ln -sfv ../../lib/$(readlink /usr/lib/libhistory.so) /usr/lib/libhistory.so
@@ -1409,7 +1409,7 @@ jenkins_jobs:
           cd /sources/m4-1.4.19
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0012 - Bc (Basic System Software)
@@ -1428,7 +1428,7 @@ jenkins_jobs:
           CC=gcc ./configure --prefix=/usr -G -O3 -r
           make
           make test
-          make install
+          sudo make install
         '
 
     - name: 0013 - Flex (Basic System Software)
@@ -1446,7 +1446,7 @@ jenkins_jobs:
           cd /sources/flex-2.6.4
           ./configure --prefix=/usr --docdir=/usr/share/doc/flex-2.6.4
           make
-          make install
+          sudo make install
           if [ -L /usr/bin/lex ];then
             unlink /usr/bin/lex
           fi
@@ -1468,9 +1468,9 @@ jenkins_jobs:
           cd /sources/tcl8.6.16/unix
           ./configure --prefix=/usr --mandir=/usr/share/man
           make
-          make install
+          sudo make install
           chmod -v u+w /usr/lib/libtcl8.6.so
-          make install-private-headers
+          sudo make install-private-headers
           ln -sfv tclsh8.6 /usr/bin/tclsh
         '
 
@@ -1499,7 +1499,7 @@ jenkins_jobs:
                       --with-tclinclude=/usr/include
           make
           make test
-          make install
+          sudo make install
           ln -svf expect5.45.4/libexpect5.45.4.so /usr/lib
         '
 
@@ -1517,7 +1517,7 @@ jenkins_jobs:
         {{ chroot_start_command }} -c '
           cd /sources/dejagnu-1.6.3
           ./configure --prefix=/usr
-          make install
+          sudo make install
         '
 
     - name: 0017 - Pkgconf (Basic System Software)
@@ -1535,7 +1535,7 @@ jenkins_jobs:
           cd /sources/pkgconf-2.3.0
           ./configure --prefix=/usr --disable-static
           make
-          make install
+          sudo make install
         '
 
     - name: 0017A - pkg-config (Basic System Software)
@@ -1557,7 +1557,7 @@ jenkins_jobs:
                       --docdir=/usr/share/doc/pkg-config-0.29.2
           make
           make check
-          make install
+          sudo make install
         '
 
     - name: 0018 - Binutils (Basic System Software)
@@ -1597,8 +1597,8 @@ jenkins_jobs:
           ./configure --prefix=/usr --enable-cxx --disable-static --docdir=/usr/share/doc/gmp-6.3.0
           make
           make html
-          make install
-          make install-html
+          sudo make install
+          sudo make install-html
         '
 
     - name: 0020 - MPFR (Basic System Software)
@@ -1617,8 +1617,8 @@ jenkins_jobs:
           ./configure --prefix=/usr --disable-static --with-gmp=/usr --docdir=/usr/share/doc/mpfr-4.2.1
           make
           make html
-          make install
-          make install-html
+          sudo make install
+          sudo make install-html
         '
 
     - name: 0021 - MPC (Basic System Software)
@@ -1637,8 +1637,8 @@ jenkins_jobs:
           ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/mpc-1.3.1
           make
           make html
-          make install
-          make install-html
+          sudo make install
+          sudo make install-html
         '
 
     - name: 0022 - Attr (Basic System Software)
@@ -1656,7 +1656,7 @@ jenkins_jobs:
           cd /sources/attr-2.5.2
           ./configure --prefix=/usr --disable-static --sysconfdir=/etc
           make
-          make install
+          sudo make install
         '
 
     - name: 0023 - Acl (Basic System Software)
@@ -1674,7 +1674,7 @@ jenkins_jobs:
           cd /sources/acl-2.3.2
           ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/acl-2.3.2
           make
-          make install
+          sudo make install
         '
 
     - name: 0024 - Libcap (Basic System Software)
@@ -1709,7 +1709,7 @@ jenkins_jobs:
           cd /sources/libxcrypt-4.4.38
           ./configure --prefix=/usr --disable-static --enable-hashes=strong --enable-obsolete-api=no --disable-failure-tokens
           make
-          make install
+          sudo make install
         '
 
     - name: 0026 - Shadow (Basic System Software)
@@ -1768,7 +1768,7 @@ jenkins_jobs:
                       --disable-fixincludes    \
                       --with-system-zlib
           make
-          make install
+          sudo make install
           chown -v -R root:root \
           /usr/lib/gcc/$(gcc -dumpmachine)/14.2.0/include{,-fixed}
           ln -svr /usr/bin/cpp /usr/lib || echo "Linking cpp failed, continuing anyway"
@@ -1794,7 +1794,7 @@ jenkins_jobs:
           ./configure --prefix=/usr --mandir=/usr/share/man --with-shared --with-termlib --without-debug --without-ada --enable-widec --enable-pc-files --with-pkg-config-libdir=/usr/lib/pkgconfig
 
           make
-          make install
+          sudo make install
           mv -v /usr/lib/libncursesw.so.* /lib
           ln -sfv ../../lib/$(readlink /usr/lib/libncursesw.so) /usr/lib/libncursesw.so
           for lib in ncurses form panel menu ; do
@@ -1839,8 +1839,8 @@ jenkins_jobs:
           ./configure --prefix=/usr
           make
           make html
-          make install
-          make install
+          sudo make install
+          sudo make install
           install -d -m755           /usr/share/doc/sed-4.9
           install -m644 doc/sed.html /usr/share/doc/sed-4.9
         '
@@ -1860,7 +1860,7 @@ jenkins_jobs:
           cd /sources/psmisc-23.7
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0031 - Gettext (Basic System Software)
@@ -1905,7 +1905,7 @@ jenkins_jobs:
           cd /sources/bison-3.8.2
           ./configure --prefix=/usr --docdir=/usr/share/doc/bison-3.8.2
           make
-          make install
+          sudo make install
         '
 
     - name: 0033 - Grep (Basic System Software)
@@ -1924,7 +1924,7 @@ jenkins_jobs:
           sed -i "s/echo/#echo/" src/egrep.sh
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0034 - Bash-5.2.37 (Basic System Software)
@@ -1942,7 +1942,7 @@ jenkins_jobs:
           cd /sources/bash-5.2.37
           ./configure --prefix=/usr --docdir=/usr/share/doc/bash-5.2.37 --without-bash-malloc --with-installed-readline
           make
-          make install
+          sudo make install
           if [ -f /bin/sh ]; then
             rm -vf /bin/sh
           fi
@@ -1964,7 +1964,7 @@ jenkins_jobs:
           cd /sources/libtool-2.5.4
           ./configure --prefix=/usr M4=/usr/bin/m4
           make
-          make install
+          sudo make install 
         '
 
     - name: 0036 - GDBM (Basic System Software)
@@ -1982,7 +1982,7 @@ jenkins_jobs:
           cd /sources/gdbm-1.24
           ./configure --prefix=/usr --disable-static --enable-libgdbm-compat --docdir=/usr/share/doc/gdbm-1.24
           make
-          make install
+          sudo make install
         '
 
     - name: 0037 - Gperf (Basic System Software)
@@ -2000,7 +2000,7 @@ jenkins_jobs:
           cd /sources/gperf-3.1
           ./configure --prefix=/usr --docdir=/usr/share/doc/gperf-3.1
           make
-          make install
+          sudo make install
         '
 
     - name: 0038 - Expat (Basic System Software)
@@ -2021,7 +2021,7 @@ jenkins_jobs:
                       --docdir=/usr/share/doc/expat-2.7.1
           make
           make check
-          make install
+          sudo make install
           install -v -m644 doc/*.{html,css} /usr/share/doc/expat-2.7.1
         '
 
@@ -2040,7 +2040,7 @@ jenkins_jobs:
           cd /sources/inetutils-2.6
           CFLAGS='-Wno-error=implicit-function-declaration -DPATH_PROCNET_DEV=\"/proc/net/dev\"' ./configure --prefix=/usr --localstatedir=/var --disable-logger --disable-whois --disable-rcp --disable-rexec --disable-rlogin --disable-rsh --disable-servers
           make
-          make install
+          sudo make install
         '
 
     - name: 0040 - Less (Basic System Software)
@@ -2058,7 +2058,7 @@ jenkins_jobs:
           cd /sources/less-668
           ./configure --prefix=/usr --sysconfdir=/etc
           make
-          make install
+          sudo make install
         '
 
     - name: 0041 - Perl (Basic System Software)
@@ -2076,7 +2076,7 @@ jenkins_jobs:
           cd /sources/perl-5.40.1
           sh Configure -des -Dprefix=/usr -Dvendorprefix=/usr -Duseshrplib -Dprivlib=/usr/lib/perl5/5.40/core_perl -Darchlib=/usr/lib/perl5/5.40/core_perl -Dsitelib=/usr/lib/perl5/5.40/site_perl -Dsitearch=/usr/lib/perl5/5.40/site_perl -Dvendorlib=/usr/lib/perl5/5.40/vendor_perl -Dvendorarch=/usr/lib/perl5/5.40/vendor_perl
           make
-          make install
+          sudo make install
         '
 
     - name: 0042 - XML Parser (Basic System Software)
@@ -2095,7 +2095,7 @@ jenkins_jobs:
           perl Makefile.PL
           make
           make test
-          make install
+          sudo make install
         '
 
     - name: 0043 - Intltool (Basic System Software)
@@ -2113,7 +2113,7 @@ jenkins_jobs:
           cd /sources/intltool-0.51.0
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0044 - Autoconf (Basic System Software)
@@ -2131,7 +2131,7 @@ jenkins_jobs:
           cd /sources/autoconf-2.72
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0045 - Automake (Basic System Software)
@@ -2149,7 +2149,7 @@ jenkins_jobs:
           cd /sources/automake-1.17
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0046 - OpenSSL (Basic System Software)
@@ -2167,7 +2167,7 @@ jenkins_jobs:
           cd /sources/openssl-3.4.1
           ./config --prefix=/usr --openssldir=/etc/ssl --libdir=lib shared zlib-dynamic
           make
-          make install
+          sudo make install
         '
 
     - name: 0047 - Libelf (Basic System Software)
@@ -2209,7 +2209,7 @@ jenkins_jobs:
           cd /sources/libffi-3.4.7
           ./configure --prefix=/usr --disable-static --with-gcc-arch=native --disable-exec-static-tramp
           make
-          make install
+          sudo make install
         '
 
     - name: 0049 - Python (Basic System Software)
@@ -2233,7 +2233,7 @@ jenkins_jobs:
           ./configure --prefix=/usr --enable-shared --with-system-expat --with-system-ffi --enable-optimizations
           make clean
           make
-          make install
+          sudo make install
           echo "[global]" > /etc/pip.conf
           echo "root-user-action = ignore" >> /etc/pip.conf
           echo "disable-pip-version-check = true" >> /etc/pip.conf
@@ -2395,7 +2395,7 @@ jenkins_jobs:
                       --enable-no-install-program=kill,uptime
           make
           make NON_ROOT_USERNAME=tester check-root
-          make install
+          sudo make install
           mv -v /usr/bin/chroot /usr/sbin
           mv -v /usr/share/man/man1/chroot.1 /usr/share/man/man8/chroot.8
           sed -i 's/"1"/"8"/' /usr/share/man/man8/chroot.8
@@ -2416,7 +2416,7 @@ jenkins_jobs:
           cd /sources/check-0.15.2
           ./configure --prefix=/usr --disable-static
           make
-          make install
+          sudo make install
         '
 
     - name: 0058 - Diffutils (Basic System Software)
@@ -2435,7 +2435,7 @@ jenkins_jobs:
           ./configure --prefix=/usr
           make clean
           make
-          make install
+          sudo make install
         '
 
     - name: 0059 - Gawk (Basic System Software)
@@ -2453,7 +2453,7 @@ jenkins_jobs:
           cd /sources/gawk-5.3.1
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0060 - Findutils (Basic System Software)
@@ -2472,7 +2472,7 @@ jenkins_jobs:
           ./configure --prefix=/usr --localstatedir=/var/lib/locate
           make clean
           make
-          make install
+          sudo make install
         '
 
     - name: 0061 - Groff (Basic System Software)
@@ -2491,7 +2491,7 @@ jenkins_jobs:
           cd /sources/groff-1.23.0
           PAGE=A4 ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0062 - GRUB (Basic System Software)
@@ -2513,8 +2513,7 @@ jenkins_jobs:
                       --disable-efiemu       \
                       --disable-werror
           make
-          make install
-          make install
+          sudo make install
           mv -v /etc/bash_completion.d/grub /usr/share/bash-completion/completions
         '
 
@@ -2533,7 +2532,7 @@ jenkins_jobs:
           cd /sources/gzip-1.13
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0064 - IPRoute2 (Basic System Software)
@@ -2551,7 +2550,7 @@ jenkins_jobs:
           cd /sources/iproute2-6.13.0
           ./configure
           make
-          make install
+          sudo make install
         '
 
     - name: 0065 - Kbd (Basic System Software)
@@ -2569,7 +2568,7 @@ jenkins_jobs:
           cd /sources/kbd-2.7.1
           ./configure --prefix=/usr --disable-vlock --disable-static --docdir=/usr/share/doc/kbd-2.7.1
           make
-          make install
+          sudo make install
         '
 
     - name: 0066 - Libpipeline (Basic System Software)
@@ -2587,7 +2586,7 @@ jenkins_jobs:
           cd /sources/libpipeline-1.5.8
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0067 - Make (Basic System Software)
@@ -2605,7 +2604,7 @@ jenkins_jobs:
           cd /sources/make-4.4.1
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0068 - Patch (Basic System Software)
@@ -2627,7 +2626,7 @@ jenkins_jobs:
           cd /sources/patch-2.7.6
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0069 - Tar (Basic System Software)
@@ -2645,7 +2644,7 @@ jenkins_jobs:
           cd /sources/tar-1.35
           FORCE_UNSAFE_CONFIGURE=1 ./configure --prefix=/usr --bindir=/bin
           make
-          make install
+          sudo make install
         '
 
     - name: 0070 - Texinfo (Basic System Software)
@@ -2663,7 +2662,7 @@ jenkins_jobs:
           cd /sources/texinfo-7.2
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0071 - Vim (Basic System Software)
@@ -2681,7 +2680,7 @@ jenkins_jobs:
           cd /sources/vim-9.1.1166
           ./configure --prefix=/usr --enable-multibyte
           make
-          make install
+          sudo make install
         '
 
     - name: 0072 - MarkupSafe (Basic System Software)
@@ -2774,7 +2773,7 @@ jenkins_jobs:
           cd /sources/man-db-2.13.0
           ./configure --prefix=/usr --docdir=/usr/share/doc/man-db-2.13.0 --sysconfdir=/etc --disable-setuid --enable-cache-owner=bin --with-browser=/usr/bin/lynx --with-vgrind=/usr/bin/vgrind --with-grap=/usr/bin/grap --with-systemdtmpfilesdir=
           make
-          make install
+          sudo make install
         '
 
     - name: 0076 - Procps-ng (Basic System Software)
@@ -2793,7 +2792,7 @@ jenkins_jobs:
           cd /sources/procps-ng-4.0.5
           ./configure --prefix=/usr --docdir=/usr/share/doc/procps-ng-4.0.5 --disable-static --disable-kill
           make
-          make install
+          sudo make install
         '
 
     - name: 0077 - Util-linux (Basic System Software)
@@ -2818,7 +2817,7 @@ jenkins_jobs:
           fi
 
           make
-          make install
+          sudo make install
         '
 
     - name: 0078 - E2fsprogs (Basic System Software)
@@ -2846,7 +2845,7 @@ jenkins_jobs:
                       --disable-fsck
           make
           make check
-          make install
+          sudo make install
           rm -fv /usr/lib/{libcom_err,libe2p,libext2fs,libss}.a
           gunzip -v /usr/share/info/libext2fs.info.gz
           install-info --dir-file=/usr/share/info/dir /usr/share/info/libext2fs.info
@@ -2868,7 +2867,7 @@ jenkins_jobs:
           cd /sources/sysklogd-2.7.0
           ./configure --prefix=/usr --sysconfdir=/etc
           make
-          make install
+          sudo make install
         '
 
     - name: 0080 - SysVinit (Basic System Software)
@@ -2888,7 +2887,7 @@ jenkins_jobs:
           cd /sources/sysvinit-3.14
           patch -Np1 -i ../sysvinit-3.14-consolidated-1.patch
           make
-          make install
+          sudo make install
         '
 
     - name: 0081 - openssh (Basic System Software)
@@ -2910,7 +2909,7 @@ jenkins_jobs:
                       --with-privsep-path=/var/lib/sshd
 
           make
-          make install
+          sudo make install
           /bin/cp /sources/conf_tmp/sshd_config /etc/ssh/sshd_config
           groupadd -g 33 sshd || echo "Group sshd already exists, continuing anyway"
           useradd -c "sshd Privsep" -d /var/lib/sshd -g sshd -s /bin/false -u 33 sshd || echo "User sshd already exists, continuing anyway"
@@ -2969,7 +2968,7 @@ jenkins_jobs:
           make -C doc html                                    
           makeinfo --html --no-split -o doc/gcrypt_nochunks.html doc/gcrypt.texi
           makeinfo --plaintext       -o doc/gcrypt.txt           doc/gcrypt.texi
-          make install
+          sudo make install
           install -v -dm755   /usr/share/doc/libgcrypt-1.11.1
           install -v -m644    README doc/{README.apichanges,fips*,libgcrypt*} \
                               /usr/share/doc/libgcrypt-1.11.1
@@ -2998,7 +2997,7 @@ jenkins_jobs:
           cd /sources/libksba-1.6.7
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0086 - npth (Basic System Software) OPTIONAL
@@ -3016,7 +3015,7 @@ jenkins_jobs:
           cd /sources/npth-1.8
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
     - name: 0087 - libgpg-error (Basic System Software) OPTIONAL
       version: 1.55
@@ -3033,7 +3032,7 @@ jenkins_jobs:
           cd /sources/libgpg-error-1.55
           ./configure --prefix=/usr --enable-install-gpg-error-config
           make
-          make install
+          sudo make install
           install -v -m644 -D README /usr/share/doc/libgpg-error-1.55/README
         '
     # TODO: GnuPG Made Easy. NOTE: Maintainers are not tracking this mirror. Do not make pull requests here, nor comment any commits, submit them usual way to bug tracker
@@ -3053,16 +3052,16 @@ jenkins_jobs:
           # ./autogen.sh
           # ./configure --prefix=/usr --disable-static
           # make
-          # make install
+          # sudo make install
 
           cd /sources/gpgme-1.15.1
           ./configure --prefix=/usr ac_cv_func_closefrom=no
           sed -i 's/1.15.1-unknown/1.15.1/' lang/python/setup.py
           make CFLAGS="-O2 -Wno-array-bounds"
-          make install
+          sudo make install
 
 
-          # TODO: Understand why gpgme-config is not being installed by the make install command and why we need to create it manually
+          # TODO: Understand why gpgme-config is not being installed by the sudo make install command and why we need to create it manually
           # /usr/bin/printf "%s\n" \
           #   "#!/bin/bash" \
           #   "case \"\$1\" in" \
@@ -3101,7 +3100,7 @@ jenkins_jobs:
           makeinfo --html --no-split -o doc/assuan_nochunks.html doc/assuan.texi
           makeinfo --plaintext -o doc/assuan.txt doc/assuan.texi
           make -C doc pdf ps
-          make install
+          sudo make install
           install -v -dm755 /usr/share/doc/libassuan-2.5.5/html
           install -v -m644 doc/assuan.html/* /usr/share/doc/libassuan-2.5.5/html
           install -v -m644 doc/assuan_nochunks.html /usr/share/doc/libassuan-2.5.5
@@ -3134,7 +3133,7 @@ jenkins_jobs:
           makeinfo --plaintext       -I doc -o doc/gnupg.txt           ../doc/gnupg.texi
           make -C doc html
           make -C doc pdf
-          make install
+          sudo make install
 
           install -v -m755 -d /usr/share/doc/gnupg-2.4.8/html
           install -v -m644    doc/gnupg_nochunks.html \
@@ -3228,7 +3227,7 @@ jenkins_jobs:
         {{ chroot_start_command }} -c '
           cd /sources/conmon
           make
-          make install
+          sudo make install
           make crio
           /bin/cp /sources/cri-o-1.33.1/bin/pinns /usr/local/bin
         '
@@ -3268,7 +3267,7 @@ jenkins_jobs:
           cd /sources/libidn2-2.3.8
           ./configure --prefix=/usr --disable-static
           make
-          make install
+          sudo make install
         '
 
     - name: 0096 - libunistring (Basic System Software) OPTIONAL
@@ -3286,7 +3285,7 @@ jenkins_jobs:
           cd /sources/libunistring-1.3
           ./configure --prefix=/usr --disable-static
           make
-          make install
+          sudo make install
         '
 
     - name: 0097 - curl (Basic System Software) OPTIONAL
@@ -3307,7 +3306,7 @@ jenkins_jobs:
             --with-openssl   \
             --with-ca-path=/etc/ssl/certs
           make
-          make install
+          sudo make install
         '
     - name: 0098 - asciidoc (Basic System Software) OPTIONAL
       version: 9.1.0
@@ -3328,7 +3327,7 @@ jenkins_jobs:
                       --sysconfdir=/etc \
                       --docdir=/usr/share/doc/asciidoc-9.1.0
           make
-          make install
+          sudo make install
           make docs
         '
 
@@ -3349,7 +3348,7 @@ jenkins_jobs:
                       --disable-static \
                       --docdir=/usr/share/doc/libxslt-1.1.43
           make
-          make install
+          sudo make install
         '
 
     - name: 0100 - libxml2 (Basic System Software) OPTIONAL
@@ -3373,7 +3372,7 @@ jenkins_jobs:
                       PYTHON=/usr/bin/python3 \
                       --docdir=/usr/share/doc/libxml2-2.14.5
           make
-          make install
+          sudo make install
         '
 
     - name: 0101 - icu4c (Basic System Software) OPTIONAL
@@ -3391,7 +3390,7 @@ jenkins_jobs:
           cd /sources/icu/source
           ./configure --prefix=/usr
           make
-          make install
+          sudo make install
         '
 
     - name: 0102 - git (Basic System Software) OPTIONAL
@@ -3410,7 +3409,7 @@ jenkins_jobs:
           make configure
           ./configure --prefix=/usr --with-openssl --with-libpcre2 --with-zlib --with-curl --with-expat --with-perl=/usr/bin/perl
           make all
-          make install
+          sudo make install
         '
 
     - name: 0103 - libseccomp (Basic System Software) OPTIONAL
@@ -3431,7 +3430,7 @@ jenkins_jobs:
           bash autogen.sh
           ./configure --prefix=/usr --host=$LFS_TGT
           make
-          make install
+          sudo make install
         '
 
     - name: 0104 - libtasn1 (Basic System Software) OPTIONAL
@@ -3449,7 +3448,7 @@ jenkins_jobs:
           cd /sources/libtasn1-4.20.0
           ./configure --prefix=/usr --disable-static
           make
-          make install
+          sudo make install
           make -C doc/reference install-data-local
         '
 
@@ -3503,7 +3502,7 @@ jenkins_jobs:
       exec_command: |
         {{ chroot_start_command }} -c '
           cd /sources/make-ca-1.16.1
-          make install
+          sudo make install
           install -vdm755 /etc/ssl/local
           /usr/sbin/make-ca -g
         '
@@ -3525,7 +3524,7 @@ jenkins_jobs:
                       --disable-nftables \
                       --enable-libipq
           make
-          make install
+          sudo make install
         '
 
     - name: 0108 - cpio (Basic System Software)
@@ -3545,7 +3544,7 @@ jenkins_jobs:
                       --enable-mt   \
                       --with-rmt=/usr/libexec/rmt
           make
-          make install
+          sudo make install
         '
 
     - name: 0109 - Dialogs (Basic System Software) OPTIONAL
@@ -3566,7 +3565,7 @@ jenkins_jobs:
                       --enable-nls \
                       --with-libtool
           make
-          make install
+          sudo make install
         '
 
     - name: 0110 - libuv (Basic System Software) OPTIONAL
@@ -3585,7 +3584,7 @@ jenkins_jobs:
           sh autogen.sh
           ./configure --prefix=/usr --disable-static
           make
-          make install
+          sudo make install
         '
 
     - name: 0111 - libarchive (Basic System Software) OPTIONAL
@@ -3603,7 +3602,7 @@ jenkins_jobs:
           cd /sources/libarchive-3.8.5
           ./configure --prefix=/usr --disable-static
           make
-          make install
+          sudo make install
         '
     
     - name: 0112 - Cmake  (Basic System Software) OPTIONAL
@@ -3631,7 +3630,7 @@ jenkins_jobs:
                       --no-system-librhash \
                       --docdir=/share/doc/cmake-4.3.0
           make
-          make install
+          sudo make install
         '
 
     - name: 0113 - jq (Basic System Software) OPTIONAL
@@ -3650,7 +3649,7 @@ jenkins_jobs:
           autoreconf -i
           ./configure
           make
-          make install
+          sudo make install
         '
   
     - name: 0114 - Dracut (Basic System Software)
@@ -3690,7 +3689,7 @@ jenkins_jobs:
           cd /sources/libaio-0.3.113
           ./configure --prefix=/usr --libdir=/usr/lib
           make
-          make install
+          sudo make install
         '
 
     - name: 0116 - LVM2 (Basic System Software) OPTIONAL
@@ -3711,7 +3710,7 @@ jenkins_jobs:
                       --enable-pkgconfig  \
                       --enable-udev_sync
           make
-          make install 
+          sudo make install 
         '
 
     # TODO I think we can remove it because in Swig I use --without-pcre, but I will keep it for now
@@ -3733,7 +3732,7 @@ jenkins_jobs:
           ./autogen.sh
           ./configure
           make
-          make install
+          sudo make install
         '
 
     - name: 0116A - Swig (Basic System Software) OPTIONAL
@@ -3751,7 +3750,7 @@ jenkins_jobs:
           cd /sources/swig-4.0.2
           ./configure --prefix=/usr --without-maximum-compile-warnings --without-pcre
           make -j$(nproc)
-          make install
+          sudo make install
         '
 
     - name: 0116A000 - yaml (Basic System Software) OPTIONAL
@@ -3772,7 +3771,7 @@ jenkins_jobs:
           ./bootstrap
           ./configure --prefix=/usr --disable-static
           make
-          make install
+          sudo make install
           ldconfig
         '
 
@@ -3795,7 +3794,7 @@ jenkins_jobs:
           autoreconf -fiv
           ./configure --prefix=/usr --disable-static
           make
-          make install
+          sudo make install
           ldconfig
         '
 
@@ -3825,7 +3824,7 @@ jenkins_jobs:
                       -DSQLITE_ENABLE_DBSTAT_VTAB=1 \
                       -DSQLITE_SECURE_DELETE=1"
           make
-          make install
+          sudo make install
           ldconfig
         '
 
@@ -3879,7 +3878,7 @@ jenkins_jobs:
         -DENABLE_TESTS=OFF \
         -DBUILD_TESTING=OFF
         make
-        make install
+        sudo make install
         ldconfig
         '
 
@@ -3944,7 +3943,7 @@ jenkins_jobs:
           --disable-dependency-tracking
         
           make
-          make install
+          sudo make install
           ldconfig
         '
 
@@ -4035,7 +4034,7 @@ jenkins_jobs:
           -DENABLE_DOCS=OFF \
           -DENABLE_PYTHON=ON || exit 1
           make
-          make install
+          sudo make install
           ldconfig
         '
   
@@ -4093,7 +4092,7 @@ jenkins_jobs:
           -DCMAKE_BUILD_TYPE=Release      \
           -DBUILD_STATIC_LIBS=OFF
           make
-          make install
+          sudo make install
         '
     - name: 0116A1 - libsolv (Basic System Software) OPTIONAL
       version: 0.7.30
@@ -4138,7 +4137,7 @@ jenkins_jobs:
           -DWITH_LIBXML2=ON
 
           make
-          make install
+          sudo make install
           ldconfig
         '
         sudo sed -i 's/^Version:.*/Version: 0.7.36/' /mnt/lfs/sources/usr/lib/pkgconfig/libsolv.pc
@@ -4172,7 +4171,7 @@ jenkins_jobs:
           --with-sqlite  \
           --with-lua
           make -j$(nproc)
-          make install
+          sudo make install
           ldconfig
           # Verifica
           python3 -c "import rpm; print('rpm OK')"
@@ -4211,7 +4210,7 @@ jenkins_jobs:
           -DWITH_TESTS=OFF
 
           make
-          make install
+          sudo make install
           ldconfig
         '
 
@@ -4234,7 +4233,7 @@ jenkins_jobs:
         cd build
         cmake .. -DPYTHON_DESIRED="3" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DWITH_MAN=0
         make -j$(nproc)
-        make install
+        sudo make install
         '
 
   system_configuration:
@@ -4252,7 +4251,7 @@ jenkins_jobs:
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/lfs-bootscripts-20240825
-          make install
+          sudo make install
         '
 
     - name: 0002 - BLFS-bootscripts-IPTABLES OPTIONAL (System Configuration)
@@ -4268,7 +4267,7 @@ jenkins_jobs:
       build_command: |
         {{ chroot_start_command }} -c '
           cd /sources/blfs-bootscripts-20250225
-          make install-iptables
+          sudo make install-iptables
         '
 
     - name: 0003 - Linux (System Configuration)
@@ -4498,7 +4497,7 @@ jenkins_jobs:
           echo "find bin..."
           find ./ -type d -name "bin"
           find ./bin
-          make install PREFIX=/usr/local
+          sudo make install PREFIX=/usr/local
         '
 
     - name: 0003 - etcd (Containers)
