@@ -74,13 +74,6 @@ chroot_start_command: |-
       /bin/bash
 
 amd64_common_build_start_command: |-
-  echo "  ██████╗  ██████╗ ████████╗    ██╗     ██╗███╗   ██╗██╗   ██╗██╗  ██╗"
-  echo "  ██╔══██╗██╔═══██╗╚══██╔══╝    ██║     ██║████╗  ██║██║   ██║╚██╗██╔╝"
-  echo "  ██║  ██║██║   ██║   ██║       ██║     ██║██╔██╗ ██║██║   ██║ ╚███╔╝ "
-  echo "  ██║  ██║██║   ██║   ██║       ██║     ██║██║╚██╗██║██║   ██║ ██╔██╗ "
-  echo "  ██████╔╝╚██████╔╝   ██║       ███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗"
-  echo "  ╚═════╝  ╚═════╝    ╚═╝       ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝"
-  echo ""
   echo "  DevOpsTribe Linux - Powered by DevOpsTribe.it and GarantiDelTalento.it"
   echo "  LFS 12.3 Build System"
   echo "Current Directory: $(pwd)"
@@ -166,13 +159,6 @@ amd64_common_build_start_command: |-
   env
 
 aarch64_common_build_start_command: |-
-  echo "  ██████╗  ██████╗ ████████╗    ██╗     ██╗███╗   ██╗██╗   ██╗██╗  ██╗"
-  echo "  ██╔══██╗██╔═══██╗╚══██╔══╝    ██║     ██║████╗  ██║██║   ██║╚██╗██╔╝"
-  echo "  ██║  ██║██║   ██║   ██║       ██║     ██║██╔██╗ ██║██║   ██║ ╚███╔╝ "
-  echo "  ██║  ██║██║   ██║   ██║       ██║     ██║██║╚██╗██║██║   ██║ ██╔██╗ "
-  echo "  ██████╔╝╚██████╔╝   ██║       ███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗"
-  echo "  ╚═════╝  ╚═════╝    ╚═╝       ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝"
-  echo ""
   echo "  DevOpsTribe Linux - Powered by DevOpsTribe.it and GarantiDelTalento.it"
   echo "  LFS 12.3 Build System"
   echo "Current Directory: $(pwd)"
