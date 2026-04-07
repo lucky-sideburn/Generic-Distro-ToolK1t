@@ -545,7 +545,7 @@ jenkins_jobs:
                     --host=$LFS_TGT                    \
                     --without-bash-malloc
         make
-        sudo sudo make install
+        sudo make DESTDIR=$LFS install
         ln -sv bash $LFS/bin/sh || echo "Symlink bash to sh failed, continuing anyway"
 
     - name: 0004 - Coreutils (Cross Compiling Temporary Tools)
@@ -563,7 +563,7 @@ jenkins_jobs:
                 --enable-install-program=hostname \
                 --enable-no-install-program=kill,uptime
             make
-            sudo sudo make install
+            sudo make DESTDIR=$LFS install
             mv -v $LFS/usr/bin/chroot              $LFS/usr/sbin
       # TODO - I have commented this out, think if I need it man pages for chroot            
       # mkdir -pv $LFS/usr/share/man/man8 || echo "Creating directory /usr/share
@@ -621,7 +621,7 @@ jenkins_jobs:
                     --host=$LFS_TGT                 \
                     --build=$(build-aux/config.guess)
           make
-          sudo sudo make install 
+          sudo make DESTDIR=$LFS install 
 
     - name: 0008 - Gawk (Cross Compiling Temporary Tools)
       version: 5.3.1
@@ -652,7 +652,7 @@ jenkins_jobs:
                     --host=$LFS_TGT \
                     --build=$(./build-aux/config.guess)
         make
-        sudo sudo make install
+        sudo make DESTDIR=$LFS install
 
     - name: 0010 - Gzip (Cross Compiling Temporary Tools)
       version: 1.13
