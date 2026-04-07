@@ -433,6 +433,14 @@ jenkins_jobs:
 
         {{ dedicated_build_dir }}
 
+        # TODO: check if this is needed, it is not in the book, but it is in the script, why?
+        ln -sv /mnt/lfs/tools/lib/gcc/x86_64-lfs-linux-gnu/14.2.0/libgcc.a \
+              /mnt/lfs/tools/lib/gcc/x86_64-lfs-linux-gnu/14.2.0/libgcc_s.so
+
+        ln -sv /mnt/lfs/tools/lib/gcc/x86_64-lfs-linux-gnu/14.2.0/libgcc.a \
+              /mnt/lfs/tools/lib/gcc/x86_64-lfs-linux-gnu/14.2.0/libgcc_s.so.
+
+
         ../configure                             \
               --prefix=/usr                      \
               --host=$LFS_TGT                    \
@@ -468,7 +476,7 @@ jenkins_jobs:
         make
 
         echo "Installing on $LFS"
-        make DESTDIR=$LFS install
+        sudo make DESTDIR=$LFS install
       
         rm -v $LFS/usr/lib/lib{stdc++{,exp,fs},supc++}.la || echo "Removing libstdc++ libraries failed, continuing anyway"
 
