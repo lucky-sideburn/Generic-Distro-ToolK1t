@@ -84,6 +84,7 @@ amd64_common_build_start_command: |-
   LFS=/mnt/lfs
   LC_ALL=POSIX
   LFS_TGT=$(uname -m)-lfs-linux-gnu
+  
   PATH=$LFS/tools/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/bin
   CONFIG_SITE=$LFS/usr/share/config.site
   export LFS LC_ALL LFS_TGT PATH CONFIG_SITE
@@ -112,6 +113,7 @@ amd64_common_build_start_command: |-
   SUDOFILE=/etc/sudoers.d/lfs
   if [ ! -f $SUDOFILE ]; then
     echo 'Defaults env_keep += "LFS LC_ALL LFS_TGT PATH CONFIG_SITE MAKEFLAGS"' | sudo tee $SUDOFILE
+    echo 'Defaults secure_path="/mnt/lfs/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"' | sudo tee -a $SUDOFILE
     sudo chmod 440 $SUDOFILE
   fi
 
@@ -154,6 +156,15 @@ amd64_common_build_start_command: |-
       fi
       ;;
   esac
+
+  line='source /etc/environment.d/lfs.sh'
+
+  for file in /root/.bashrc /home/ubuntu/.bashrc /root/.profile /home/ubuntu/.profile; do
+    sudo touch "$file"
+    if ! sudo grep -qxF "$line" "$file"; then
+      echo "$line" | sudo tee -a "$file" > /dev/null
+    fi
+  done
 
   cd $LFS/sources
   env
@@ -195,6 +206,7 @@ aarch64_common_build_start_command: |-
   SUDOFILE=/etc/sudoers.d/lfs
   if [ ! -f $SUDOFILE ]; then
     echo 'Defaults env_keep += "LFS LC_ALL LFS_TGT PATH CONFIG_SITE MAKEFLAGS"' | sudo tee $SUDOFILE
+    echo 'Defaults secure_path="/mnt/lfs/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"' | sudo tee -a $SUDOFILE
     sudo chmod 440 $SUDOFILE
   fi
 
@@ -237,6 +249,15 @@ aarch64_common_build_start_command: |-
       fi
       ;;
   esac
+
+  line='source /etc/environment.d/lfs.sh'
+
+  for file in /root/.bashrc /home/ubuntu/.bashrc /root/.profile /home/ubuntu/.profile; do
+    sudo touch "$file"
+    if ! sudo grep -qxF "$line" "$file"; then
+      echo "$line" | sudo tee -a "$file" > /dev/null
+    fi
+  done
 
   cd $LFS/sources
   env
@@ -420,8 +441,8 @@ jenkins_jobs:
               --with-headers=$LFS/usr/include    \
               --disable-nscd                     \
               libc_cv_slibdir=/usr/lib
-        make
-        make DESTDIR=$LFS install
+        sudo make
+        sudo make DESTDIR=$LFS install
         sed '/RTLDLIST=/s@/usr@@g' -i $LFS/usr/bin/ldd
         echo 'int main(){}' | $LFS_TGT-gcc -xc -
         readelf -l a.out | grep ld-linux
