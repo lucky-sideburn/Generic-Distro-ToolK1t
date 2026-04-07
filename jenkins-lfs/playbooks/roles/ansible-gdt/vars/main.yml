@@ -95,24 +95,24 @@ amd64_common_build_start_command: |-
   # strips or misinterprets heredoc blocks during pipeline parsing.
   # Instead we use individual echo/printf statements for idempotency.
 
-  mkdir -p /etc/environment.d
+  sudo mkdir -p /etc/environment.d
 
   # Only write each variable if not already present in the file
   LFSENV=/etc/environment.d/lfs.sh
-  touch $LFSENV
+  sudo touch $LFSENV
 
-  grep -q "^export LFS=" $LFSENV || echo "export LFS=$LFS" >> $LFSENV
-  grep -q "^export LC_ALL=" $LFSENV || echo "export LC_ALL=$LC_ALL" >> $LFSENV
-  grep -q "^export LFS_TGT=" $LFSENV || echo "export LFS_TGT=$LFS_TGT" >> $LFSENV
-  grep -q "^export PATH=" $LFSENV || echo "export PATH=$PATH" >> $LFSENV
-  grep -q "^export CONFIG_SITE=" $LFSENV || echo "export CONFIG_SITE=$CONFIG_SITE" >> $LFSENV
-  grep -q "^export MAKEFLAGS=" $LFSENV || echo "export MAKEFLAGS=$MAKEFLAGS" >> $LFSENV
+  grep -q "^export LFS=" $LFSENV || echo "export LFS=$LFS" | sudo tee -a $LFSENV
+  grep -q "^export LC_ALL=" $LFSENV || echo "export LC_ALL=$LC_ALL" | sudo tee -a $LFSENV
+  grep -q "^export LFS_TGT=" $LFSENV || echo "export LFS_TGT=$LFS_TGT" | sudo tee -a $LFSENV
+  grep -q "^export PATH=" $LFSENV || echo "export PATH=$PATH" | sudo tee -a $LFSENV
+  grep -q "^export CONFIG_SITE=" $LFSENV || echo "export CONFIG_SITE=$CONFIG_SITE" | sudo tee -a $LFSENV
+  grep -q "^export MAKEFLAGS=" $LFSENV || echo "export MAKEFLAGS=$MAKEFLAGS" | sudo tee -a $LFSENV
 
   # Preserve vars across sudo - idempotent
   SUDOFILE=/etc/sudoers.d/lfs
   if [ ! -f $SUDOFILE ]; then
-    echo 'Defaults env_keep += "LFS LC_ALL LFS_TGT PATH CONFIG_SITE MAKEFLAGS"' > $SUDOFILE
-    chmod 440 $SUDOFILE
+    echo 'Defaults env_keep += "LFS LC_ALL LFS_TGT PATH CONFIG_SITE MAKEFLAGS"' | sudo tee $SUDOFILE
+    sudo chmod 440 $SUDOFILE
   fi
 
   # Verify LFS directory structure is present - exit if not initialized
@@ -178,24 +178,24 @@ aarch64_common_build_start_command: |-
   # strips or misinterprets heredoc blocks during pipeline parsing.
   # Instead we use individual echo/printf statements for idempotency.
 
-  mkdir -p /etc/environment.d
+  sudo mkdir -p /etc/environment.d
 
   # Only write each variable if not already present in the file
   LFSENV=/etc/environment.d/lfs.sh
-  touch $LFSENV
+  sudo touch $LFSENV
 
-  grep -q "^export LFS=" $LFSENV || echo "export LFS=$LFS" >> $LFSENV
-  grep -q "^export LC_ALL=" $LFSENV || echo "export LC_ALL=$LC_ALL" >> $LFSENV
-  grep -q "^export LFS_TGT=" $LFSENV || echo "export LFS_TGT=$LFS_TGT" >> $LFSENV
-  grep -q "^export PATH=" $LFSENV || echo "export PATH=$PATH" >> $LFSENV
-  grep -q "^export CONFIG_SITE=" $LFSENV || echo "export CONFIG_SITE=$CONFIG_SITE" >> $LFSENV
-  grep -q "^export MAKEFLAGS=" $LFSENV || echo "export MAKEFLAGS=$MAKEFLAGS" >> $LFSENV
+  grep -q "^export LFS=" $LFSENV || echo "export LFS=$LFS" | sudo tee -a $LFSENV
+  grep -q "^export LC_ALL=" $LFSENV || echo "export LC_ALL=$LC_ALL" | sudo tee -a $LFSENV
+  grep -q "^export LFS_TGT=" $LFSENV || echo "export LFS_TGT=$LFS_TGT" | sudo tee -a $LFSENV
+  grep -q "^export PATH=" $LFSENV || echo "export PATH=$PATH" | sudo tee -a $LFSENV
+  grep -q "^export CONFIG_SITE=" $LFSENV || echo "export CONFIG_SITE=$CONFIG_SITE" | sudo tee -a $LFSENV
+  grep -q "^export MAKEFLAGS=" $LFSENV || echo "export MAKEFLAGS=$MAKEFLAGS" | sudo tee -a $LFSENV
 
   # Preserve vars across sudo - idempotent
   SUDOFILE=/etc/sudoers.d/lfs
   if [ ! -f $SUDOFILE ]; then
-    echo 'Defaults env_keep += "LFS LC_ALL LFS_TGT PATH CONFIG_SITE MAKEFLAGS"' > $SUDOFILE
-    chmod 440 $SUDOFILE
+    echo 'Defaults env_keep += "LFS LC_ALL LFS_TGT PATH CONFIG_SITE MAKEFLAGS"' | sudo tee $SUDOFILE
+    sudo chmod 440 $SUDOFILE
   fi
 
   # Verify LFS directory structure is present - exit if not initialized
