@@ -68,9 +68,11 @@ CompressOutput=no
 QemuFirmware=bios
 
 [Content]
-RootDirectory=$LFS_WORKDIR
+# Con Distribution=custom il rootfs va fornito via BaseTrees=
+# (RootDirectory= è stato rimosso in mkosi v20)
+BaseTrees=$LFS_WORKDIR
 Packages=
-RootExcludes=
+BaseTreesExclude=
     root/.cache
     root/go
     tools
