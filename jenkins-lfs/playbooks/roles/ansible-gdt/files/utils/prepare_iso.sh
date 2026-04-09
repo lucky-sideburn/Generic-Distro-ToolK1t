@@ -1,22 +1,35 @@
 #!/bin/bash
+#!/bin/bash
 # Script to prepare a bootable LFS Live ISO
 # Assumes LFS is mounted at /mnt/lfs
 
-# 1. Create workspace
+set -euo pipefail
+
 ISO_WORKSPACE="/tmp/lfs_iso_ws"
-LFS_KERNEL_VERSION="6.13.4" # Change to your exact version
-LFS_ROOT="/mnt/lfs"         # Your LFS mount point
+LFS_KERNEL_VERSION="6.13.4"
+LFS_ROOT="/mnt/lfs"
 LFS_HOSTNAME="devopstribe-linux"
+ISO_OUTPUT="/var/lib/libvirt/images/lfs-system.iso"
+ISO_LABEL="${LFS_HOSTNAME}_ISO"
 
-[ -d $ISO_WORKSPACE ] || sudo mkdir -p $ISO_WORKSPACE
-[ -f /var/lib/libvirt/images/lfs-system.iso ] || sudo -r /var/lib/libvirt/images/lfs-system.iso
+find_kernel_image() {
+  find "$LFS_ROOT/boot" -maxdepth 1 -type f -name "vmlinuz-${LFS_KERNEL_VERSION}*" | head -n 1
+}
 
-# 2. Copy EVERYTHING from your LFS root (except /proc, /sys, /dev)
-# Use -a to preserve permissions/symlinks which are critical for LFS
-sudo rsync -avz --progress \
+KERNEL_IMAGE="$(find_kernel_image)"
+
+if [ -z "$KERNEL_IMAGE" ]; then
+  echo "Error: could not find a kernel image for version ${LFS_KERNEL_VERSION} under ${LFS_ROOT}/boot"
+  exit 1
+fi
+
+sudo mkdir -p "$ISO_WORKSPACE"
+sudo rm -f "$ISO_OUTPUT"
+
+sudo rsync -avz --delete --progress \
   --exclude='/root/.cache' \
-  --exclude='/sources' \
   --exclude='/root/go' \
+  --exclude='/sources' \
   --exclude='/tmp' \
   --exclude='/build' \
   --exclude='/proc/*' \
@@ -26,17 +39,22 @@ sudo rsync -avz --progress \
   --exclude='/var/cache/*' \
   --exclude='/var/log/*' \
   --exclude='/tools' \
-  /mnt/lfs/ $ISO_WORKSPACE/
+  "$LFS_ROOT/" "$ISO_WORKSPACE/"
 
-sudo mkdir -p $ISO_WORKSPACE/live
-sudo cp $LFS/boot/initrd $ISO_WORKSPACE/live/initrd
-sudo cp $LFS/boot/vmlinuz-6.13.4-lfs-12.3 $ISO_WORKSPACE/live/vmlinuz
+sudo mkdir -p "$ISO_WORKSPACE/live" "$ISO_WORKSPACE/boot/grub"
+sudo cp "$KERNEL_IMAGE" "$ISO_WORKSPACE/live/vmlinuz"
 
-# Create the GRUB config INSIDE the workspace
-sudo mkdir -p $ISO_WORKSPACE/boot/grub
+sudo dracut --force \
+  --kver "$LFS_KERNEL_VERSION" \
+  --kmoddir "$LFS_ROOT/lib/modules/$LFS_KERNEL_VERSION" \
+  --add "dmsquash-live bash kernel-modules rootfs-block base loop" \
+  --omit "systemd multipath btrfs" \
+  --filesystems "iso9660 squashfs overlay" \
+  --drivers "virtio_pci virtio_blk virtio_scsi sr_mod cdrom sd_mod loop" \
+  --no-hostonly \
+  "$ISO_WORKSPACE/live/initrd"
 
-# Create grub.cfg
-sudo tee $ISO_WORKSPACE/boot/grub/grub.cfg << EOF
+sudo tee "$ISO_WORKSPACE/boot/grub/grub.cfg" > /dev/null << EOF
 insmod part_gpt
 insmod part_msdos
 insmod iso9660
@@ -45,19 +63,16 @@ insmod all_video
 set default=0
 set timeout=5
 
-# GRUB cerca la partizione per caricare Kernel e Initrd
-search --no-floppy --set=root --label ${LFS_HOSTNAME}_ISO
+search --no-floppy --set=root --label ${ISO_LABEL}
 
 menuentry "$LFS_HOSTNAME GNU/Linux Live" {
     set gfxpayload=keep
-    linux /live/vmlinuz root=live:LABEL=${LFS_HOSTNAME}_ISO rd.live.image rd.live.squashimg=filesystem.squashfs rd.live.overlay.overlayfs=1 console=tty1 console=ttyS0
-    # rd.debug rd.shell quiet splash
+    linux /live/vmlinuz root=live:CDLABEL=${ISO_LABEL} rd.live.image rd.live.dir=/live rd.live.overlay.overlayfs=1 console=tty1 console=ttyS0
     initrd /live/initrd
 }
 EOF
 
-# Create /etc/inittab
-sudo tee $ISO_WORKSPACE/etc/inittab << 'EOF'
+sudo tee "$ISO_WORKSPACE/etc/inittab" > /dev/null << 'EOF'
 # Default Runlevel
 id:3:initdefault:
 
@@ -80,16 +95,12 @@ l5:5:wait:/etc/rc.d/init.d/rc 5
 l6:6:wait:/etc/rc.d/init.d/rc 6
 
 # Consoles
-# 1:2345:respawn:/sbin/agetty --autologin root --noclear -n tty1 9600
 1:2345:respawn:/sbin/agetty tty1 9600
 2:2345:respawn:/sbin/agetty tty2 9600
 3:2345:respawn:/sbin/agetty tty3 9600
-
-# End of /etc/inittab
 EOF
 
-# Create /etc/fstab
-sudo tee $ISO_WORKSPACE/etc/fstab << 'EOF'
+sudo tee "$ISO_WORKSPACE/etc/fstab" > /dev/null << 'EOF'
 # file system  mount-point    type     options             dump  fsck
 proc           /proc          proc     nosuid,noexec,nodev 0     0
 sysfs          /sys           sysfs    nosuid,noexec,nodev 0     0
@@ -98,27 +109,17 @@ tmpfs          /run           tmpfs    defaults            0     0
 devtmpfs       /dev           devtmpfs mode=0755,nosuid    0     0
 tmpfs          /dev/shm       tmpfs    nosuid,nodev        0     0
 cgroup2        /sys/fs/cgroup cgroup2  nosuid,noexec,nodev 0     0
-
-# CD-ROM is already mounted as root, no need to mount it again
-# /dev/sr0     /              iso9660  ro                  0     0
-
-# End /etc/fstab
 EOF
 
-# Clean up unnecessary services from the live ISO (temporaty patch)
-# TODO: Fix this
-sudo rm $ISO_WORKSPACE/etc/rc.d/rcS.d/S45cleanfs
-sudo rm $ISO_WORKSPACE/etc/rc.d/rcS.d/S40mountfs
-sudo rm $ISO_WORKSPACE/etc/rc.d/rc3.d/S92kubelet  
-sudo rm $ISO_WORKSPACE/etc/rc.d/rc3.d/S91crio
-sudo rm $ISO_WORKSPACE/etc/rc.d/rc3.d/S30sshd
-sudo rm $ISO_WORKSPACE/etc/rc.d/rcS.d/S30checkfs
+sudo rm -f "$ISO_WORKSPACE/etc/rc.d/rcS.d/S45cleanfs"
+sudo rm -f "$ISO_WORKSPACE/etc/rc.d/rcS.d/S40mountfs"
+sudo rm -f "$ISO_WORKSPACE/etc/rc.d/rc3.d/S92kubelet"
+sudo rm -f "$ISO_WORKSPACE/etc/rc.d/rc3.d/S30sshd"
+sudo rm -f "$ISO_WORKSPACE/etc/rc.d/rcS.d/S30checkfs"
 
-# Set the hostname
-echo "${LFS_HOSTNAME}" | sudo tee $ISO_WORKSPACE/etc/hostname
+echo "$LFS_HOSTNAME" | sudo tee "$ISO_WORKSPACE/etc/hostname" > /dev/null
 
-# Also update /etc/hosts
-sudo tee $ISO_WORKSPACE/etc/hosts << 'EOF'
+sudo tee "$ISO_WORKSPACE/etc/hosts" > /dev/null << 'EOF'
 # Begin /etc/hosts
 
 127.0.0.1 localhost.localdomain localhost
@@ -130,58 +131,40 @@ ff02::2   ip6-allrouters
 # End /etc/hosts
 EOF
 
-# If it doesn't exist, create one
-sudo tee $ISO_WORKSPACE/etc/rc.d/init.d/hostname << 'EOF'
+sudo tee "$ISO_WORKSPACE/etc/rc.d/init.d/hostname" > /dev/null << 'EOF'
 #!/bin/sh
-########################################################################
-# Begin hostname
-#
-# Description : Set hostname
-#
-########################################################################
 
 . /lib/lsb/init-functions
 
-case "${1}" in
+case "$1" in
    start)
       log_info_msg "Setting hostname..."
       hostname -F /etc/hostname
       evaluate_retval
       ;;
    *)
-      echo "Usage: ${0} {start}"
+      echo "Usage: $0 {start}"
       exit 1
       ;;
 esac
-
-# End hostname
 EOF
 
-sudo tee $ISO_WORKSPACE/root/.bashrc << 'EOF'
-EOF
-
-sudo tee $ISO_WORKSPACE/root/.bash_profile << 'EOF'
-EOF
-
-sudo tee -a $ISO_WORKSPACE/root/.bashrc << 'EOF'
+sudo tee "$ISO_WORKSPACE/root/.bashrc" > /dev/null << 'EOF'
 # Custom LFS Live ISO Bashrc
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 export PS1="\[\e[1;32m\]\u@\h:\[\e[1;34m\]\w\[\e[0m\]\$ "
-
-alias ask='interpreter --api_base http://localhost:8080/v1 --local'
 EOF
 
-sudo tee -a $ISO_WORKSPACE/root/.bash_profile << 'EOF'
-# Carica il bashrc se esiste
+sudo tee "$ISO_WORKSPACE/root/.bash_profile" > /dev/null << 'EOF'
 if [ -f ~/.bashrc ]; then
   . ~/.bashrc
 fi
 EOF
 
-sudo chmod +x $ISO_WORKSPACE/etc/rc.d/init.d/hostname
-sudo ln -sf ../init.d/hostname $ISO_WORKSPACE/etc/rc.d/rcS.d/S02hostname
+sudo chmod +x "$ISO_WORKSPACE/etc/rc.d/init.d/hostname"
+sudo ln -sf ../init.d/hostname "$ISO_WORKSPACE/etc/rc.d/rcS.d/S02hostname"
 
-sudo mksquashfs /mnt/lfs/ $ISO_WORKSPACE/live/filesystem.squashfs \
+sudo mksquashfs "$LFS_ROOT/" "$ISO_WORKSPACE/live/filesystem.squashfs" \
   -e boot \
   -e sources \
   -e dev/* \
@@ -196,134 +179,18 @@ sudo mksquashfs /mnt/lfs/ $ISO_WORKSPACE/live/filesystem.squashfs \
   -e var/tmp \
   -comp xz
 
+sudo rm -f "$ISO_WORKSPACE/initrd.img-no-kmods"
+sudo rm -rf "$ISO_WORKSPACE/dist" "$ISO_WORKSPACE/tools"
 
-
-[ -f $ISO_WORKSPACE/initrd.img-no-kmods ] && sudo rm $ISO_WORKSPACE/initrd.img-no-kmods
-[ -d $ISO_WORKSPACE/dist ] && sudo rm -rf $ISO_WORKSPACE/dist
-[ -d $ISO_WORKSPACE/tools ] && sudo rm -rf $ISO_WORKSPACE/tools
-
-# Create the directory structure for AI models
-sudo mkdir -p $ISO_WORKSPACE/opt/ai/models
-
-MODEL_DEST="$ISO_WORKSPACE/opt/ai/models/llama-3.2-1b-instruct-q8_0.gguf"
-mkdir -p "$(dirname "$MODEL_DEST")"
-
-ls "$MODEL_DEST" || sudo /bin/cp /opt/ai/models/llama-3.2-1b-instruct-q8_0.gguf "$MODEL_DEST"
-
-sudo tee $ISO_WORKSPACE/usr/local/bin/start-llama-server << 'EOF'
-#!/bin/bash
-/usr/local/bin/llama-server \
-  -m /opt/ai/models/llama-3.2-1b-instruct-q8_0.gguf \
-  --port 8080 \
-  --host 0.0.0.0 \
-  --ctx-size 2048 \
-  --n-predict 512 \
-  --threads $(nproc) \
-  --alias "lfs-agent-brain"
-  # \
-  #> /var/log/llama-server.log 2>&1 &
-EOF
-
-if [ $? -ne 0 ]; then
-  echo "Error: Previous command failed. Exiting."
-  exit 1
-fi
-
-sudo chmod +x $ISO_WORKSPACE/usr/local/bin/start-llama-server
-
-sudo tee $ISO_WORKSPACE/etc/rc.d/init.d/llama-server << 'EOF'
-#!/bin/sh
-########################################################################
-# Begin llama-server
-#
-# Description : Start llama-server at boot
-#
-########################################################################
-
-. /lib/lsb/init-functions
-
-case "${1}" in
-   start)
-    log_info_msg "Starting llama-server..."
-    /usr/local/bin/start-llama-server &
-    evaluate_retval
-    ;;
-   stop)
-    log_info_msg "Stopping llama-server..."
-    pkill -f llama-server
-    evaluate_retval
-    ;;
-   *)
-    echo "Usage: ${0} {start|stop}"
-    exit 1
-    ;;
-esac
-
-# End llama-server
-EOF
-
-sudo chmod +x $ISO_WORKSPACE/etc/rc.d/init.d/llama-server
-sudo ln -sf ../init.d/llama-server $ISO_WORKSPACE/etc/rc.d/rc3.d/S99llama-server
-
-# Create the Wargames script
-sudo tee $ISO_WORKSPACE/usr/local/bin/ask << 'EOF'
-#!/bin/bash
-
-function typewriter {
-  text="$1"
-  for (( i=0; i<${#text}; i++ )); do
-    echo -n "${text:$i:1}"
-    sleep 0.03
-  done
-  echo ""
-}
-
-if [ -z "$1" ]; then
-  typewriter "Ask me anything, or type 'exit' to quit."
-fi
-
-while true; do
-  # Prompt the user for input
-  echo -n "Inserisci la tua domanda: "
-  read USER_INPUT
-
-  # Exit the loop if the user types "exit"
-  if [[ "$USER_INPUT" == "exit" ]]; then
-    typewriter "Goodbye!"
-    break
-  fi
-
-  # Correzione per llama.cpp
-  START_TIME=$(date +%s%N)
-  RESPONSE=$(curl -s http://localhost:8080/completion \
-    -H "Content-Type: application/json" \
-    -d "{\"prompt\": \"$USER_INPUT\", \"n_predict\": 200}" | jq -r '.content')
-  END_TIME=$(date +%s%N)
-  RESPONSE_TIME=$(( (END_TIME - START_TIME) / 1000000 ))
-  echo "Response time: ${RESPONSE_TIME} ms"
-    
-  typewriter "$RESPONSE"
-
-done
-EOF
-
-chmod +x $ISO_WORKSPACE/usr/local/bin/hal
-sudo chmod +x $ISO_WORKSPACE/usr/local/bin/wargame
-
-sudo mkdir -p $ISO_WORKSPACE/tmp
-sudo chmod 1777 $ISO_WORKSPACE/tmp
-sudo mkdir -p $ISO_WORKSPACE/var/log
-sudo mkdir -p $ISO_WORKSPACE/run
+sudo chmod +x "$ISO_WORKSPACE/etc/rc.d/init.d/llama-server"
+sudo ln -sf ../init.d/llama-server "$ISO_WORKSPACE/etc/rc.d/rc3.d/S99llama-server"
+sudo mkdir -p "$ISO_WORKSPACE/tmp" "$ISO_WORKSPACE/var/log" "$ISO_WORKSPACE/run"
+sudo chmod 1777 "$ISO_WORKSPACE/tmp"
 
 sudo grub-mkrescue --iso-level 3 \
-  -o /var/lib/libvirt/images/lfs-system.iso $ISO_WORKSPACE -- -volid "${LFS_HOSTNAME}_ISO" \
+  -o "$ISO_OUTPUT" "$ISO_WORKSPACE" -- -volid "$ISO_LABEL" \
   -publisher "${LFS_HOSTNAME}_LINUX" \
   -hfsplus off
 
-if [ $? -ne 0 ]; then
-  echo "Error: grub-mkrescue failed. Exiting."
-  exit 1
-fi
-
-sudo chown libvirt-qemu:kvm /var/lib/libvirt/images/lfs-system.iso
+sudo chown libvirt-qemu:kvm "$ISO_OUTPUT"
 
