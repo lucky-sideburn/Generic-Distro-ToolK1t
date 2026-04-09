@@ -70,16 +70,8 @@ QemuFirmware=bios
 [Content]
 # Con Distribution=custom il rootfs va fornito via BaseTrees=
 # (RootDirectory= è stato rimosso in mkosi v20)
-BaseTrees=$LFS_WORKDIR
+BaseTrees=$MKOSI_WORKDIR/lfs-rootfs.tar
 Packages=
-BaseTreesExclude=
-    root/.cache
-    root/go
-    tools
-    sources
-    tmp
-    var/cache
-    var/log
 
 PostInstallationScripts=mkosi.postinst
 
@@ -182,6 +174,20 @@ echo "[postinst] Done."
 POSTINST
 
 sudo chmod +x "$MKOSI_WORKDIR/mkosi.postinst"
+
+# ── Crea tar della LFS con esclusioni ────────────────────────────────────────
+LFS_TAR="$MKOSI_WORKDIR/lfs-rootfs.tar"
+echo "[INFO] Creating tar of LFS rootfs (excluding unnecessary directories)..."
+sudo tar -C "$LFS_WORKDIR" \
+  --exclude='./root/.cache' \
+  --exclude='./root/go' \
+  --exclude='./tools' \
+  --exclude='./sources' \
+  --exclude='./tmp' \
+  --exclude='./var/cache' \
+  --exclude='./var/log' \
+  -cf "$LFS_TAR" .
+echo "[INFO] LFS tar created at $LFS_TAR"
 
 # ── Build immagine con mkosi ──────────────────────────────────────────────────
 echo "[INFO] Building image with mkosi (this may take a while)..."
