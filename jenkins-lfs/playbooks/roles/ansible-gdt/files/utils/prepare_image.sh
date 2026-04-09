@@ -59,7 +59,7 @@ sudo tee "$MKOSI_WORKDIR/mkosi.conf" > /dev/null << EOF
 Distribution=custom
 
 [Output]
-Format=qcow2
+Format=disk
 ImageId=lfs-vm
 OutputDirectory=output
 CompressOutput=no
@@ -186,14 +186,15 @@ echo "[INFO] Building image with mkosi (this may take a while)..."
 cd "$MKOSI_WORKDIR"
 sudo mkosi build
 
-BUILT_IMAGE="$MKOSI_WORKDIR/output/lfs-vm.qcow2"
+BUILT_IMAGE="$MKOSI_WORKDIR/output/lfs-vm.raw"
 [ -f "$BUILT_IMAGE" ] || { echo "[ERROR] mkosi did not produce $BUILT_IMAGE"; exit 1; }
 echo "[INFO] Image built successfully: $BUILT_IMAGE"
 
-# ── Copia immagine in libvirt ─────────────────────────────────────────────────
-echo "[INFO] Copying image to $IMAGE_PATH..."
+# ── Converti raw → qcow2 e copia in libvirt ───────────────────────────────────
+echo "[INFO] Converting raw image to qcow2..."
 [ -f "$IMAGE_PATH" ] && sudo rm -f "$IMAGE_PATH"
-sudo cp "$BUILT_IMAGE" "$IMAGE_PATH"
+sudo qemu-img convert -f raw -O qcow2 "$BUILT_IMAGE" "$IMAGE_PATH"
+echo "[INFO] Image converted and saved to $IMAGE_PATH"
 
 echo "[INFO] Cloning image to $IMAGE_CLONE_PATH..."
 [ -f "$IMAGE_CLONE_PATH" ] && sudo rm -f "$IMAGE_CLONE_PATH"
