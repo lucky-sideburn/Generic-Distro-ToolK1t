@@ -172,7 +172,18 @@ POSTINST
 
 sudo chmod +x "$MKOSI_WORKDIR/mkosi.postinst"
 
-# ── Crea tar della LFS con esclusioni ────────────────────────────────────────
+# ── Crea /usr/lib/os-release nella LFS (richiesto da mkosi) ──────────────────
+echo "[INFO] Creating /usr/lib/os-release in LFS..."
+sudo mkdir -p "$LFS_WORKDIR/usr/lib"
+sudo tee "$LFS_WORKDIR/usr/lib/os-release" > /dev/null << EOF
+ID=lfs
+NAME="Linux From Scratch"
+PRETTY_NAME="Linux From Scratch $GDT_HOSTNAME"
+VERSION_ID="12.3"
+HOME_URL="https://www.linuxfromscratch.org/"
+EOF
+
+# ── Crea /usr/lib/os-release nella LFS (richiesto da mkosi) ──────────────────
 LFS_TAR="$MKOSI_WORKDIR/lfs-rootfs.tar"
 echo "[INFO] Creating tar of LFS rootfs (excluding unnecessary directories)..."
 sudo tar -C "$LFS_WORKDIR" \
