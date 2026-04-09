@@ -75,13 +75,9 @@ Packages=
 
 PostInstallationScripts=mkosi.postinst
 
-[Partitions]
-Bootable=yes
-BootPartitionSize=512M
-RootPartitionSize=auto
-
 [Bootloader]
 Bootloader=grub
+UnifiedKernelImages=no
 BiosBootPartition=yes
 KernelCommandLine=root=/dev/vda2 ro nomodeset debug earlyprintk=efi,keep console=ttyS0,115200 console=tty1
 EOF
