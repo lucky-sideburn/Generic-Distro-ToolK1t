@@ -76,9 +76,10 @@ Packages=
 PostInstallationScripts=mkosi.postinst
 
 [Bootloader]
-Bootloader=grub
+# BIOS boot via GRUB, no EFI, no UKI/ukify needed
+Bootloader=none
+BiosBootloader=grub
 UnifiedKernelImages=no
-BiosBootPartition=yes
 KernelCommandLine=root=/dev/vda2 ro nomodeset debug earlyprintk=efi,keep console=ttyS0,115200 console=tty1
 EOF
 
