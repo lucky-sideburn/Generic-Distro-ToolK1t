@@ -70,7 +70,7 @@ QemuFirmware=bios
 [Content]
 # Con Distribution=custom il rootfs va fornito via BaseTrees=
 # (RootDirectory= è stato rimosso in mkosi v20)
-BaseTrees=$MKOSI_WORKDIR/lfs-rootfs.tar
+BaseTrees=${MKOSI_WORKDIR}/lfs-rootfs.tar
 Packages=
 
 PostInstallationScripts=mkosi.postinst
