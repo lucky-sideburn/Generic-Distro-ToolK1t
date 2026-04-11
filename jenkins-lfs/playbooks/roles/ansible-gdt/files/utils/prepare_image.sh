@@ -19,6 +19,7 @@ LFS_ROOT="/mnt/lfs-root"
 export PATH="$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/go/bin"
 
 # ── Argomenti ─────────────────────────────────────────────────────────────────
+BUILD_MODE=""
 echo "[INFO] Parsing arguments..."
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -103,8 +104,8 @@ echo "[INFO] Cleaning up mount points..."
 echo "[INFO] Unmounting all loop devices..."
 LOOP_DEVICES=$(sudo losetup -l | awk 'NR>1 {print $1}' | grep '/dev/loop' || true)
 for DEVICE in $LOOP_DEVICES; do
-  mountpoint -q "${DEVICE}p1" && sudo umount "${DEVICE}p1" || true
-  mountpoint -q "${DEVICE}p2" && sudo umount "${DEVICE}p2" || true
+  sudo umount "${DEVICE}p1" 2>/dev/null || true
+  sudo umount "${DEVICE}p2" 2>/dev/null || true
 done
 sudo losetup -D
 
@@ -276,6 +277,12 @@ EOF
 sudo cp "$CONF_TMP/grub.cfg" /mnt/lfs-boot/boot/grub/grub.cfg
 
 # ── Chroot: password, dracut, init scripts ───────────────────────────────────
+echo "[INFO] Mounting virtual filesystems for chroot..."
+sudo mount --bind /proc "$LFS_ROOT/proc"
+sudo mount --bind /sys "$LFS_ROOT/sys"
+sudo mount --bind /dev "$LFS_ROOT/dev"
+sudo mount --bind /dev/pts "$LFS_ROOT/dev/pts"
+
 echo "[INFO] Running chroot setup (password, dracut, init scripts)..."
 sudo chroot "$LFS_ROOT" /usr/bin/env -i   \
     HOME=/root                  \
@@ -298,8 +305,14 @@ sudo chroot "$LFS_ROOT" /usr/bin/env -i   \
             /boot/initrd
     "
 
-sudo cp "$LFS_ROOT/boot/initrd" /mnt/lfs-boot/boot/initrd
+sudo cp "$LFS_ROOT/boot/initrd" /mnt/lfs-boot/initrd
 echo "[INFO] Chroot setup completed."
+
+echo "[INFO] Unmounting virtual filesystems..."
+sudo umount "$LFS_ROOT/dev/pts"
+sudo umount "$LFS_ROOT/dev"
+sudo umount "$LFS_ROOT/sys"
+sudo umount "$LFS_ROOT/proc"
 
 # ── Umount ────────────────────────────────────────────────────────────────────
 echo "[INFO] Unmounting partitions..."
