@@ -1866,6 +1866,9 @@ jenkins_jobs:
       build_tool: true
       build_command: |
         {{ chroot_start_command }} -c '
+          if [ -f /usr/lib/libtinfow.so.6 ]; then ln -sfv libtinfow.so.6 /usr/lib/libtinfo.so.6; fi
+          if [ -f /usr/lib/libtinfow.so.6 ]; then ln -sfv libtinfow.so.6 /usr/lib/libtinfo.so; fi
+          if [ -f /usr/lib/libncursesw.so.6 ]; then ln -sfv libncursesw.so.6 /usr/lib/libncurses.so.6; fi
           cd /sources/psmisc-23.7
           ./configure --prefix=/usr
           make
