@@ -101,7 +101,7 @@ echo "[INFO] Cleaning up mount points..."
 [ -d /mnt/lfs-root ] && sudo rm -rf /mnt/lfs-root/*
 
 echo "[INFO] Unmounting all loop devices..."
-LOOP_DEVICES=$(losetup -l | awk 'NR>1 {print $1}' | grep '/dev/loop' || true)
+LOOP_DEVICES=$(sudo losetup -l | awk 'NR>1 {print $1}' | grep '/dev/loop' || true)
 for DEVICE in $LOOP_DEVICES; do
   mountpoint -q "${DEVICE}p1" && sudo umount "${DEVICE}p1" || true
   mountpoint -q "${DEVICE}p2" && sudo umount "${DEVICE}p2" || true
@@ -110,8 +110,29 @@ sudo losetup -D
 
 # ── Partizionamento ───────────────────────────────────────────────────────────
 echo "[INFO] Setting up loop device and partitions..."
-sudo losetup -fP "$IMAGE_PATH"
-LOOP_DEVICE=$(losetup -l | grep "$IMAGE_PATH" | awk '{print $1}')
+LOOP_DEVICE=$(sudo losetup --show -fP "$IMAGE_PATH")
+
+if [[ -z "$LOOP_DEVICE" || ! -b "$LOOP_DEVICE" ]]; then
+  echo "[ERROR] Failed to attach loop device for $IMAGE_PATH"
+  exit 1
+fi
+
+wait_for_partition() {
+  local partition_path="$1"
+  local attempts=10
+
+  while (( attempts > 0 )); do
+    if [[ -b "$partition_path" ]]; then
+      return 0
+    fi
+
+    sleep 1
+    ((attempts--))
+  done
+
+  echo "[ERROR] Timed out waiting for partition device $partition_path"
+  exit 1
+}
 
 if [[ "$BUILD_MODE" == "host_libvirt_amd64" ]]; then
   sudo parted -s "$LOOP_DEVICE" mklabel msdos
@@ -126,6 +147,11 @@ elif [[ "$BUILD_MODE" == "vagrant_qemu_aarch64" ]]; then
   sudo parted -s "$LOOP_DEVICE" mkpart primary ext4 512MiB 100%
   sudo mkfs.fat -F32 "${LOOP_DEVICE}p1"
 fi
+
+sudo partprobe "$LOOP_DEVICE" || true
+sudo udevadm settle || true
+wait_for_partition "${LOOP_DEVICE}p1"
+wait_for_partition "${LOOP_DEVICE}p2"
 
 sudo mkfs.ext4 "${LOOP_DEVICE}p2"
 
